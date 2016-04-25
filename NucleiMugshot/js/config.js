@@ -2,7 +2,7 @@ console.log('config.js');
 
 var config = {
     domain: 'sbu-bmi.github.io',
-    //domain: 'localhost:63342/FeatureScapeToolSuite',
+    //domain: 'localhost:63342/FeatureScapeApps',
     findAPI: 'https://falcon.bmi.stonybrook.edu',
     port: 4500,
     quipUrl: 'http://quip.bmi.stonybrook.edu/camicroscope_latest/osdCamicroscope.php',
