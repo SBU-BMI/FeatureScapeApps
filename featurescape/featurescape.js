@@ -1,5 +1,5 @@
 console.log('featurescape.js loaded');
-// http://localhost:8000/featurescape/?https://fscape-132294.nitrousapp.com/?limit=1000;fun/u24demo.js
+// http://localhost:8000/FeatureScapeApps/featurescape/?https://fscape-132294.nitrousapp.com/?limit=1000;fun/u24demo.js
 
 fscape = function (x) {
     // being used to ini UI
