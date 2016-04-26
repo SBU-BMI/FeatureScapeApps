@@ -57,7 +57,7 @@ u24p.buildUI = function (id) { // build User Interface
 
             var quot = "%22";
             var _static = quot + 'provenance.analysis.execution_id' + quot + ':' + quot + u24p.anexid + quot;
-            var url = 'http://' + config.domain + '/FeatureScapeApps/featurescape/?' + u24p.findApi + '?limit=' + sz + '&find={%22randval%22:{%22$gte%22:' + sp.textContent + '},' + _static + ',%22provenance.image.case_id%22:%22' + caseId + '%22}';
+            var url = 'featurescape/?' + u24p.findApi + '?limit=' + sz + '&find={%22randval%22:{%22$gte%22:' + sp.textContent + '},' + _static + ',%22provenance.image.case_id%22:%22' + caseId + '%22}';
             if (config.mongoUrl)
             {
                 url = url + '&mongoUrl=' + config.mongoUrl;
