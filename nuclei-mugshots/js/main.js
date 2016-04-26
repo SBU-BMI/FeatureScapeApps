@@ -22,6 +22,10 @@ mugshots = function () {
 
         var _static = config.quot + 'provenance.analysis.execution_id' + config.quot + ':' + config.quot + config.analysis_execution_id + config.quot;
         url = mugshots.findApi + "?collection=objects&limit=12&find={" + _static + ',' + config.quot + "randval" + config.quot + ":{" + config.quot + "$gte" + config.quot + ":" + rand + "}}";
+        if (config.mongoUrl) {
+            url = url + '&mongoUrl=' + config.mongoUrl;
+
+        }
         log('*** Random nuclei were selected for you. ***');
 
     }
