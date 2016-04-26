@@ -1,7 +1,7 @@
 console.log('config.js');
 
 var config = {
-    domain: 'http://sbu-bmi.github.io',
+    domain: 'http://sbu-bmi.github.io/FeatureScapeApps',
     //domain: 'http://localhost:63342/FeatureScapeApps',
     findAPI: 'https://falcon.bmi.stonybrook.edu',
     port: 4500,
