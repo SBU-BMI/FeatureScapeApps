@@ -1,4 +1,4 @@
-[Nuclei Mugshots](https://github.com/SBU-BMI/FeatureScapeApps/nuclei-mugshots)
+[Nuclei Mugshots](https://github.com/SBU-BMI/FeatureScapeApps)
 
 ## Nuclei Mugshots
 #### Mugshots of the "bad guys"... the bad nuclei, that is. Wanted: for robbery (of good health!)
