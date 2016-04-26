@@ -55,10 +55,9 @@ u24p.buildUI = function (id) { // build User Interface
 
             var sz = $('input', spSize)[0].value;
 
-            var quot = "%22";
-            var _static = quot + 'provenance.analysis.execution_id' + quot + ':' + quot + u24p.anexid + quot;
-            //http://' + config.domain + '/FeatureScapeApps/featurescape/' + 
-            var url = '?' + u24p.findApi + '?limit=' + sz + '&find={%22randval%22:{%22$gte%22:' + sp.textContent + '},' + _static + ',%22provenance.image.case_id%22:%22' + caseId + '%22}';
+            var _static = config.quot + 'provenance.analysis.execution_id' + config.quot + ':' + config.quot + u24p.anexid + config.quot;
+            // Yes, we really do need absolute path for this url:
+            var url = config.domain + '/FeatureScapeApps/featurescape/?' + u24p.findApi + '?limit=' + sz + '&find={' + config.quot + 'randval' + config.quot + ':{' + config.quot + '$gte' + config.quot + ':' + sp.textContent + '},' + _static + ',' + config.quot + 'provenance.image.case_id' + config.quot + ':' + config.quot + '' + caseId + '' + config.quot + '}';
             if (config.mongoUrl)
             {
                 url = url + '&mongoUrl=' + config.mongoUrl;
