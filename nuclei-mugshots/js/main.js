@@ -48,7 +48,8 @@ function buildQueryString(q) {
     // Remember it stops at '='
     // https://falcon.bmi.stonybrook.edu:4500/?limit
     var base = getQueryVariable('url', q);
-    base = base + '=500';
+    // Resample 50; we're only rendering 12.
+    base = base + '=50';
 
     // "find1: {"randval":{"$gte":0.399},"provenance.analysis.execution_id":"luad:20160215","provenance.image.case_id":"TCGA-05-4244-01Z-00-DX1"}"
     var find = getQueryVariable('find', q);
