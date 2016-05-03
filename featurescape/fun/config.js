@@ -11,5 +11,5 @@ var config = {
     analysis_execution_id: 'luad:20160215',
     imgcoll: 'quip_images',
     quot: "%22",
-    mongoUrl: 'mongodb://172.17.0.1:27015/u24_version3'
+    //mongoUrl: 'mongodb://172.17.0.1:27015/u24_version3'
 };
