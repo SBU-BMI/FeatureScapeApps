@@ -175,7 +175,9 @@ mugshots.fun = function (data, size) {
     var slideHeight = 0;
 
     if (sameCaseId) {
-        var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={' + config.quot + 'caseid' + config.quot + ':' + config.quot + prevCaseId + config.quot + '}';
+        var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={' + config.quot + 'case_id' + config.quot + ':' + config.quot + prevCaseId + config.quot + '}';
+        log(url);
+
         $.ajax({
             url: url,
             async: false,
@@ -190,7 +192,7 @@ mugshots.fun = function (data, size) {
     }
 
     randomMembers.forEach(function (doc) {
-        var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={' + config.quot + 'caseid' + config.quot + ':' + config.quot + doc.provenance.image.case_id + config.quot + '}';
+        var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={' + config.quot + 'case_id' + config.quot + ':' + config.quot + doc.provenance.image.case_id + config.quot + '}';
 
         if (!sameCaseId) {
             $.ajax({
