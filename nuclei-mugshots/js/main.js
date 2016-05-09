@@ -44,6 +44,7 @@ function buildQueryString(q) {
     var fy = getQueryVariable('fy', q);
     var ymin = getQueryVariable('ymin', q);
     var ymax = getQueryVariable('ymax', q);
+    var db = getQueryVariable('db', q);
 
     // Remember it stops at '='
     // https://falcon.bmi.stonybrook.edu:4500/?limit
@@ -99,7 +100,11 @@ function buildQueryString(q) {
         myUrl = myUrl + '&mongoUrl=' + config.mongoUrl;
 
     }
-    
+
+    if (db) {
+        myUrl = myUrl + '&db=' + db;
+    }
+
     return myUrl;
 
 }
@@ -164,6 +169,7 @@ mugshots.fun = function (data, size) {
     var sameCaseId = true;
     var prevCaseId = '';
     randomMembers.forEach(function (doc) {
+        console.log(doc);
         if (prevCaseId != '' && prevCaseId != doc.provenance.image.case_id) {
             sameCaseId = false;
         }
