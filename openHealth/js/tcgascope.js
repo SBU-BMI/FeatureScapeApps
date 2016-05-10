@@ -96,7 +96,7 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
                 openHealth.tcga.getTable(cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + clinicalFile + ".txt",
                     function (x) {
                         openHealth.tcga.dt[clinicalFile] = x;
-                        localforage.setfilename(clinicalFile, x);
+                        localforage.setItem(clinicalFile, x);
                         console.log(clinicalFile + ' loaded from TCGA and cached for this machine');
                         get_biospecimen_slide(biosFile, cancer_type)
                     }
