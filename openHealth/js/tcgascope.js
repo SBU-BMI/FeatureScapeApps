@@ -11,7 +11,7 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
         var str = tm.toLowerCase();
 
         console.log('str ' + str);
-        doType(str);
+        getTcgaData(str);
     };
 
     function meta(cancer_type) {
@@ -39,27 +39,25 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
         //localforage.removeItem(filename)
         localforage.getItem(filename, function (x) {
             var clinical_patient = '',
-             biospecimen_slide = '',
-             docs = '',
-             tab = '',
-             dx = '';
-            if (cancer_type === 'gbm')
-            {
-                 clinical_patient = 'clinical_patient_gbm';
-                 biospecimen_slide = 'biospecimen_slide_gbm';
-                 docs = 'gbmDocs';
-                 tab = 'gbmTab';
-                 dx = 'gbmDx';
+                biospecimen_slide = '',
+                docs = '',
+                tab = '',
+                dx = '';
+            if (cancer_type === 'gbm') {
+                clinical_patient = 'clinical_patient_gbm';
+                biospecimen_slide = 'biospecimen_slide_gbm';
+                docs = 'gbmDocs';
+                tab = 'gbmTab';
+                dx = 'gbmDx';
 
             }
 
-            if (cancer_type === 'lgg')
-            {
-                 clinical_patient = 'clinical_patient_lgg';
-                 biospecimen_slide = 'biospecimen_slide_lgg';
-                 docs = 'lggDocs';
-                 tab = 'lggTab';
-                 dx = 'lggDx';
+            if (cancer_type === 'lgg') {
+                clinical_patient = 'clinical_patient_lgg';
+                biospecimen_slide = 'biospecimen_slide_lgg';
+                docs = 'lggDocs';
+                tab = 'lggTab';
+                dx = 'lggDx';
             }
 
             if (!x) {
@@ -69,7 +67,7 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
                         localforage.setItem(filename, x);
                         console.log(filename + ' loaded from TCGA and cached for this machine');
                         //fun()
-                        testFun(cancer_type, clinical_patient, biospecimen_slide, docs, tab, dx);
+                        drawGraphs(cancer_type, clinical_patient, biospecimen_slide, docs, tab, dx);
                     },
                     0,
                     2
@@ -78,30 +76,19 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
                 console.log(filename + ' retrieved from cache');
                 openHealth.tcga.dt[filename] = x;
                 //fun()
-                testFun(cancer_type, clinical_patient, biospecimen_slide, docs, tab, dx);
+                drawGraphs(cancer_type, clinical_patient, biospecimen_slide, docs, tab, dx);
             }
 
         })
     }
 
 
-    function doType(cancer_type) {
+    function getTcgaData(cancer_type) {
 
         openHealth.tm = cancer_type;
         meta(openHealth.tm);
         var clinicalFile = 'clinical_patient_' + cancer_type;
         var biosFile = 'biospecimen_slide_' + cancer_type;
-        var fun;
-
-        if (cancer_type === 'gbm') {
-            //fun = GBMfun;
-
-        }
-
-        if (cancer_type === 'lgg') {
-            //fun = LGGfun;
-        }
-
 
         localforage.getItem(clinicalFile, function (x) {
             //localforage.removeItem(clinicalFile)
@@ -111,7 +98,6 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
                         openHealth.tcga.dt[clinicalFile] = x;
                         localforage.setfilename(clinicalFile, x);
                         console.log(clinicalFile + ' loaded from TCGA and cached for this machine');
-                        //get_biospecimen_slide(biosFile, cancer_type, fun)
                         get_biospecimen_slide(biosFile, cancer_type)
                     }
                 )
@@ -119,18 +105,18 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
                 console.log(clinicalFile + ' retrieved from cache');
                 openHealth.tcga.dt[clinicalFile] = x;
 
-                //get_biospecimen_slide(biosFile, cancer_type, fun)
                 get_biospecimen_slide(biosFile, cancer_type)
             }
 
         })
 
     }
-    doType(openHealth.tm);
+
+    getTcgaData(openHealth.tm);
 
 
-// clinical_patient_xxx, biospecimen_slide_xxx, xxxDocs, xxxTab, xxxDx
-    function testFun(cancer_type, clinical_patient, biospecimen_slide, xxxDocs, xxxTab, xxxDx) {
+    // clinical_patient_xxx, biospecimen_slide_xxx, xxxDocs, xxxTab, xxxDx
+    function drawGraphs(cancer_type, clinical_patient, biospecimen_slide, xxxDocs, xxxTab, xxxDx) {
         // Extract AGE
         openHealth.tcga.dt[clinical_patient].age = openHealth.tcga.dt[clinical_patient].age_at_initial_pathologic_diagnosis.map(function (xi) {
             return parseInt(xi)
@@ -151,7 +137,7 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
             }
             else {
                 return parseInt(xi)
-            }	// karnofsky_performance_score
+            }   // karnofsky_performance_score
         });
 
 
@@ -304,8 +290,7 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
                     var _static = config.quot + 'provenance.analysis.execution_id' + config.quot + ':' + config.quot + openHealth.execId + config.quot;
                     // Yes, we really do need absolute path for this url:
                     var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=' + 500 + '&find={' + config.quot + 'randval' + config.quot + ':{' + config.quot + '$gte' + config.quot + ':' + textContent + '},' + _static + ',' + config.quot + 'provenance.image.subject_id' + config.quot + ':' + config.quot + patient[x.textContent]["bcr_patient_barcode"] + config.quot + '}&db=' + openHealth.db;
-                    if (config.mongoUrl)
-                    {
+                    if (config.mongoUrl) {
                         fscape = fscape + '&mongoUrl=' + config.mongoUrl;
                     }
                     fscape = fscape + ';fun/u24demo.js';
@@ -589,16 +574,12 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
             AddXAxis(C.race, '# images found');
             AddXAxis(C.karnofsky_performance_score, '# images found');
 
-            karnofsky_performance_score;
             // clear bootstrap to make room
             document.getElementById('openHealth').className = "";
             openHealthJobMsg.textContent = ""
 
-
         })
 
-
     }
-
 
 });
