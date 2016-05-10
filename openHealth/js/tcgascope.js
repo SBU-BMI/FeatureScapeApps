@@ -20,10 +20,8 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
             cancer_type = 'luad';
 
         var url = config.findAPI + ':' + config.port + '/?limit=1&collection=metadata&find={"cancer_type":"' + cancer_type + '"}&db=u24_meta';
-        console.log(url);
 
         $.getJSON(url).then(function (arr) {
-            console.log(JSON.stringify(arr));
 
             arr.forEach(function (item) {
                 openHealth.db = item.db;
@@ -61,7 +59,9 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
             }
 
             if (!x) {
-                openHealth.tcga.getTable(cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + filename + ".txt",
+                var str = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + filename + ".txt";
+                console.log(str);
+                openHealth.tcga.getTable(str,
                     function (x) {
                         openHealth.tcga.dt[filename] = x;
                         localforage.setItem(filename, x);
@@ -83,6 +83,9 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
     }
 
 
+    // TODO:
+    //https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/luad/bcr/biotab/clin
+    //+PATIENT IDs
     function getTcgaData(cancer_type) {
 
         openHealth.tm = cancer_type;
@@ -93,7 +96,9 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
         localforage.getItem(clinicalFile, function (x) {
             //localforage.removeItem(clinicalFile)
             if (!x) {
-                openHealth.tcga.getTable(cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + clinicalFile + ".txt",
+                var str = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + clinicalFile + ".txt";
+                console.log(str);
+                openHealth.tcga.getTable(str,
                     function (x) {
                         openHealth.tcga.dt[clinicalFile] = x;
                         localforage.setItem(clinicalFile, x);
@@ -117,21 +122,28 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
 
     // clinical_patient_xxx, biospecimen_slide_xxx, xxxDocs, xxxTab, xxxDx
     function drawGraphs(cancer_type, clinical_patient, biospecimen_slide, xxxDocs, xxxTab, xxxDx) {
+
+        //console.log(JSON.stringify(openHealth.tcga.dt[clinical_patient].karnofsky_score));
+
         // Extract AGE
         openHealth.tcga.dt[clinical_patient].age = openHealth.tcga.dt[clinical_patient].age_at_initial_pathologic_diagnosis.map(function (xi) {
             return parseInt(xi)
         });
         // Extract SURVIVAL
-        openHealth.tcga.dt[clinical_patient].survival = openHealth.tcga.dt[clinical_patient].days_to_death.map(function (xi, i) {
+        // "death_days_to":["days_to_death","CDE_ID: ...
+        openHealth.tcga.dt[clinical_patient].survival = openHealth.tcga.dt[clinical_patient].death_days_to.map(function (xi, i) {
             if (xi == "[Not Applicable]") {
-                xi = openHealth.tcga.dt[clinical_patient].days_to_last_followup[i]; // this is not ideal so we'll need to flag the vital status in teh analysis
+                // "last_contact_days_to":["days_to_last_followup","CDE_ID: ...
+                xi = openHealth.tcga.dt[clinical_patient].last_contact_days_to[i]; // this is not ideal so we'll need to flag the vital status in teh analysis
             }
             return parseInt(xi)
         });
         openHealth.tcga.dt[clinical_patient].dead = openHealth.tcga.dt[clinical_patient].vital_status.map(function (xi) {
             return xi == "Dead"
         });
-        openHealth.tcga.dt[clinical_patient].score = openHealth.tcga.dt[clinical_patient].karnofsky_performance_score.map(function (xi, i) {
+
+        //"karnofsky_score":["karnofsky_performance_score","CDE_ID: ...
+        openHealth.tcga.dt[clinical_patient].score = openHealth.tcga.dt[clinical_patient].karnofsky_score.map(function (xi, i) {
             if (!parseFloat(xi)) {
                 return NaN
             }
@@ -160,7 +172,7 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
                 xi.gender = p.gender;
                 xi.race = p.race;
                 xi.score = p.score;
-                xi.karnofsky_performance_score = p.karnofsky_performance_score
+                xi.karnofsky_score = p.karnofsky_score
             } else {
                 console.log('patient ' + bcr + ' not found for slide ' + i)
             }
@@ -180,19 +192,18 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
         openHealthJobMsg.textContent = '--> processing ...';
         openHealthJobDC.innerHTML = '';
 
-        // ---- UI Dimensional scalling ---
+        // ---- UI Dimensional scaling ---
         openHealth.getScript(["https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js", "https://www.google.com/jsapi", "https://square.github.io/crossfilter/crossfilter.v1.min.js", "https://dc-js.github.io/dc.js/js/dc.js", "https://dc-js.github.io/dc.js/css/dc.css"], function () { // after satisfying d3 dependency
             openHealthJobMsg.textContent = "Assembling charts ...";
             //openHealthJobDC.innerHTML='<table cellpadding="10px"><tr><td style="vertical-align:top"><table><tr><td style="vertical-align:top"><div>% Necrotic Cells:</div><div id="percent_necrosis"></div><div>% Tumor Nuclei:</div><div id="percent_tumor_nuclei"></div><div>Location:</div><div id="section_location"></div></td><td style="vertical-align:top"><div>% Tumor Cells:</div><div id="percent_tumor_cells"></div><div>% Lymphocyte Infiltration:</div><div id="percent_lymphocyte_infiltration"></div><div>Race:</div><div id="race"></div><div>Gender:</div><div id="gender"></div></td><td style="vertical-align:top"><div>% Stromal Cells:</div><div id="percent_stromal_cells"></div><div style="color:blue">Karnofsky Score:</div><div id="karnofsky_performance_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div><div>% Monocyte Infiltration:</div><div id="percent_monocyte_infiltration"></div><div>% Neutrophil Infiltration:</div><div id="percent_neutrophil_infiltration"></div></td></tr></table></td><td style="vertical-align:top"><h3>' + cancer_type + ' Tumor progression</h3><div id="tumorProgression"></div><b>Legend</b>: color indicates Karnofsky performance score (see framed bar chart); diameter indicates number of images</td></tr></table><table><tr><td style="vertical-align:top"><div id="tcgaPatientsHeader">TCGA patients:</div><div id="tcgaPatients"></div></td><td style="vertical-align:top"><div id="slideImagesHeader">Slide Images:</div><div id="slideImages"></div></td><td style="vertical-align:top"><div id="diagnosticImagesHeader">Diagnostic Images:</div><div id="diagnosticImages"></div></td><td style="vertical-align:top"><div id="buttonResults"></div></td></tr></table>'
             //openHealthJobDC.innerHTML='<table cellpadding="10px"><tr><td style="vertical-align:top"><table><tr><td style="vertical-align:top"><div>% Necrotic Cells:</div><div id="percent_necrosis"></div><div>% Tumor Nuclei:</div><div id="percent_tumor_nuclei"></div><div>Location:</div><div id="section_location"></div></td><td style="vertical-align:top"><div>% Tumor Cells:</div><div id="percent_tumor_cells"></div><div>% Lymphocyte Infiltration:</div><div id="percent_lymphocyte_infiltration"></div><div>Race:</div><div id="race"></div><div>Gender:</div><div id="gender"></div></td><td style="vertical-align:top"><div>% Stromal Cells:</div><div id="percent_stromal_cells"></div><div style="color:blue">Karnofsky Score:</div><div id="karnofsky_performance_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div><div>% Monocyte Infiltration:</div><div id="percent_monocyte_infiltration"></div><div>% Neutrophil Infiltration:</div><div id="percent_neutrophil_infiltration"></div></td></tr></table></td><td style="vertical-align:top"><h3>' + cancer_type + ' Tumor progression</h3><div id="tumorProgression"></div><b>Legend</b>: color indicates Karnofsky performance score (see framed bar chart); diameter indicates number of images</td></tr></table><table id="patientSlideTable"><thead><tr><td id="tcgaPatientsHeader">TCGA patients:</td><td id="diagnosticImagesHeader">Diagnostic Images:</td></tr></thead><tr><td style="vertical-align:top"><div id="tcgaPatientsHeader_">TCGA patients:</div><div id="tcgaPatients"></div></td><td style="vertical-align:top"><div id="slideImagesHeader">Slide Images:</div><div id="slideImages"></div></td><td style="vertical-align:top"><div id="diagnosticImagesHeader_">Diagnostic Images:</div><div id="diagnosticImages"></div></td><td style="vertical-align:top"><div id="buttonResults"></div></td></tr></table>'
             //openHealthJobDC.innerHTML='<table cellpadding="10px"><tr><td style="vertical-align:top"><table><tr><td style="vertical-align:top"><div>% Necrotic Cells:</div><div id="percent_necrosis"></div><div>% Tumor Nuclei:</div><div id="percent_tumor_nuclei"></div><div>Location:</div><div id="section_location"></div></td><td style="vertical-align:top"><div>% Tumor Cells:</div><div id="percent_tumor_cells"></div><div>% Lymphocyte Infiltration:</div><div id="percent_lymphocyte_infiltration"></div><div>Race:</div><div id="race"></div><div>Gender:</div><div id="gender"></div></td><td style="vertical-align:top"><div>% Stromal Cells:</div><div id="percent_stromal_cells"></div><div style="color:blue">Karnofsky Score:</div><div id="karnofsky_performance_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div><div>% Monocyte Infiltration:</div><div id="percent_monocyte_infiltration"></div><div>% Neutrophil Infiltration:</div><div id="percent_neutrophil_infiltration"></div></td></tr></table></td><td style="vertical-align:top"><h3>' + cancer_type + ' Tumor progression</h3><div id="tumorProgression"></div><b>Legend</b>: color indicates Karnofsky performance score (see framed bar chart); diameter indicates number of images</td></tr></table><table id="patientSlideTable"><thead><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">TCGA patients:</td><td id="diagnosticImagesHeader" style="color:maroon;font-weight:bold">Diagnostic Images:</td></tr></thead><tbody id="patientSlideTableBody"></tbody></table><table id="hiddenTable" hidden=true><tr><td style="vertical-align:top"><div id="tcgaPatientsHeader_">TCGA patients:</div><div id="tcgaPatients"></div></td><td style="vertical-align:top"><div id="slideImagesHeader">Slide Images:</div><div id="slideImages"></div></td><td style="vertical-align:top"><div id="diagnosticImagesHeader_">Diagnostic Images:</div><div id="diagnosticImages"></div></td><td style="vertical-align:top"><div id="buttonResults"></div></td></tr></table>'
-            openHealthJobDC.innerHTML = '<table cellpadding="10px"><tr><td style="vertical-align:top"><table><tr><td style="vertical-align:top"><div>% Necrotic Cells:</div><div id="percent_necrosis"></div><div>% Tumor Nuclei:</div><div id="percent_tumor_nuclei"></div><div>Location:</div><div id="section_location"></div></td><td style="vertical-align:top"><div>% Tumor Cells:</div><div id="percent_tumor_cells"></div><div>% Lymphocyte Infiltration:</div><div id="percent_lymphocyte_infiltration"></div><div>Race:</div><div id="race"></div><div>Gender:</div><div id="gender"></div></td><td style="vertical-align:top"><div>% Stromal Cells:</div><div id="percent_stromal_cells"></div><div style="color:blue">Karnofsky Score:</div><div id="karnofsky_performance_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div><div>% Monocyte Infiltration:</div><div id="percent_monocyte_infiltration"></div><div>% Neutrophil Infiltration:</div><div id="percent_neutrophil_infiltration"></div></td></tr></table></td><td style="vertical-align:top"><h3>GBM Tumor progression</h3><div id="tumorProgression"></div><b>Legend</b>: color indicates Karnofsky performance score (see framed bar chart); diameter indicates number of images</td></tr></table><table><tr><td style="vertical-align:top"><table id="patientSlideTable"><thead><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">TCGA patients:</td><td id="diagnosticImagesHeader" style="color:maroon;font-weight:bold">Diagnostic Images:</td></tr></thead><tbody id="patientSlideTableBody"></tbody></table></td><td id="moreInfo" style="vertical-align:top"></td></tr></table><table id="hiddenTable" hidden=true><tr><td style="vertical-align:top"><div id="tcgaPatientsHeader_">TCGA patients:</div><div id="tcgaPatients"></div></td><td style="vertical-align:top"><div id="slideImagesHeader">Slide Images:</div><div id="slideImages"></div></td><td style="vertical-align:top"><div id="diagnosticImagesHeader_">Diagnostic Images:</div><div id="diagnosticImages"></div></td><td style="vertical-align:top"><div id="buttonResults"></div></td></tr></table>';
+            openHealthJobDC.innerHTML = '<table cellpadding="10px"><tr><td style="vertical-align:top"><table><tr><td style="vertical-align:top"><div>% Necrotic Cells:</div><div id="percent_necrosis"></div><div>% Tumor Nuclei:</div><div id="percent_tumor_nuclei"></div><div>Location:</div><div id="section_location"></div></td><td style="vertical-align:top"><div>% Tumor Cells:</div><div id="percent_tumor_cells"></div><div>% Lymphocyte Infiltration:</div><div id="percent_lymphocyte_infiltration"></div><div>Race:</div><div id="race"></div><div>Gender:</div><div id="gender"></div></td><td style="vertical-align:top"><div>% Stromal Cells:</div><div id="percent_stromal_cells"></div><div style="color:blue">Karnofsky Score:</div><div id="karnofsky_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div><div>% Monocyte Infiltration:</div><div id="percent_monocyte_infiltration"></div><div>% Neutrophil Infiltration:</div><div id="percent_neutrophil_infiltration"></div></td></tr></table></td><td style="vertical-align:top"><h3>GBM Tumor progression</h3><div id="tumorProgression"></div><b>Legend</b>: color indicates Karnofsky performance score (see framed bar chart); diameter indicates number of images</td></tr></table><table><tr><td style="vertical-align:top"><table id="patientSlideTable"><thead><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">TCGA patients:</td><td id="diagnosticImagesHeader" style="color:maroon;font-weight:bold">Diagnostic Images:</td></tr></thead><tbody id="patientSlideTableBody"></tbody></table></td><td id="moreInfo" style="vertical-align:top"></td></tr></table><table id="hiddenTable" hidden=true><tr><td style="vertical-align:top"><div id="tcgaPatientsHeader_">TCGA patients:</div><div id="tcgaPatients"></div></td><td style="vertical-align:top"><div id="slideImagesHeader">Slide Images:</div><div id="slideImages"></div></td><td style="vertical-align:top"><div id="diagnosticImagesHeader_">Diagnostic Images:</div><div id="diagnosticImages"></div></td><td style="vertical-align:top"><div id="buttonResults"></div></td></tr></table>';
 
             var docs = openHealth.tcga.dt[xxxDocs];
-            console.log('docs: ' + docs);
+            //console.log('docs: ' + JSON.stringify(docs));
 
             var tab = openHealth.tcga.dt[xxxTab];
-
 
             var C = {}, D = {}, G = {}, U = {}, R = {};
             var P = {}, S = {};  // list patients and slides
@@ -462,8 +473,8 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
             addRowChard2('gender', openHealth.unique(openHealth.tcga.dt[xxxTab].gender));
             addRowChard('race', openHealth.unique(openHealth.tcga.dt[xxxTab].race));
             addRowChard(
-                'karnofsky_performance_score',
-                openHealth.unique(openHealth.tcga.dt[xxxTab].karnofsky_performance_score),
+                'karnofsky_score',
+                openHealth.unique(openHealth.tcga.dt[xxxTab].karnofsky_score),
                 function (CRT) {
                     CRT
                         .colors(d3.scale.linear().domain([-1, 0, 40, 80, 90, 100]).range(["silver", "red", "red", "yellow", "green", "green"]))
@@ -572,7 +583,7 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
             AddXAxis(C.section_location, '# images found');
             AddXAxis(C.gender, '# images found');
             AddXAxis(C.race, '# images found');
-            AddXAxis(C.karnofsky_performance_score, '# images found');
+            AddXAxis(C.karnofsky_score, '# images found');
 
             // clear bootstrap to make room
             document.getElementById('openHealth').className = "";
