@@ -1,5 +1,4 @@
 console.log('featurescape.js loaded');
-// http://localhost:8000/FeatureScapeApps/featurescape/?https://fscape-132294.nitrousapp.com/?limit=1000;fun/u24demo.js
 
 fscape = function (x) {
     // being used to ini UI
@@ -186,45 +185,30 @@ fscape.cleanUI = function () { // and create fscapeAnalysisDiv
 };
 
 fscape.fun = function (x, url) {
-    fscape.log(x.length + ' entries sampled from ' + url, 'blue');
-    fscape.cleanUI();
-    // make sure only numeric parameters go forward
-    var alwaysNum = {};
-    Object.getOwnPropertyNames(x[0]).forEach(function (p) {
-        if (typeof(parseFloat(x[0][p]) == 'number')) {
-            alwaysNum[p] = true
-        }
+
+    // "VERSION 3"
+    x = x.map(function (xi) {
+        return xi.properties.scalar_features;
+        //return xi.features;
     });
-    var pp = Object.getOwnPropertyNames(alwaysNum);
-    pp.forEach(function (p) {
-        x.forEach(function (xi, i) {
-            if (alwaysNum[p]) {
-                alwaysNum[p] = (!isNaN(parseFloat(xi[p])))
-            }
-        })
-    });
-    // remove non-numeric parameters
-    var ppn = [], ppnan = [];
-    pp.forEach(function (p) {
-        if (alwaysNum[p]) {
-            ppn.push(p)
-        }
-        else {
-            ppnan.push(p)
-        }
-    });
-    var y = [], z = [];
-    x.forEach(function (xi, i) {
-        y[i] = {};
-        z[i] = {};
-        ppn.forEach(function (p) {
-            y[i][p] = parseFloat(xi[p])
+
+    var nv = [];
+    x.forEach(function (item) {
+        var JSONArray = item[0]["nv"];
+
+        var features = {};
+        JSONArray.forEach(function (item) {
+            features[item.name] = item.value;
         });
-        ppnan.forEach(function (p) {
-            z[i][p] = xi[p]
-        })
+
+        nv.push(features);
     });
-    fscape.plot(y, z)
+
+    var xx = nv;
+    fscape.log(xx.length + ' entries sampled from ' + url, 'blue');
+    fscape.cleanUI();
+
+    fscape.plot(xx)
 };
 
 fscape.clust2html = function (cl) {
@@ -275,19 +259,12 @@ fscape.plot = function (x) { // when ready to do it
 
     // featurecrossTD
 
-    // lsit parameters
-    var parmsAll = Object.getOwnPropertyNames(fscape.dt.tab);
-    // numeric paramters
+    // numeric parameters
     var parmNum = Object.getOwnPropertyNames(fscape.dt.tab).filter(function (p) {
         return typeof(fscape.dt.docs[0][p]) == "number"
     });
-    // string parameters
-    var parmStr = Object.getOwnPropertyNames(fscape.dt.tab).filter(function (p) {
-        return typeof(fscape.dt.docs[0][p]) == "string"
-    });
 
-    // cluster numeric paramters
-
+    // cluster numeric parameters
     var xx = parmNum.map(function (p) {
         return fscape.dt.tab[p]
     });

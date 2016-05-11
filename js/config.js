@@ -1,8 +1,8 @@
 console.log('config.js');
 
 var config = {
-    domain: 'http://sbu-bmi.github.io/FeatureScapeApps',
-    //domain: 'http://localhost:63342/FeatureScapeApps',
+    //domain: 'http://sbu-bmi.github.io/FeatureScapeApps',
+    domain: 'http://localhost:63342/Quip',
     //findAPI: 'https://falcon.bmi.stonybrook.edu',
     findAPI: 'http://quip1.uhmc.sunysb.edu',
     port: 4000,
@@ -10,6 +10,6 @@ var config = {
     reserve4Url: 'http://reserve4.informatics.stonybrook.edu/dev1/osdCamicroscope.php',
     analysis_execution_id: 'luad:20160215',
     imgcoll: 'images',
-    quot: "%22",
+    quot: "%22"
     //mongoUrl: 'mongodb://172.17.0.1:27015/u24_version3'
 };

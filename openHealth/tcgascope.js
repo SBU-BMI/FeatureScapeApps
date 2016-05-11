@@ -3,7 +3,7 @@ console.log('tcgascope.js loaded');
 
 openHealth.tm = 'gbm';
 
-openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
+openHealth.require(config.domain + '/openHealth/tcga.js', function () {
     var selectTumorHTML = '<h3 style="color:navy">Tumor Type: <select onchange="tumorChanged(this)" style="font-color:navy;background-color:silver;font-size:large" id="selectTumor"><option>GBM - Glioblastoma Multiforme</option><option>LGG - Lower Grade Glioma</option></select></h3>';
     openHealthJob.innerHTML = selectTumorHTML + '<div id="openHealthJobMsg" style="color:red">processing ...</div><div id="openHealthJobDC"></div>';
     tumorChanged = function (evt) {
@@ -149,7 +149,7 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
             }
             else {
                 return parseInt(xi)
-            }   // karnofsky_performance_score
+            }	// karnofsky_performance_score
         });
 
 
@@ -210,7 +210,7 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
             var listDxSlides = function (pp) {
                 // check DxImages available already
                 if (!openHealth.tcga.dt[xxxDx]) {
-                    openHealth.getText(config.domain + '/openHealth/data/' + cancer_type + '_patientids.json', function (x) {
+                    openHealth.getText(config.domain + '/data/' + cancer_type + '_patientids.json', function (x) {
                         //x = x.replace(/}/g, '},');
                         //x = '[' + x.slice(0, -2) + ']';
 
@@ -293,7 +293,7 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
                     //buttonResults.innerHTML='<pre>'+JSON.stringify(patient[x.textContent],null,3)+'</pre>'
 
                     buttonResults.innerHTML = '<pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
-                    //var fscape = 'http://sbu-bmi.github.io/featurescape/?https://fscape-132294.nitrousapp.com/?find={"provenance.analysis_execution_id":"yi-algo-v2","image.subjectid":"' + patient[x.textContent]["bcr_patient_barcode"] + '"};fun/u24demo.js';
+                    //var fscape = 'http://sbu-bmi.github.io/featurescape/?https://fscape-132294.nitrousapp.com/?find={"provenance.analysis_execution_id":"yi-algo-v2","image.subjectid":"' + patient[x.textContent]["bcr_patient_barcode"] + '"};';
 
                     var v = 0.95 * Math.random();
                     var textContent = v.toString().slice(0, 5);
@@ -304,7 +304,6 @@ openHealth.require(config.domain + '/openHealth/js/tcga.js', function () {
                     if (config.mongoUrl) {
                         fscape = fscape + '&mongoUrl=' + config.mongoUrl;
                     }
-                    fscape = fscape + ';fun/u24demo.js';
 
                     moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="feature landscape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
                     fscapeButton.onclick = function () {

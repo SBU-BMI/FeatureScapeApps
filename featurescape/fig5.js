@@ -2,9 +2,14 @@ console.log('fig4.js loaded');
 
 window.onload = function () {
 
-    $.getJSON('../data/patients_fig4.json').then(function (x) {
-        console.log('loaded ' + x.length + ' records');
+    var url = config.findAPI + ':' + config.port + '?collection=patients&limit=522&db=u24_luad';
+    //var url = '../data/patients_fig4.json';
+
+    $.getJSON(url).then(function (x) {
+        //console.log(JSON.stringify(x[0]));
         //y=x
+        console.log('loaded ' + x.length + ' records');
+
         var msg = function (txt, clr) {
             if (!clr) {
                 clr = "blue"
@@ -21,22 +26,55 @@ window.onload = function () {
         //unpack data into table, tab
         tab = {};
         var parms = Object.getOwnPropertyNames(x[0]);
+
+        ///parms[parms.indexOf('days_to_last_followup')] = 'months_followup';
+
+        //console.log('\n\nparms: ' + parms);
+
+        // each parm with empty array
         parms.forEach(function (p) {
-            tab[p] = []
+            tab[p] = [];
         });
+        //console.log('\n\ntab1: ' + JSON.stringify(tab));
+
+        // _id's
         x.forEach(function (xi, i) {
             x[i].i = i;
             parms.forEach(function (p) {
-                tab[p][i] = xi[p]
+                if (p === 'days_to_last_followup')
+                {
+                    if (!isNaN(xi[p])) {
+                        var myInt = xi[p];
+                        //console.log('myInt', myInt);
+                        if (myInt > 0)
+                        {
+                            tab[p][i] = (myInt/30);
+                        }
+                        else {
+                            tab[p][i] = myInt;
+                        }
+
+                    }
+                    else {
+                        tab[p][i] = xi[p];
+                    }
+
+                }
+                else {
+                    tab[p][i] = xi[p];
+                }
+
             })
         });
+        //console.log('\n\ntab2: ' + JSON.stringify(tab));
+
         docs = x;
 
         // build table
         var h = '<table>';
         h += '<tr><td id="fig4_1" style="vertical-align:top">';
         h += '<h3 style="color:maroon">Gene Mutation</h3>';
-        h += '<p style="color:maroon">Click on bars to select molecular cohorts,<br>Xaxis: # patients; Yaxis: mutation status<br>[<b style="color:blue">blue</b><b style="color:YellowGreen">-</b><b style="color:red">red</b>] color range indicates fraction of total.</p>';
+        h += '<p style="color:maroon">Click on bars to select molecular cohorts,<br>Xaxis: # patients; Yaxis: mutation vital_status<br>[<b style="color:blue">blue</b><b style="color:YellowGreen">-</b><b style="color:red">red</b>] color range indicates fraction of total.</p>';
         h += '<h4 style="color:navy" id="fig4_1_EGFR">EGFR</h4>';
         h += '<h4 style="color:navy" id="fig4_1_KRAS">KRAS</h4>';
         h += '<h4 style="color:navy" id="fig4_1_STK11_LKB1">STK11_LKB1</h4>';
@@ -70,7 +108,9 @@ window.onload = function () {
         fig4div.innerHTML = h;
 
         // Parameterization
-        var morphParms = ["NumberOfPixels_median", "PhysicalSize_median", "NumberOfPixelsOnBorder_median", "FeretDiameter_median", "PrincipalMoments0_median", "PrincipalMoments1_median", "Elongation_median", "Perimeter_median", "Roundness_median", "EquivalentSphericalRadius_median", "EquivalentSphericalPerimeter_median", "EquivalentEllipsoidDiameter0_median", "EquivalentEllipsoidDiameter1_median", "Flatness_median", "MeanR_median", "MeanG_median", "MeanB_median", "StdR_median", "StdG_median", "StdB_median", "age_at_initial_pathologic_diagno", "est_days_to_remission", "K17_group", "Stage", "Tumor", "gender_code", "hist_code"];
+        var morphParms = ["gender", "icd_o_3_histology", "histological_type", "Study", "SizeInPixels_median", "PrincipalMoments0_median", "PrincipalMoments1_median", "Elongation_median", "Perimeter_median", "Roundness_median", "EquivalentSphericalRadius_median", "EquivalentSphericalPerimeter_median", "EquivalentEllipsoidDiameter0_median", "EquivalentEllipsoidDiameter1_median", "Flatness_median", "meanR_median", "meanG_median", "meanB_median", "stdR_median", "stdG_median", "stdB_median", "age_at_initial_pathologic_diagnosis"];
+        //console.log(morphParms);
+        //console.log(morphParms.length);
         morphParms.sort(function (a, b) {
             var val = (a.toUpperCase() > b.toUpperCase());
             if (val) {
@@ -117,7 +157,7 @@ window.onload = function () {
         if (searchParms.morph2) {
             morphParm2.value = searchParms.morph2
         } else {
-            morphParm2.value = "StdR_median"
+            morphParm2.value = "stdR_median"
         }
         morphParm1.onchange = morphParm2.onchange = function () {
             location.search = '?morph1=' + morphParm1.value + '&morph2=' + morphParm2.value
@@ -125,17 +165,48 @@ window.onload = function () {
 
         // Add survival information
         survivalPlot = function () {
+
+            var x = tab.days_to_last_followup.map(function(xi){
+
+                if (isNaN(xi))
+                {
+                    return 0;
+                }
+                else
+                {
+                    return xi;
+                }
+
+            });
+
+            var y = tab.vital_status.map(function(xi){
+
+                if (xi === 'Alive')
+                {
+                    xi = 0;
+                }
+
+                if (xi === 'Dead')
+                {
+                    xi = 1;
+                }
+
+                return xi;
+
+            });
+
             trace0 = {
-                x: tab.months_followup,
-                y: tab.status,
+                x: x,
+                y: y,
                 mode: 'lines'
             };
 
-            // convert status into survival
+            // convert vital_status into survival
             var x = [], y = [], ind = [];
             trace0.x.forEach(function (v, i) {
                 var xi = trace0.x[i];
                 var yi = trace0.y[i];
+
                 if ((typeof(xi) == 'number') && (typeof(yi) == 'number')) {
                     x.push(xi);
                     y.push(yi);
@@ -143,21 +214,25 @@ window.onload = function () {
                 }
             });
 
+
+
             var jj = jmat.sort(x)[1];
+
             surv0 = { // calculating survival here
                 tt: [],
-                status: [], // survival, we'll have to calculate it
+                vital_status: [], // survival, we'll have to calculate it
                 ind: []
             };
 
             jj.map(function (j, i) {
                 surv0.tt[i] = x[j];
-                surv0.status[i] = y[j]; // note this is the former y value (status)
+                surv0.vital_status[i] = y[j]; // note this is the former y value (vital_status)
                 surv0.ind[i] = ind[j]
             });
 
+
             // calculating survival for unique times
-            survCalc = function (x) { // x is the status, ordered chronologically
+            survCalc = function (x) { // x is the vital_status, ordered chronologically
                 var y = [x[0]];
                 var n = x.length;
                 var s = [1];
@@ -168,7 +243,9 @@ window.onload = function () {
                 return s
             };
 
-            surv0.yy = survCalc(surv0.status);
+            surv0.yy = survCalc(surv0.vital_status);
+
+
             trace0.x = surv0.tt;
             trace0.y = surv0.yy;
 
@@ -179,7 +256,7 @@ window.onload = function () {
             // now only for the selected patients
             if (typeof(dcSurv) != "undefined") {
                 trace1 = (function () {
-                    //console.log(9)
+
                     var xy = dcStatus.G.all().filter(function (xyi) {
                         return xyi.value
                     });
@@ -367,6 +444,7 @@ window.onload = function () {
              }
              )*/
 
+            console.log('p = ' + p);
             var xx = tab[p].filter(function (v) {
                 return typeof(v) == 'number'
             });
@@ -417,7 +495,7 @@ window.onload = function () {
 
         dcSurv.C = dc.scatterPlot('#' + 'dcSurvival');
         dcSurv.D = cf.dimension(function (d) {
-            return [d.months_followup, d.KM]
+            return [d.days_to_last_followup, d.KM]
         });
 
         dcSurv.G = dcSurv.D.group();
@@ -439,7 +517,7 @@ window.onload = function () {
 
         dcStatus.C = dc.scatterPlot('#' + 'dcStatus');
         dcStatus.D = cf.dimension(function (d) {
-            return [d.months_followup, d.status]
+            return [d.days_to_last_followup, d.vital_status]
         });
 
         dcStatus.G = dcStatus.D.group();
