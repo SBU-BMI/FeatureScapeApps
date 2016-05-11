@@ -814,7 +814,7 @@ openHealth.ini = function () {
         return this
     };
 
-    this.flatJSON = function (s, n) { // flatens json structure into a 1st degree object
+    this.flatJSON = function (s, n) { // flattens json structure into a 1st degree object
         if (!n) {
             n = ""
         }
