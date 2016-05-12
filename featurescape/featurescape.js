@@ -292,7 +292,7 @@ fscape.plot = function (x) { // when ready to do it
         return 1 - Math.abs(cij)
     });
     cc.forEach(function (ci, i) {
-        ci[i] = 0; // diagonal by defenition
+        ci[i] = 0; // diagonal by definition
     });
     var cl = jmat.cluster(cc);  // remember this has three output arguments
     fscape.dt.cl = cl; // this may be better kept as a structure

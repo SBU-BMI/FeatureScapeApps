@@ -66,7 +66,7 @@ openHealth.ini = function () {
         if (!!fun) {
             r.onload = fun
         }
-         // calback
+         // callback
         r.open(meth, url, true);
         r.send();
         return r

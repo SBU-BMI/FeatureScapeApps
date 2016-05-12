@@ -1,10 +1,41 @@
 console.log('fig4.js loaded');
+//tab.bcr_patient_barcode[3]
 
-window.onload = function () {
+fig4 = function () {
+    console.log('location: ' + location);
+    var url = '';
+    var subjectId = '';
+    if (location.hash.length > 1) {
+        // TODO: waiting on database.
+        //url = location.hash.slice(1);
+        url = '../data/patients_fig4.json';
+        subjectId = location.hash.slice(1);
+    }
+    else {
+        // Default data url
+        url = '../data/patients_fig4.json';
+    }
 
-    $.getJSON('../data/patients_fig4.json').then(function (x) {
+    console.log('url: ', url);
+    console.log('subjectId: ', subjectId);
+    fig4.loadData(url, subjectId);
+};
+
+fig4.loadData = function (url, subjectId) {
+    $.getJSON(url).then(function (x) {
+
+        if (subjectId !== "")
+        {
+            var newArr = x.filter(function(item){
+                return item.bcr_patient_barcode === subjectId;
+            });
+
+            x = newArr;
+
+        }
+
         console.log('loaded ' + x.length + ' records');
-        //y=x
+
         var msg = function (txt, clr) {
             if (!clr) {
                 clr = "blue"
@@ -21,16 +52,28 @@ window.onload = function () {
         //unpack data into table, tab
         tab = {};
         var parms = Object.getOwnPropertyNames(x[0]);
+
+        // 'tab' object key is parm, and value is empty array
+        // just getting it ready for later...
         parms.forEach(function (p) {
             tab[p] = []
         });
+
         x.forEach(function (xi, i) {
+            // Appending an index to each ("i":0, "i":1, etc.)
             x[i].i = i;
+            // 'tab' object key is parm, and value is array of all values for that parm
+            // Access like: tab.name[index]
             parms.forEach(function (p) {
-                tab[p][i] = xi[p]
-            })
+
+                tab[p][i] = xi[p];
+
+            });
+
         });
+
         docs = x;
+
 
         // build table
         var h = '<table>';
@@ -352,20 +395,7 @@ window.onload = function () {
             });
 
             morph[p].G = morph[p].D.group();
-            /*.reduce(
-             // reduce in
-             function(p,v){
-             return p+1
-             },
-             // reduce out
-             function(p,v){
-             return p-1
-             },
-             // ini
-             function(p,v){
-             return 0
-             }
-             )*/
+
 
             var xx = tab[p].filter(function (v) {
                 return typeof(v) == 'number'
@@ -460,5 +490,10 @@ window.onload = function () {
         $('.dc-chart g.row text').css('fill', 'black');
 
     })
+};
+
+window.onload = function () {
+
+    fig4();
 
 };
