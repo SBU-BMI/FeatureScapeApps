@@ -35,7 +35,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                     var attr = '';
 
                     if (!openHealth.cancer_type) {
-                        if (tm === 'gbm') {
+                        if (tm === 'luad') {
                             openHealth.db = item.db;
                             openHealth.execution_id = item.execution_id;
                             openHealth.cancer_type = item.cancer_type;
@@ -285,35 +285,6 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                         }
                     });
 
-                    // TODO: don't go to local file at all.
-                    /*
-                     openHealth.getText(config.domain + '/data/' + cancer_type + '_patientids.json', function (x) {
-
-                     var string = JSON.stringify(x),
-                     substring = "404 Not Found";
-
-                     if (string.indexOf(substring) > -1)
-                     {
-                     console.log(substring);
-                     }
-                     else
-                     {
-                     var y = {}; // index of diagnostic images per patient
-                     x.map(function (xi) {
-                     if (!y[xi.patientid]) {
-                     y[xi.patientid] = [xi.caseid]
-                     } else {
-                     y[xi.patientid].push(xi.caseid)
-                     }
-
-                     });
-
-                     }
-
-                     // SUBJECT ID: CASE IDs
-                     openHealth.tcga.dt[xxxDx] = y;
-                     listDxSlides(pp)
-                     })*/
                 } else {
                     var pp0 = pp.filter(function (pi) {
                         return openHealth.tcga.dt[xxxDx][pi]
@@ -365,23 +336,33 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                 diagnosticImagesHeader.textContent = ' Diagnostic Images (...):';
                 tcgaPatients.innerHTML = "";
                 slideImages.innerHTML = "";
+
+
                 openHealth.tcga.resultsPatient = function (x) {
 
                     buttonResults.innerHTML = '<pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
 
                     var v = 0.95 * Math.random();
                     var textContent = v.toString().slice(0, 5);
-                    var _static = config.quot + 'provenance.analysis.execution_id' + config.quot + ':' + config.quot + openHealth.execution_id + config.quot;
+                    var exec = config.quot + 'provenance.analysis.execution_id' + config.quot + ':' + config.quot + openHealth.execution_id + config.quot;
+                    var find = '{' + config.quot + 'randval' + config.quot + ':{' + config.quot + '$gte' + config.quot + ':' + textContent + '},' + exec + ',' + config.quot + 'provenance.image.subject_id' + config.quot + ':' + config.quot + patient[x.textContent]["bcr_patient_barcode"] + config.quot + '}&db=' + openHealth.db;
 
                     // FEATURESCAPE
-                    var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find={' + config.quot + 'randval' + config.quot + ':{' + config.quot + '$gte' + config.quot + ':' + textContent + '},' + _static + ',' + config.quot + 'provenance.image.subject_id' + config.quot + ':' + config.quot + patient[x.textContent]["bcr_patient_barcode"] + config.quot + '}&db=' + openHealth.db;
+                    var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
                     if (config.mongoUrl) {
                         fscape = fscape + '&mongoUrl=' + config.mongoUrl;
                     }
 
                     // FIGURE4
-                    var fig4 = config.domain + '/featurescape/fig4.html#' + patient[x.textContent]["bcr_patient_barcode"];
-                    //openHealth.tcga.dt[xxxDx]
+                    //bcr_patient_barcode: { $in: [<value1>, <value2>, ... <valueN> ] }
+                    var ppp = '';
+                    pp.forEach(function (p) {
+                        ppp += '%22' + p + '%22,';
+
+                    });
+                    ppp = ppp.slice(0, -1);
+
+                    var fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port + '?collection=patients&limit=' + pp.length + '&find={%22bcr_patient_barcode%22:{%22$in%22:[' +  ppp  + ']}}&db=' + openHealth.db;
 
                     moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="feature landscape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="fig4 (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
 

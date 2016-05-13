@@ -4,36 +4,22 @@ console.log('fig4.js loaded');
 fig4 = function () {
     console.log('location: ' + location);
     var url = '';
-    var subjectId = '';
     if (location.hash.length > 1) {
-        // TODO: waiting on database.
-        //url = location.hash.slice(1);
-        url = '../data/patients_fig4.json';
-        subjectId = location.hash.slice(1);
+        url = location.hash.slice(1);
     }
     else {
         // Default data url
         url = '../data/patients_fig4.json';
     }
 
-    console.log('url: ', url);
-    console.log('subjectId: ', subjectId);
-    fig4.loadData(url, subjectId);
+    fig4.loadData(url);
 };
 
-fig4.loadData = function (url, subjectId) {
+fig4.loadData = function (url) {
     $.getJSON(url).then(function (x) {
 
-        if (subjectId !== "")
-        {
-            var newArr = x.filter(function(item){
-                return item.bcr_patient_barcode === subjectId;
-            });
-
-            x = newArr;
-
-        }
-
+        //var div = document.getElementById('debug');
+        //div.innerHTML = '<font color="red">Begin debug</font><br><font color="blue">' + url + '</font><br><b>loaded ' + x.length + ' record(s)</b><br><br>' + JSON.stringify(x) + '<br><font color="red">End debug</font>';
         console.log('loaded ' + x.length + ' records');
 
         var msg = function (txt, clr) {
@@ -48,6 +34,64 @@ fig4.loadData = function (url, subjectId) {
         };
         msg('loaded ' + x.length + ' records');
 
+        // Convert data
+        var data = [];
+        if (url.indexOf('http') > -1) {
+            x.forEach(function (xi, i) {
+                var elem = {};
+                elem.EGFR_mutations_code = xi.EGFR;
+                elem.KRAS_mutations_code = xi.KRAS;
+                elem.STK11_LKB1_mutations_code = xi.STK11_LKB1;
+                elem.TP53_mutations_code = xi.TP53;
+                elem.NF1_mutations_code = xi.NF1;
+                elem.BRAF_mutations_code = xi.BRA;
+                elem.SETD2_mutations_code = xi.SETD2;
+                if (xi.vital_status === 'Alive') {
+                    xi.vital_status = 0;
+                }
+                else {
+                    xi.vital_status = 1;
+                }
+                elem.status = xi.vital_status;
+                if (!isNaN(xi.days_to_last_followup)) {
+                    elem.months_followup = (xi.days_to_last_followup / 30);
+                }
+                elem.age_at_initial_pathologic_diagno = xi.age_at_initial_pathologic_diagnosis;
+                if (xi.gender === "FEMALE") {
+                    xi.gender = 0;
+                }
+                else {
+                    xi.gender = 1;
+                }
+                elem.gender_code = xi.gender;
+                elem.hist_code = xi.icd_o_3_histology.slice(-1);
+                elem.MeanB_median = xi.meanB_median;
+                elem.MeanG_median = xi.meanG_median;
+                elem.MeanR_median = xi.meanR_median;
+                elem.NumberOfPixels_median = xi.SizeInPixels_median;
+                elem.StdB_median = xi.stdB_median;
+                elem.StdG_median = xi.stdG_median;
+                elem.StdR_median = xi.stdR_median;
+                elem.Tumor = xi.Study;
+                elem.Stage = 0;
+                elem.Elongation_median = xi.Elongation_median;
+                elem.EquivalentEllipsoidDiameter0_median = xi.EquivalentEllipsoidDiameter0_median;
+                elem.EquivalentEllipsoidDiameter1_median = xi.EquivalentEllipsoidDiameter1_median;
+                elem.EquivalentSphericalPerimeter_median = xi.EquivalentSphericalPerimeter_median;
+                elem.EquivalentSphericalRadius_median = xi.EquivalentSphericalRadius_median;
+                elem.Flatness_median = xi.Flatness_median;
+                elem.Perimeter_median = xi.Perimeter_median;
+                elem.PrincipalMoments0_median = xi.PrincipalMoments0_median;
+                elem.PrincipalMoments1_median = xi.PrincipalMoments1_median;
+                elem.Roundness_median = xi.Roundness_median;
+
+                data.push(elem);
+
+            });
+
+        }
+
+        x = data;
 
         //unpack data into table, tab
         tab = {};
@@ -113,7 +157,7 @@ fig4.loadData = function (url, subjectId) {
         fig4div.innerHTML = h;
 
         // Parameterization
-        var morphParms = ["NumberOfPixels_median", "PhysicalSize_median", "NumberOfPixelsOnBorder_median", "FeretDiameter_median", "PrincipalMoments0_median", "PrincipalMoments1_median", "Elongation_median", "Perimeter_median", "Roundness_median", "EquivalentSphericalRadius_median", "EquivalentSphericalPerimeter_median", "EquivalentEllipsoidDiameter0_median", "EquivalentEllipsoidDiameter1_median", "Flatness_median", "MeanR_median", "MeanG_median", "MeanB_median", "StdR_median", "StdG_median", "StdB_median", "age_at_initial_pathologic_diagno", "est_days_to_remission", "K17_group", "Stage", "Tumor", "gender_code", "hist_code"];
+        var morphParms = ["NumberOfPixels_median", "PrincipalMoments0_median", "PrincipalMoments1_median", "Elongation_median", "Perimeter_median", "Roundness_median", "EquivalentSphericalRadius_median", "EquivalentSphericalPerimeter_median", "EquivalentEllipsoidDiameter0_median", "EquivalentEllipsoidDiameter1_median", "Flatness_median", "MeanR_median", "MeanG_median", "MeanB_median", "StdR_median", "StdG_median", "StdB_median", "age_at_initial_pathologic_diagno", "Stage", "Tumor", "gender_code", "hist_code"];
         morphParms.sort(function (a, b) {
             var val = (a.toUpperCase() > b.toUpperCase());
             if (val) {
@@ -388,8 +432,6 @@ fig4.loadData = function (url, subjectId) {
                 var v = d[p];
                 if (v !== "") {
                     return v
-                } else {
-                    4
                 }
 
             });
