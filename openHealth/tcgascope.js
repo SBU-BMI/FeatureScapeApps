@@ -1,7 +1,5 @@
 console.log('tcgascope.js loaded');
 
-//openHealth.cancer_type = 'gbm';
-
 openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
     openHealthJob.innerHTML = selectBox() + '<div id="openHealthJobMsg" style="color:red">processing ...</div><div id="openHealthJobDC"></div>';
@@ -142,6 +140,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         })
 
     }
+
     getTcgaData(openHealth.cancer_type);
 
 
@@ -170,8 +169,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         });
 
         //"karnofsky_score":["karnofsky_performance_score","CDE_ID: ...
-        if (openHealth.tcga.dt[clinical_patient].karnofsky_score)
-        {
+        if (openHealth.tcga.dt[clinical_patient].karnofsky_score) {
             openHealth.tcga.dt[clinical_patient].score = openHealth.tcga.dt[clinical_patient].karnofsky_score.map(function (xi, i) {
                 if (!parseFloat(xi)) {
                     return NaN
@@ -182,8 +180,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             });
 
         }
-        else
-        {
+        else {
             //return "[Not Applicable]";
         }
 
@@ -233,7 +230,17 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         // ---- UI Dimensional scaling ---
         openHealth.getScript(["https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js", "https://www.google.com/jsapi", "https://square.github.io/crossfilter/crossfilter.v1.min.js", "https://dc-js.github.io/dc.js/js/dc.js", "https://dc-js.github.io/dc.js/css/dc.css"], function () { // after satisfying d3 dependency
             openHealthJobMsg.textContent = "Assembling charts ...";
-            openHealthJobDC.innerHTML = '<table cellpadding="10px"><tr><td style="vertical-align:top"><table><tr><td style="vertical-align:top"><div>% Necrotic Cells:</div><div id="percent_necrosis"></div><div>% Tumor Nuclei:</div><div id="percent_tumor_nuclei"></div><div>Location:</div><div id="section_location"></div></td><td style="vertical-align:top"><div>% Tumor Cells:</div><div id="percent_tumor_cells"></div><div>% Lymphocyte Infiltration:</div><div id="percent_lymphocyte_infiltration"></div><div>Race:</div><div id="race"></div><div>Gender:</div><div id="gender"></div></td><td style="vertical-align:top"><div>% Stromal Cells:</div><div id="percent_stromal_cells"></div><div style="color:blue">Karnofsky Score:</div><div id="karnofsky_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div><div>% Monocyte Infiltration:</div><div id="percent_monocyte_infiltration"></div><div>% Neutrophil Infiltration:</div><div id="percent_neutrophil_infiltration"></div></td></tr></table></td><td style="vertical-align:top"><h3>' + (openHealth.cancer_type).toUpperCase() + ' Tumor progression</h3><div id="tumorProgression"></div><b>Legend</b>: color indicates Karnofsky performance score (see framed bar chart); diameter indicates number of images</td></tr></table><table><tr><td style="vertical-align:top"><table id="patientSlideTable"><thead><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">TCGA patients:</td><td id="diagnosticImagesHeader" style="color:maroon;font-weight:bold">Diagnostic Images:</td></tr></thead><tbody id="patientSlideTableBody"></tbody></table></td><td id="moreInfo" style="vertical-align:top"></td></tr></table><table id="hiddenTable" hidden=true><tr><td style="vertical-align:top"><div id="tcgaPatientsHeader_">TCGA patients:</div><div id="tcgaPatients"></div></td><td style="vertical-align:top"><div id="slideImagesHeader">Slide Images:</div><div id="slideImages"></div></td><td style="vertical-align:top"><div id="diagnosticImagesHeader_">Diagnostic Images:</div><div id="diagnosticImages"></div></td><td style="vertical-align:top"><div id="buttonResults"></div></td></tr></table>';
+
+            var ks = '';
+            var ks1 = '';
+            if (openHealth.cancer_type !== 'paad') {
+                ks = '<div style="color:blue">Karnofsky Score:</div><div id="karnofsky_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div>';
+                ks1 = 'color indicates Karnofsky performance score (see framed bar chart);';
+            }
+
+            openHealthJobDC.innerHTML = '<table cellpadding="10px"><tr><td style="vertical-align:top"><table><tr><td style="vertical-align:top"><div>% Necrotic Cells:</div><div id="percent_necrosis"></div><div>% Tumor Nuclei:</div><div id="percent_tumor_nuclei"></div><div>Location:</div><div id="section_location"></div></td><td style="vertical-align:top"><div>% Tumor Cells:</div><div id="percent_tumor_cells"></div><div>% Lymphocyte Infiltration:</div><div id="percent_lymphocyte_infiltration"></div><div>Race:</div><div id="race"></div><div>Gender:</div><div id="gender"></div></td><td style="vertical-align:top"><div>% Stromal Cells:</div><div id="percent_stromal_cells"></div>'
+                + ks + '<div>% Monocyte Infiltration:</div><div id="percent_monocyte_infiltration"></div><div>% Neutrophil Infiltration:</div><div id="percent_neutrophil_infiltration"></div></td></tr></table></td><td style="vertical-align:top"><h3>' + (openHealth.cancer_type).toUpperCase() + ' Tumor progression</h3><div id="tumorProgression"></div><b>Legend</b>: '
+                + ks1 + ' diameter indicates number of images</td></tr></table><table><tr><td style="vertical-align:top"><table id="patientSlideTable"><thead><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">TCGA patients:</td><td id="diagnosticImagesHeader" style="color:maroon;font-weight:bold">Diagnostic Images:</td></tr></thead><tbody id="patientSlideTableBody"></tbody></table></td><td id="moreInfo" style="vertical-align:top"></td></tr></table><table id="hiddenTable" hidden=true><tr><td style="vertical-align:top"><div id="tcgaPatientsHeader_">TCGA patients:</div><div id="tcgaPatients"></div></td><td style="vertical-align:top"><div id="slideImagesHeader">Slide Images:</div><div id="slideImages"></div></td><td style="vertical-align:top"><div id="diagnosticImagesHeader_">Diagnostic Images:</div><div id="diagnosticImages"></div></td><td style="vertical-align:top"><div id="buttonResults"></div></td></tr></table>';
 
             var docs = openHealth.tcga.dt[xxxDocs];
 
@@ -253,9 +260,9 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                         dataType: 'json',
                         success: function (arr) {
 
-                            var a=[];
+                            var a = [];
                             arr.forEach(function (item) {
-                                var b={};
+                                var b = {};
                                 b.patientid = item.image.subjectid;
                                 b.caseid = item.image.caseid;
                                 a.push(b);
@@ -280,33 +287,33 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
                     // TODO: don't go to local file at all.
                     /*
-                    openHealth.getText(config.domain + '/data/' + cancer_type + '_patientids.json', function (x) {
+                     openHealth.getText(config.domain + '/data/' + cancer_type + '_patientids.json', function (x) {
 
-                        var string = JSON.stringify(x),
-                            substring = "404 Not Found";
+                     var string = JSON.stringify(x),
+                     substring = "404 Not Found";
 
-                        if (string.indexOf(substring) > -1)
-                        {
-                            console.log(substring);
-                        }
-                        else
-                        {
-                            var y = {}; // index of diagnostic images per patient
-                            x.map(function (xi) {
-                                if (!y[xi.patientid]) {
-                                    y[xi.patientid] = [xi.caseid]
-                                } else {
-                                    y[xi.patientid].push(xi.caseid)
-                                }
+                     if (string.indexOf(substring) > -1)
+                     {
+                     console.log(substring);
+                     }
+                     else
+                     {
+                     var y = {}; // index of diagnostic images per patient
+                     x.map(function (xi) {
+                     if (!y[xi.patientid]) {
+                     y[xi.patientid] = [xi.caseid]
+                     } else {
+                     y[xi.patientid].push(xi.caseid)
+                     }
 
-                            });
+                     });
 
-                        }
+                     }
 
-                        // SUBJECT ID: CASE IDs
-                        openHealth.tcga.dt[xxxDx] = y;
-                        listDxSlides(pp)
-                    })*/
+                     // SUBJECT ID: CASE IDs
+                     openHealth.tcga.dt[xxxDx] = y;
+                     listDxSlides(pp)
+                     })*/
                 } else {
                     var pp0 = pp.filter(function (pi) {
                         return openHealth.tcga.dt[xxxDx][pi]
@@ -537,23 +544,28 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             addRowChard2('section_location', openHealth.unique(openHealth.tcga.dt[xxxTab].section_location));
             addRowChard2('gender', openHealth.unique(openHealth.tcga.dt[xxxTab].gender));
             addRowChard('race', openHealth.unique(openHealth.tcga.dt[xxxTab].race));
-            addRowChard(
-                'karnofsky_score',
-                openHealth.unique(openHealth.tcga.dt[xxxTab].karnofsky_score),
-                function (CRT) {
-                    CRT
-                        .colors(d3.scale.linear().domain([-1, 0, 40, 80, 90, 100]).range(["silver", "red", "red", "yellow", "green", "green"]))
-                        .colorAccessor(function (d, i) {
-                            var v = parseFloat(d.key);
-                            if (isNaN(v)) {
-                                return -1
-                            }
-                            else {
-                                return v
-                            }
-                        })
-                }
-            );
+
+
+            if (openHealth.cancer_type !== 'paad') {
+                addRowChard(
+                    'karnofsky_score',
+                    openHealth.unique(openHealth.tcga.dt[xxxTab].karnofsky_score),
+                    function (CRT) {
+                        CRT
+                            .colors(d3.scale.linear().domain([-1, 0, 40, 80, 90, 100]).range(["silver", "red", "red", "yellow", "green", "green"]))
+                            .colorAccessor(function (d, i) {
+                                var v = parseFloat(d.key);
+                                if (isNaN(v)) {
+                                    return -1
+                                }
+                                else {
+                                    return v
+                                }
+                            })
+                    }
+                );
+
+            }
 
             C.tumorProgression = dc.bubbleChart("#tumorProgression");
             D.tumorProgression = cf.dimension(function (d) {
@@ -637,7 +649,10 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             AddXAxis(C.section_location, '# images found');
             AddXAxis(C.gender, '# images found');
             AddXAxis(C.race, '# images found');
-            AddXAxis(C.karnofsky_score, '# images found');
+            if (openHealth.cancer_type !== 'paad') {
+                AddXAxis(C.karnofsky_score, '# images found');
+            }
+
 
             // clear bootstrap to make room
             document.getElementById('openHealth').className = "";

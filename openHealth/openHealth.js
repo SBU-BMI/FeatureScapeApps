@@ -162,8 +162,6 @@ openHealth.ini = function () {
 
     this.sodaData = { // some reference SODA data links
         "NY Medicare Inpatient": "http://health.data.ny.gov/resource/2yck-xisk.json",
-        // DSRIP NY
-        // Hospital Inpatient Prevention Quality Indicators
         "DSRIP Hospital Inpatient Prevention Quality Indicators (PQI) for Adult Discharges by Zip Code (SPARCS): Beginning 2009": "https://health.data.ny.gov/resource/5q8c-d6xq.json",
         "DSRIP Hospital Inpatient Prevention Quality Indicators (PQI) for Adult Discharges by County (SPARCS): Beginning 2009": "https://health.data.ny.gov/resource/iqp6-vdi4.json",
         "DSRIP Medicaid Inpatient Prevention Quality Indicators (PQI) for Adult Discharges by Patient Zip Code: Beginning 2011": "https://health.data.ny.gov/resource/izyt-3msa.json",
@@ -172,18 +170,11 @@ openHealth.ini = function () {
         "DSRIP Medicaid Chronic Conditions, Inpatient Admissions and Emergency Room Visits by County: Beginning 2012": "https://health.data.ny.gov/resource/wybq-m39t.json",
         "DSRIP Medicaid Chronic Conditions, Inpatient Admissions and Emergency Room Visits by Zip Code: Beginning 2012": "https://health.data.ny.gov/resource/2yck-xisk.json",
         "DSRIP Medicaid Hospital Inpatient Potentially Preventable Readmission (PPR) Rates by Hospital: Beginning 2011": "https://health.data.ny.gov/resource/ckvf-rbyn.json",
-        // Medicaid Inpatient Admissions and Emergency Room Visits
-        // "NY DSRIP Medicaid Beneficiaries, Inpatient Admissions, and Emergency Room Visits by Zip Code: Beginning 2012":"http://health.data.ny.gov/resource/m2wt-pje4.json",
-        // "NY DSRIP Medicaid Chronic Conditions, Inpatient Admissions and Emergency Room Visits by Zip Code: Beginning 2012":"http://health.data.ny.gov/resource/2yck-xisk.json",
-        //"NY DSRIP Medicaid Chronic Conditions, Inpatient Admissions and Emergency Room Visits by County: Beginning 2012":"http://health.data.ny.gov/resource/wybq-m39t.json",
         "DSRIP Medicaid Potentially Preventable Emergency Visit (PPV) Rates by Patient County: Beginning 2011": "https://health.data.ny.gov/resource/cr7a-34ka.json",
         "DSRIP Medicaid Potentially Preventable Emergency Visits (PPV) by Patient Zip Code: Beginning 2011": "https://health.data.ny.gov/resource/khkm-zkp2.json",
         "DSRIP Medicaid Inpatient Prevention Quality Indicators (PDI) for Pediatric Discharges by Patient County: Beginning 2011": "https://health.data.ny.gov/resource/64yg-akce.json",
         "DSRIP Medicaid Program Enrollment by Month: Beginning 2009": "https://health.data.ny.gov/resource/m4hz-kzn3.json",
         "DSRIP Hospital Inpatient Discharges (SPARCS De-Identified): 2012": "https://health.data.ny.gov/resource/u4ud-w55t.json"
-        //"Medicaid Inpatient Prevention Quality Indicators (PDI) for Pediatric Discharges by Patient County: Beginning 2011":"http://health.data.ny.gov/resource/64yg-akce.json",
-        // MIS
-        // "NY DSRIP Discharge":"http://health.data.ny.gov/resource/ckvf-rbyn.json"
     };
     this.soda = function (url, q, fun) { // operate Socrata Open Data API (SODA), http://dev.socrata.com/docs/endpoints.html
         if (!url.match("http[s]{0,1}://")) { // if url is not a URL then assume it is an entry of openHealth.sodaData
@@ -246,23 +237,17 @@ openHealth.ini = function () {
         var moreFun = function (x) {
             xx = xx.concat(x);
             console.log([xx.length, x.length, q.limit, q.offset, url]);
-            //console.log(xx);
-            //if(lala){
             if (x.length < q.limit) {
                 fun0(xx)
             } // reached the end of the line, just have the original fun and be done with it
             else {
                 openHealth.sodaAll(url, q, moreFun, xx, fun0)
             }
-            //lala=false
-            //}
         };
         return this.soda2(url, q, moreFun)
     };
 
     this.sodas = function (urls, q, fun, xx) { // version of sodaAll with multiple urls, for example, to load from a list of zip codes
-        //console.log(urls[0]);
-        //var urlsi = urls;
         if (typeof(urls) == "string") {
             urls = [urls]
         } // so it can handle a single url too
@@ -382,7 +367,7 @@ openHealth.ini = function () {
         return u;
     };
 
-    this.avgKeyValue = function (tab, key, val, x) { // find avverage value of a key value pair
+    this.avgKeyValue = function (tab, key, val, x) { // find average value of a key value pair
         // i.e. openHealth.avgKeyValue(paintSuffolk.tab,"Disease state","Septicemia","Rate per 1000")
         var tabKey = tab[key];
         tabKeyVal = [];
@@ -405,7 +390,7 @@ openHealth.ini = function () {
         return y
     };
 
-    this.avgKeyValues = function (tab, key, vals, x) { // aplies .avgKeyValue to all values
+    this.avgKeyValues = function (tab, key, vals, x) { // applies .avgKeyValue to all values
         var y = {};
         vals.map(function (v) {
             y[v] = openHealth.avgKeyValue(tab, key, v, x)
@@ -426,7 +411,7 @@ openHealth.ini = function () {
         return i
     };
 
-    this.countKeyValues = function (tab, key, vals, x) { // aplies .avgKeyValue to all values
+    this.countKeyValues = function (tab, key, vals, x) { // applies .avgKeyValue to all values
         var y = {};
         vals.map(function (v) {
             y[v] = openHealth.countKeyValue(tab, key, v, x)
@@ -732,6 +717,7 @@ openHealth.ini = function () {
     };
 
     this.log = function (x) {
+        console.log('here log');
         var div = document.getElementById("openHealthJob");
         if (div) {
             var p = document.createElement('p');
@@ -742,7 +728,8 @@ openHealth.ini = function () {
         }
     };
 
-    this.createLog = function (h) { // create log div, if posiible, within an existing openHealth div
+    this.createLog = function (h) { // create log div, if possible, within an existing openHealth div
+        
         var div0 = document.getElementById("openHealth");
         if (!div0) {
             div0 = document.createElement('div');
@@ -771,6 +758,7 @@ openHealth.ini = function () {
     };
 
     this.endJobMsgURL = function () { // post URL of job into the div.id="msg" if it exists
+    
         var divMsg = document.getElementById("msg");
         if (divMsg) {
             //document.getElementById("openHealthJob").innerHTML="";

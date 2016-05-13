@@ -39,19 +39,7 @@ fscape.UI = function () {
         featureScapeLog.style.color = 'red';
         var ss = location.search.slice(1).split(';');
         inputURL.value = ss[0];
-        if (ss[1]) {
-            var sr = document.createElement('script');
-            sr.src = ss[1];
-            sr.onload = function () {
-                fscape.loadURL()
-            };
-            document.head.appendChild(sr);
-            //$.getScript(ss[1]).then(function(){
-            //    fscape.loadURL()
-            //})
-        } else {
-            fscape.loadURL()
-        }
+        fscape.loadURL();
 
     }
     // load file
@@ -448,8 +436,8 @@ fscape.plot = function (x) { // when ready to do it
                 force.on("tick", function () {
                     // Update the links
                     link.attr("x1", function (d) {
-                            return d.source.x;
-                        })
+                        return d.source.x;
+                    })
                         .attr("y1", function (d) {
                             return d.source.y;
                         })
@@ -490,9 +478,6 @@ fscape.plot = function (x) { // when ready to do it
                     })
             );
             doNet(1 - 0.5);
-
-
-            4
 
         }, 1000)
 
@@ -657,7 +642,7 @@ fscape.scatterPlot = function (div0, i, j) {
             showgrid: true
         }
     };
-    
+
     fscape.plt = Plotly.newPlot(div, [trace0], layout);
     window.scrollTo(window.innerWidth, window.scrollY);
 
@@ -673,14 +658,6 @@ fscape.scatterPlot = function (div0, i, j) {
                 return Math.round(x * 10000000000) / 10000000000
             };
 
-            /*
-             // Error: fscape.plt._result = undefined.
-             var xmin = fscape.plt._result._fullLayout.xaxis._tmin;
-             var xmax = fscape.plt._result._fullLayout.xaxis._tmax;
-             var ymin = fscape.plt._result._fullLayout.yaxis._tmin;
-             var ymax = fscape.plt._result._fullLayout.yaxis._tmax;
-             */
-
             // Plotly will attach the plot information to the div that you specify.
             var xmin = div._fullLayout.xaxis._tmin;
             var xmax = div._fullLayout.xaxis._tmax;
@@ -691,7 +668,12 @@ fscape.scatterPlot = function (div0, i, j) {
             h += '<p style="color:blue">' + fi + ': ' + xmin + ' , ' + xmax + '</p>';
             h += '<p style="color:blue">' + fj + ': ' + ymin + ' , ' + ymax + '</p>';
             resampleMsg.innerHTML = h;
-            var urlTammy = config.domain + "/nuclei-mugshots/#caseid=" + location.search.match('TCGA-[^%]+')[0] + "&fx=" + fi + '&xmin=' + xmin + '&xmax=' + xmax + "&fy=" + fj + '&ymin=' + ymin + '&ymax=' + ymax + '&url=' + location.search.match(config.findAPI + '[^\;]+')[0];
+            var patient = location.search.match('TCGA-[^%]+')[0];
+            var parm = 'caseid';
+            if (patient.length == 12) {
+                parm = 'subjectid';
+            }
+            var urlTammy = config.domain + "/nuclei-mugshots/#" + parm + "=" + patient + "&fx=" + fi + '&xmin=' + xmin + '&xmax=' + xmax + "&fy=" + fj + '&ymin=' + ymin + '&ymax=' + ymax + '&url=' + location.search.match(config.findAPI + '[^\;]+')[0];
             window.open(urlTammy);
 
         }
@@ -704,14 +686,3 @@ fscape.scatterPlot = function (div0, i, j) {
 $(document).ready(function () {
     fscape()
 });
-
-
-// Reference
-//
-// generating reference csv file (no worries, all connection info obfuscated :-P)
-// mongoexport --host xxxxxx --port xxxx --username xxxx --password xxxx  --collection Nuclei --type=csv --db=stony-brook --fields Slide,X,Y,Area,Perimeter,Eccentricity,Circularity,MajorAxisLength,MinorAxisLength,Extent,Solidity,FSD1,FSD2,FSD3,FSD4,FSD5,FSD6,HematoxlyinMeanIntensity,HematoxlyinMeanMedianDifferenceIntensity,HematoxlyinMaxIntensity,HematoxlyinMinIntensity,HematoxlyinStdIntensity,HematoxlyinEntropy,HematoxlyinEnergy,HematoxlyinSkewness,HematoxlyinKurtosis,HematoxlyinMeanGradMag,HematoxlyinStdGradMag,HematoxlyinEntropyGradMag,HematoxlyinEnergyGradMag,HematoxlyinSkewnessGradMag,HematoxlyinKurtosisGradMag,HematoxlyinSumCanny,HematoxlyinMeanCanny,CytoplasmMeanIntensity,CytoplasmMeanMedianDifferenceIntensity,CytoplasmMaxIntensity,CytoplasmMinIntensity,CytoplasmStdIntensity,CytoplasmEntropy,CytoplasmEnergy,CytoplasmSkewness,CytoplasmKurtosis,CytoplasmMeanGradMag,CytoplasmStdGradMag,CytoplasmEntropyGradMag,CytoplasmEnergyGradMag,CytoplasmSkewnessGradMag,CytoplasmKurtosisGradMag,CytoplasmSumCanny,CytoplasmMeanCanny,Boundaries,filename --limit 100000 --out nuclei100k.csv
-//
-// 1K reference dataset: https://opendata.socrata.com/resource/3dx7-jw2n.json
-// 10K reference dataset: https://opendata.socrata.com/resource/ytu3-b8rp.json
-// 100K reference dataset: https://opendata.socrata.com/resource/pbup-cums.json
-// Tahsin's mongodb: https://fscape-132294.nitrousapp.com/?limit=100

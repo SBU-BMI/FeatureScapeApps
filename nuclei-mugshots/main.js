@@ -38,6 +38,7 @@ mugshots = function () {
 function buildQueryString(q) {
 
     var caseid = getQueryVariable('caseid', q);
+    var subjectid = getQueryVariable('subjectid', q);
     var fx = getQueryVariable('fx', q);
     var xmin = getQueryVariable('xmin', q);
     var xmax = getQueryVariable('xmax', q);
