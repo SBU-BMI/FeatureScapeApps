@@ -45,7 +45,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                         }
                     }
 
-                    selectTumorHTML += '<option value="' + value + '" ' + attr + '>' + tm.toUpperCase() + '</option>';
+                    selectTumorHTML += '<option value="' + value + '" ' + attr + '>' + tm.toUpperCase() + ' - ' + item.name + '</option>';
 
                 });
             }
