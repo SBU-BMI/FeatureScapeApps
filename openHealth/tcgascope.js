@@ -54,19 +54,6 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         return selectTumorHTML;
     }
 
-    function staticSelectBox() {
-        // Static
-        var selectTumorHTML = '<h3 style="color:navy">';
-        selectTumorHTML += 'Tumor Type: <select onchange="tumorChanged(this)" style="font-color:navy;background-color:silver;font-size:large" id="selectTumor">';
-        selectTumorHTML += '<option>LUAD - Lung Adenocarcinoma</option>';
-        selectTumorHTML += '<option selected>GBM - Glioblastoma Multiforme</option>';
-        selectTumorHTML += '<option>LGG - Lower Grade Glioma</option>';
-        selectTumorHTML += '</select>';
-        selectTumorHTML += '</h3>';
-        return selectTumorHTML;
-    }
-
-
     function get_biospecimen_slide(filename, cancer_type) {
 
         console.log('*** get_biospecimen_slide ***');
@@ -310,8 +297,8 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
                 }
 
-
             };
+
             var listSlides = function () {
                 slideImages.parentNode.hidden = "true";
                 if (R.gender.FEMALE.c + R.gender.MALE.c > R.section_location.BOTTOM.c + R.section_location.TOP.c) {
@@ -375,10 +362,12 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                     };
 
                 };
+
                 openHealth.tcga.resultsSlide = function (x) {
                     var d = openHealth.findOne(openHealth.tcga.dt[xxxDocs], 'bcr_slide_barcode', x.textContent);
                     buttonResults.innerHTML = '<pre>' + JSON.stringify(d, null, 3) + '</pre>'
                 };
+
                 patientSlideTableBody.innerHTML = ""; // clear tbody
                 pp.sort().forEach(function (p, i) {
                     var pr = document.createElement('p');
@@ -391,18 +380,19 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                     patientSlideTableBody.appendChild(tr);
 
                 });
+
                 ss.sort().forEach(function (s, i) {
                     var pr = document.createElement('p');
-                    pr.innerHTML = ' ' + i + ') <button onclick="openHealth.tcga.resultsSlide(this)">' + s + '</button> <a href="http://quip.bmi.stonybrook.edu/camicroscope-qin/osdCamicroscope.php?tissueId=' + s + '" target=_blank> caMicroscope </a>.';
+                    pr.innerHTML = ' ' + i + ') <button onclick="openHealth.tcga.resultsSlide(this)">' + s + '</button> <a href="' + config.quipUrl + '?tissueId=' + s + '" target=_blank> caMicroscope </a>.';
                     slideImages.appendChild(pr)
                 });
+
                 listDxSlides(pp)
             };
 
             var cf = crossfilter(docs);
 
-
-            var addRowChard = function (parm, Uparm, fun) {
+            var addRowChart = function (parm, Uparm, fun) {
                 D[parm] = cf.dimension(function (d) {
                     return d[parm]
                 });
@@ -449,8 +439,9 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                 }
 
             };
+
             // - - - - version that tracks slides and images - - - -
-            var addRowChard2 = function (parm, Uparm, fun) {
+            var addRowChart2 = function (parm, Uparm, fun) {
                 D[parm] = cf.dimension(function (d) {
                     return d[parm]
                 });
@@ -459,6 +450,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                 openHealth.unique(openHealth.tcga.dt[xxxTab].patient).map(function (p) {
                     P[parm][p] = {c: 0}
                 });
+
                 S[parm] = {};
                 openHealth.tcga.dt[xxxTab].bcr_slide_barcode.map(function (s) {
                     S[parm][s] = {c: 0}
@@ -491,6 +483,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                         return 0
                     }
                 );
+
                 C[parm] = dc.rowChart("#" + parm)
                     .width(300)
                     .height(40 + U[parm].length * 15)
@@ -514,21 +507,20 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
             // - - - - - - - - - - - - -
 
-
-            addRowChard('percent_necrosis');
-            addRowChard('percent_tumor_cells');
-            addRowChard('percent_stromal_cells');
-            addRowChard('percent_tumor_nuclei');
-            addRowChard('percent_lymphocyte_infiltration');
-            addRowChard('percent_monocyte_infiltration');
-            addRowChard('percent_neutrophil_infiltration');
-            addRowChard2('section_location', openHealth.unique(openHealth.tcga.dt[xxxTab].section_location));
-            addRowChard2('gender', openHealth.unique(openHealth.tcga.dt[xxxTab].gender));
-            addRowChard('race', openHealth.unique(openHealth.tcga.dt[xxxTab].race));
+            addRowChart('percent_necrosis');
+            addRowChart('percent_tumor_cells');
+            addRowChart('percent_stromal_cells');
+            addRowChart('percent_tumor_nuclei');
+            addRowChart('percent_lymphocyte_infiltration');
+            addRowChart('percent_monocyte_infiltration');
+            addRowChart('percent_neutrophil_infiltration');
+            addRowChart2('section_location', openHealth.unique(openHealth.tcga.dt[xxxTab].section_location));
+            addRowChart2('gender', openHealth.unique(openHealth.tcga.dt[xxxTab].gender));
+            addRowChart('race', openHealth.unique(openHealth.tcga.dt[xxxTab].race));
 
 
             if (openHealth.cancer_type !== 'paad') {
-                addRowChard(
+                addRowChart(
                     'karnofsky_score',
                     openHealth.unique(openHealth.tcga.dt[xxxTab].karnofsky_score),
                     function (CRT) {
@@ -552,10 +544,13 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             D.tumorProgression = cf.dimension(function (d) {
                 return d.patient
             });
+
             R.tumorProgression = {};
+
             openHealth.unique(openHealth.tcga.dt[xxxTab].patient).map(function (u) {
                 R.tumorProgression[u] = {c: 0}
             });
+
             G.tumorProgression = D.tumorProgression.group().reduce(
                 // reduce in
                 function (p, v) {
@@ -620,6 +615,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                     .attr("y", chartToUpdate.height() - 0)
                     .text(displayText);
             };
+
             AddXAxis(C.percent_necrosis, '# images found');
             AddXAxis(C.percent_tumor_cells, '# images found');
             AddXAxis(C.percent_stromal_cells, '# images found');
@@ -630,10 +626,10 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             AddXAxis(C.section_location, '# images found');
             AddXAxis(C.gender, '# images found');
             AddXAxis(C.race, '# images found');
+
             if (openHealth.cancer_type !== 'paad') {
                 AddXAxis(C.karnofsky_score, '# images found');
             }
-
 
             // clear bootstrap to make room
             document.getElementById('openHealth').className = "";
