@@ -1,5 +1,4 @@
 console.log('fig4.js loaded');
-//tab.bcr_patient_barcode[3]
 
 fig4 = function () {
     console.log('location: ' + location);
@@ -17,9 +16,6 @@ fig4 = function () {
 
 fig4.loadData = function (url) {
     $.getJSON(url).then(function (x) {
-
-        //var div = document.getElementById('debug');
-        //div.innerHTML = '<font color="red">Begin debug</font><br><font color="blue">' + url + '</font><br><b>loaded ' + x.length + ' record(s)</b><br><br>' + JSON.stringify(x) + '<br><font color="red">End debug</font>';
         console.log('loaded ' + x.length + ' records');
 
         var msg = function (txt, clr) {
@@ -65,17 +61,7 @@ fig4.loadData = function (url) {
                 }
                 elem.gender_code = xi.gender;
 
-                var dd = 0;
-                if (xi.icd_o_3_histology) {
-                    dd = xi.icd_o_3_histology.slice(-1);
-                    if (!isNaN(dd)) {
-                        dd = parseInt(dd);
-                    }
-
-                }
-
-                elem.hist_code = dd;
-
+                //elem.hist_code = xi.icd_o_3_histology; // N/A
                 elem.MeanB_median = xi.meanB_median;
                 elem.MeanG_median = xi.meanG_median;
                 elem.MeanR_median = xi.meanR_median;
@@ -83,8 +69,9 @@ fig4.loadData = function (url) {
                 elem.StdB_median = xi.stdB_median;
                 elem.StdG_median = xi.stdG_median;
                 elem.StdR_median = xi.stdR_median;
-                elem.Tumor = xi.Study;
-                elem.Stage = 0;
+                //elem.Tumor = xi.Study; // N/A
+                //elem.Stage = // N/A
+                elem.Study = xi.Study;
                 elem.Elongation_median = xi.Elongation_median;
                 elem.EquivalentEllipsoidDiameter0_median = xi.EquivalentEllipsoidDiameter0_median;
                 elem.EquivalentEllipsoidDiameter1_median = xi.EquivalentEllipsoidDiameter1_median;
@@ -99,20 +86,25 @@ fig4.loadData = function (url) {
                 data.push(elem);
 
             });
+            x = data;
 
         }
-        else
-        {
+        else {
             data = x;
         }
 
-        console.log(data[0]);
-
-        var tt = data[0].Tumor;
+        var tt = '';
+        if (data[0].Study) {
+            tt = data[0].Study;
+        }
+        else {
+            if (data[0].Tumor) {
+                tt = data[0].Tumor;
+            }
+        }
         document.getElementById('patientInfo').innerHTML = 'Morphology features extracted from image analysis of histology whole slide images for ' + data.length + ' ' + ((isNaN(tt)) ? tt : 'Lung Adenocarcinoma') + ' Patients of The Cancer Genome Atlas.';
-        document.getElementById('repositoryInfo').innerHTML = 'the <a href="https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/' + ((isNaN(tt)) ? tt.toLowerCase() : 'luad')  + '/bcr/biotab/clin/" target="_blank">TCGA repository</a>.';
+        document.getElementById('repositoryInfo').innerHTML = 'the <a href="https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/' + ((isNaN(tt)) ? tt.toLowerCase() : 'luad') + '/bcr/biotab/clin/" target="_blank">TCGA repository</a>.';
 
-        x = data;
 
         //unpack data into table, tab
         tab = {};
@@ -178,7 +170,7 @@ fig4.loadData = function (url) {
         fig4div.innerHTML = h;
 
         // Parameterization
-        var morphParms = ["NumberOfPixels_median", "PrincipalMoments0_median", "PrincipalMoments1_median", "Elongation_median", "Perimeter_median", "Roundness_median", "EquivalentSphericalRadius_median", "EquivalentSphericalPerimeter_median", "EquivalentEllipsoidDiameter0_median", "EquivalentEllipsoidDiameter1_median", "Flatness_median", "MeanR_median", "MeanG_median", "MeanB_median", "StdR_median", "StdG_median", "StdB_median", "age_at_initial_pathologic_diagno", "Stage", "Tumor", "gender_code", "hist_code"];
+        var morphParms = ["NumberOfPixels_median", "PrincipalMoments0_median", "PrincipalMoments1_median", "Elongation_median", "Perimeter_median", "Roundness_median", "EquivalentSphericalRadius_median", "EquivalentSphericalPerimeter_median", "EquivalentEllipsoidDiameter0_median", "EquivalentEllipsoidDiameter1_median", "Flatness_median", "MeanR_median", "MeanG_median", "MeanB_median", "StdR_median", "StdG_median", "StdB_median", "age_at_initial_pathologic_diagno", "gender_code"];
         morphParms.sort(function (a, b) {
             var val = (a.toUpperCase() > b.toUpperCase());
             if (val) {
@@ -231,6 +223,7 @@ fig4.loadData = function (url) {
             location.search = '?morph1=' + morphParm1.value + '&morph2=' + morphParm2.value
         };
 
+        // Plotly
         // Add survival information
         survivalPlot = function () {
             trace0 = {
@@ -354,13 +347,14 @@ fig4.loadData = function (url) {
         // time for cross filter
         var onFiltered = function (parm) {
             //console.log(parm,new Date,gene)
-            survivalPlot(parm)
+            survivalPlot(parm);
+
         };
 
+
+        // Dimensional Charting
         var cf = crossfilter(x);
-
         gene = {};
-
         genePlot = function (gn) { // gene name
             gene[gn] = {};
             gene[gn].R = {
@@ -430,6 +424,7 @@ fig4.loadData = function (url) {
             return gene
         };
 
+
         genePlot('EGFR');
         genePlot('KRAS');
         genePlot('STK11_LKB1');
@@ -437,6 +432,7 @@ fig4.loadData = function (url) {
         genePlot('NF1');
         genePlot('BRAF');
         genePlot('SETD2');
+
 
         // morphPlot
         morph = {};
@@ -458,7 +454,6 @@ fig4.loadData = function (url) {
             });
 
             morph[p].G = morph[p].D.group();
-
 
             var xx = tab[p].filter(function (v) {
                 return typeof(v) == 'number'
@@ -499,9 +494,11 @@ fig4.loadData = function (url) {
 
         };
 
+
         morphPlot("fig4_2_1", morphParm1.value);
         morphPlot("fig4_2_2", morphParm1.value);
         morphPlot("fig4_2_3", morphParm2.value);
+
 
         // DC Survival
         dcSurv = {
