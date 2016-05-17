@@ -64,7 +64,18 @@ fig4.loadData = function (url) {
                     xi.gender = 1;
                 }
                 elem.gender_code = xi.gender;
-                elem.hist_code = xi.icd_o_3_histology.slice(-1);
+
+                var dd = 0;
+                if (xi.icd_o_3_histology) {
+                    dd = xi.icd_o_3_histology.slice(-1);
+                    if (!isNaN(dd)) {
+                        dd = parseInt(dd);
+                    }
+
+                }
+
+                elem.hist_code = dd;
+
                 elem.MeanB_median = xi.meanB_median;
                 elem.MeanG_median = xi.meanG_median;
                 elem.MeanR_median = xi.meanR_median;
@@ -90,6 +101,16 @@ fig4.loadData = function (url) {
             });
 
         }
+        else
+        {
+            data = x;
+        }
+
+        console.log(data[0]);
+
+        var tt = data[0].Tumor;
+        document.getElementById('patientInfo').innerHTML = 'Morphology features extracted from image analysis of histology whole slide images for ' + data.length + ' ' + ((isNaN(tt)) ? tt : 'Lung Adenocarcinoma') + ' Patients of The Cancer Genome Atlas.';
+        document.getElementById('repositoryInfo').innerHTML = 'the <a href="https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/' + ((isNaN(tt)) ? tt.toLowerCase() : 'luad')  + '/bcr/biotab/clin/" target="_blank">TCGA repository</a>.';
 
         x = data;
 
@@ -535,7 +556,5 @@ fig4.loadData = function (url) {
 };
 
 window.onload = function () {
-
     fig4();
-
 };
