@@ -30,81 +30,12 @@ fig4.loadData = function (url) {
         };
         msg('loaded ' + x.length + ' records');
 
-        // Convert data
-        var data = [];
+
         if (url.indexOf('http') > -1) {
-            x.forEach(function (xi, i) {
-                var elem = {};
-                elem.EGFR_mutations_code = xi.EGFR;
-                elem.KRAS_mutations_code = xi.KRAS;
-                elem.STK11_LKB1_mutations_code = xi.STK11_LKB1;
-                elem.TP53_mutations_code = xi.TP53;
-                elem.NF1_mutations_code = xi.NF1;
-                elem.BRAF_mutations_code = xi.BRA;
-                elem.SETD2_mutations_code = xi.SETD2;
-                if (xi.vital_status === 'Alive') {
-                    xi.vital_status = 0;
-                }
-                else {
-                    xi.vital_status = 1;
-                }
-                elem.status = xi.vital_status;
-                if (!isNaN(xi.days_to_last_followup)) {
-                    elem.months_followup = (xi.days_to_last_followup / 30);
-                }
-                elem.age_at_initial_pathologic_diagno = xi.age_at_initial_pathologic_diagnosis;
-                if (xi.gender === "FEMALE") {
-                    xi.gender = 0;
-                }
-                else {
-                    xi.gender = 1;
-                }
-                elem.gender_code = xi.gender;
-
-                //elem.hist_code = xi.icd_o_3_histology; // N/A
-                elem.MeanB_median = xi.meanB_median;
-                elem.MeanG_median = xi.meanG_median;
-                elem.MeanR_median = xi.meanR_median;
-                elem.NumberOfPixels_median = xi.SizeInPixels_median;
-                elem.StdB_median = xi.stdB_median;
-                elem.StdG_median = xi.stdG_median;
-                elem.StdR_median = xi.stdR_median;
-                //elem.Tumor = xi.Study; // N/A
-                //elem.Stage = // N/A
-                elem.Study = xi.Study;
-                elem.Elongation_median = xi.Elongation_median;
-                elem.EquivalentEllipsoidDiameter0_median = xi.EquivalentEllipsoidDiameter0_median;
-                elem.EquivalentEllipsoidDiameter1_median = xi.EquivalentEllipsoidDiameter1_median;
-                elem.EquivalentSphericalPerimeter_median = xi.EquivalentSphericalPerimeter_median;
-                elem.EquivalentSphericalRadius_median = xi.EquivalentSphericalRadius_median;
-                elem.Flatness_median = xi.Flatness_median;
-                elem.Perimeter_median = xi.Perimeter_median;
-                elem.PrincipalMoments0_median = xi.PrincipalMoments0_median;
-                elem.PrincipalMoments1_median = xi.PrincipalMoments1_median;
-                elem.Roundness_median = xi.Roundness_median;
-
-                data.push(elem);
-
-            });
-            x = data;
-
-        }
-        else {
-            data = x;
+            x = convertData(x);
         }
 
-        var tt = '';
-        if (data[0].Study) {
-            tt = data[0].Study;
-        }
-        else {
-            if (data[0].Tumor) {
-                tt = data[0].Tumor;
-            }
-        }
-        document.getElementById('patientInfo').innerHTML = 'Morphology features extracted from image analysis of histology whole slide images for ' + data.length + ' ' + ((isNaN(tt)) ? tt : 'Lung Adenocarcinoma') + ' Patients of The Cancer Genome Atlas.';
-        document.getElementById('repositoryInfo').innerHTML = 'the <a href="https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/' + ((isNaN(tt)) ? tt.toLowerCase() : 'luad') + '/bcr/biotab/clin/" target="_blank">TCGA repository</a>.';
-
+        showInfo(x);
 
         //unpack data into table, tab
         tab = {};
@@ -169,8 +100,8 @@ fig4.loadData = function (url) {
         h += '</tr></table>';
         fig4div.innerHTML = h;
 
-        // Parameterization
-        var morphParms = ["NumberOfPixels_median", "PrincipalMoments0_median", "PrincipalMoments1_median", "Elongation_median", "Perimeter_median", "Roundness_median", "EquivalentSphericalRadius_median", "EquivalentSphericalPerimeter_median", "EquivalentEllipsoidDiameter0_median", "EquivalentEllipsoidDiameter1_median", "Flatness_median", "MeanR_median", "MeanG_median", "MeanB_median", "StdR_median", "StdG_median", "StdB_median", "age_at_initial_pathologic_diagno", "gender_code"];
+        var morphParms = getMorphParms(parms);
+
         morphParms.sort(function (a, b) {
             var val = (a.toUpperCase() > b.toUpperCase());
             if (val) {
@@ -223,334 +154,450 @@ fig4.loadData = function (url) {
             location.search = '?morph1=' + morphParm1.value + '&morph2=' + morphParm2.value
         };
 
-        // Plotly
-        // Add survival information
-        survivalPlot = function () {
-            trace0 = {
-                x: tab.months_followup,
-                y: tab.status,
-                mode: 'lines'
-            };
-
-            // convert status into survival
-            var x = [], y = [], ind = [];
-            trace0.x.forEach(function (v, i) {
-                var xi = trace0.x[i];
-                var yi = trace0.y[i];
-                if ((typeof(xi) == 'number') && (typeof(yi) == 'number')) {
-                    x.push(xi);
-                    y.push(yi);
-                    ind.push(i)
-                }
-            });
-
-            var jj = jmat.sort(x)[1];
-            surv0 = { // calculating survival here
-                tt: [],
-                status: [], // survival, we'll have to calculate it
-                ind: []
-            };
-
-            jj.map(function (j, i) {
-                surv0.tt[i] = x[j];
-                surv0.status[i] = y[j]; // note this is the former y value (status)
-                surv0.ind[i] = ind[j]
-            });
-
-            // calculating survival for unique times
-            survCalc = function (x) { // x is the status, ordered chronologically
-                var y = [x[0]];
-                var n = x.length;
-                var s = [1];
-                for (var i = 1; i < n; i++) {
-                    y[i] = y[i - 1] + x[i];
-                    s[i] = s[i - 1] * (1 - x[i] / (n - i))
-                }
-                return s
-            };
-
-            surv0.yy = survCalc(surv0.status);
-            trace0.x = surv0.tt;
-            trace0.y = surv0.yy;
-
-            surv0.yy.forEach(function (yi, i) {
-                docs[surv0.ind[i]].KM = yi; // recording Kaplan Meier in the original docs
-            });
-
-            // now only for the selected patients
-            if (typeof(dcSurv) != "undefined") {
-                trace1 = (function () {
-                    //console.log(9)
-                    var xy = dcStatus.G.all().filter(function (xyi) {
-                        return xyi.value
-                    });
-                    var x = [], y = [];
-                    xy.map(function (xyi, i) {
-                        x[i] = xyi.key[0];
-                        y[i] = xyi.key[1]
-                    });
-                    var ind = jmat.sort(x)[1];
-                    x = [];
-                    y = [];
-                    ind.forEach(function (i, j) {
-                        if (xy[i].key[0] !== "") {
-                            x.push(xy[i].key[0]);
-                            y.push(xy[i].key[1])
-                        }
-                    });
-
-                    var n = x.length;
-                    var s = [1];
-                    for (var i = 1; i < n; i++) {
-                        s[i] = s[i - 1] * (1 - y[i] / (n - i))
-                    }
-
-                    return {
-                        x: x,
-                        y: s
-                    }
-                })()
-            }
-
-            var layout = {
-                title: 'Blue - whole population; Orange - selected cohort',
-                showlegend: false,
-                xaxis: {
-                    range: [0, 250],
-                    type: "linear",
-                    title: "months followup"
-                },
-                yaxis: {
-                    range: [0, 1],
-                    type: "linear",
-                    title: "Survival (Kaplan Meier estimator)"
-                }
-            };
-
-            survival.style.width = '600px';
-            survival.style.height = '500px';
-
-            if (typeof(trace1) !== 'undefined') {
-                data = [trace0, trace1]
-            } else {
-                data = [trace0]
-            }
-
-            Plotly.newPlot('survival', data, layout);
-            //console.log('plotly',new Date)
-
-        };
-        survivalPlot();
-
-        x = docs;
-
-        // time for cross filter
-        var onFiltered = function (parm) {
-            //console.log(parm,new Date,gene)
-            survivalPlot(parm);
-
-        };
-
-
-        // Dimensional Charting
-        var cf = crossfilter(x);
-        gene = {};
-        genePlot = function (gn) { // gene name
-            gene[gn] = {};
-            gene[gn].R = {
-                low: 0,
-                high: 0,
-                NA: 0
-            };
-
-            gene[gn].C = dc.rowChart("#fig4_1_" + gn);
-            gene[gn].D = cf.dimension(function (d) {
-                if (d[gn + '_mutations_code'] === 0) {
-                    return 'no mutation'
-                } else if (d[gn + '_mutations_code'] === 1) {
-                    return 'mutation present'
-                } else {
-                    return 'NA'
-                }
-            });
-
-            gene[gn].G = gene[gn].D.group().reduce(
-                // reduce in
-                function (p, v) {
-                    if (v[gn + '_mutations_code'] === 0) {
-                        gene[gn].R.low += 1;
-                        return gene[gn].R.low
-                    } else if (v[gn + '_mutations_code'] === 1) {
-                        gene[gn].R.high += 1;
-                        return gene[gn].R.high
-                    } else {
-                        gene[gn].R.NA += 1;
-                        return gene[gn].R.NA
-                    }
-                },
-                // reduce out
-                function (p, v) {
-                    if (v[gn + '_mutations_code'] === 0) {
-                        gene[gn].R.low -= 1;
-                        return gene[gn].R.low
-                    } else if (v[gn + '_mutations_code'] === 1) {
-                        gene[gn].R.high -= 1;
-                        return gene[gn].R.high
-                    } else {
-                        gene[gn].R.NA -= 1;
-                        return gene[gn].R.NA
-                    }
-                },
-                //ini
-                function () {
-                    return 0
-                }
-            );
-
-            gene[gn].C
-                .width(500)
-                .height(100)
-                .margins({top: 10, right: 50, bottom: 30, left: 40})
-                .dimension(gene[gn].D)
-                .group(gene[gn].G)
-                .elasticX(true)
-                .colors(d3.scale.linear().domain([0, 0.5, 1]).range(["blue", "yellow", "red"]))
-                .colorAccessor(function (d, i) {
-                    return d.value / (gene[gn].R.NA + gene[gn].R.high + gene[gn].R.low)
-                })
-                .on('filtered', function () {
-                    onFiltered(gn)
-                });
-            return gene
-        };
-
-
-        genePlot('EGFR');
-        genePlot('KRAS');
-        genePlot('STK11_LKB1');
-        genePlot('TP53');
-        genePlot('NF1');
-        genePlot('BRAF');
-        genePlot('SETD2');
-
-
-        // morphPlot
-        morph = {};
-
-        morphPlot = function (divId, p) {
-            var div = document.getElementById(divId);
-            div.innerHTML += p + '<br>';
-            div.style.color = 'navy';
-            div.style.fontWeight = 'bold';
-            morph[p] = {};
-            morph[p].R = {};
-            morph[p].C = dc.barChart('#' + divId);
-            morph[p].D = cf.dimension(function (d) {
-                var v = d[p];
-                if (v !== "") {
-                    return v
-                }
-
-            });
-
-            morph[p].G = morph[p].D.group();
-
-            var xx = tab[p].filter(function (v) {
-                return typeof(v) == 'number'
-            });
-
-            var Xmin = xx.reduce(function (a, b) {
-                return Math.min(a, b)
-            });
-
-            var Xmax = xx.reduce(function (a, b) {
-                return Math.max(a, b)
-            });
-
-            var Xn = xx.length;
-            morph[p].C
-                .width(300)
-                .height(280)
-                //.x(d3.scale.linear())
-                //.xUnitCount(function(){return 10})
-                .xUnits(function () {
-                    return 50
-                })
-                .renderHorizontalGridLines(true)
-                .renderVerticalGridLines(true)
-                //.y(d3.scale.log().domain([1,100]).range([0,280]))
-                .x(d3.scale.linear().domain([Xmin, Xmax]).range([0, 300]))
-                .y(d3.scale.linear())
-                //.y(d3.scale.log().domain([1,100]).range([1,100]))
-                .elasticY(true)
-                //.elasticX(true)
-                .dimension(morph[p].D)
-                .group(morph[p].G)
-                .on('filtered', function () {
-                    onFiltered(p)
-                });
-
-            return morph
-
-        };
-
-
-        morphPlot("fig4_2_1", morphParm1.value);
-        morphPlot("fig4_2_2", morphParm1.value);
-        morphPlot("fig4_2_3", morphParm2.value);
-
-
-        // DC Survival
-        dcSurv = {
-            R: []
-        };
-
-        dcSurv.C = dc.scatterPlot('#' + 'dcSurvival');
-        dcSurv.D = cf.dimension(function (d) {
-            return [d.months_followup, d.KM]
-        });
-
-        dcSurv.G = dcSurv.D.group();
-        dcSurv.C
-            .width(500)
-            .height(300)
-            .x(d3.scale.linear().domain([0, 250])) //.domain([0, 20])
-            .y(d3.scale.linear().domain([0, 1]))
-            //.yAxisLabel("Survial (KM estimator)")
-            //.xAxisLabel("months followup")
-            //.symbolSize(8)
-            //.clipPadding(10)
-            .dimension(dcSurv.D)
-            .group(dcSurv.G);
-
-        dcStatus = {
-            R: []
-        };
-
-        dcStatus.C = dc.scatterPlot('#' + 'dcStatus');
-        dcStatus.D = cf.dimension(function (d) {
-            return [d.months_followup, d.status]
-        });
-
-        dcStatus.G = dcStatus.D.group();
-        dcStatus.C
-            .width(500)
-            .height(100)
-            .x(d3.scale.linear().domain([0, 250])) //.domain([0, 20])
-            .y(d3.scale.linear().domain([-1, 2]))
-            //.yAxisLabel("Survial (KM estimator)")
-            //.xAxisLabel("months followup")
-            //.symbolSize(8)
-            //.clipPadding(10)
-            .dimension(dcStatus.D)
-            .group(dcStatus.G);
-
-        // ready to render
-        dc.renderAll();
-        $('.dc-chart g.row text').css('fill', 'black');
+        plotData();
 
     })
 };
+
+function getMorphParms(propertyNames) {
+    // We would like to show these parameters
+    var morphParms = ["NumberOfPixels_median", "PhysicalSize_median", "NumberOfPixelsOnBorder_median", "FeretDiameter_median", "PrincipalMoments0_median", "PrincipalMoments1_median", "Elongation_median", "Perimeter_median", "Roundness_median", "EquivalentSphericalRadius_median", "EquivalentSphericalPerimeter_median", "EquivalentEllipsoidDiameter0_median", "EquivalentEllipsoidDiameter1_median", "Flatness_median", "MeanR_median", "MeanG_median", "MeanB_median", "StdR_median", "StdG_median", "StdB_median", "age_at_initial_pathologic_diagno", "est_days_to_remission", "K17_group", "Stage", "Tumor", "gender_code", "hist_code"];
+    var mp = [];
+
+    // Check to see if they exist in our data
+    morphParms.forEach(function (mpp) {
+        if (propertyNames.indexOf(mpp) > -1) {
+            mp.push(mpp);
+        }
+
+    });
+
+    return mp;
+
+}
+
+function convertData(data) {
+    // Convert data
+    var newData = [];
+    data.forEach(function (dt) {
+        var elem = {};
+        elem.EGFR_mutations_code = dt.EGFR;
+        elem.KRAS_mutations_code = dt.KRAS;
+        elem.STK11_LKB1_mutations_code = dt.STK11_LKB1;
+        elem.TP53_mutations_code = dt.TP53;
+        elem.NF1_mutations_code = dt.NF1;
+        elem.BRAF_mutations_code = dt.BRA;
+        elem.SETD2_mutations_code = dt.SETD2;
+        if (dt.vital_status === 'Alive') {
+            dt.vital_status = 0;
+        }
+        else {
+            dt.vital_status = 1;
+        }
+        elem.status = dt.vital_status;
+        if (!isNaN(dt.days_to_last_followup)) {
+            elem.months_followup = (dt.days_to_last_followup / 30);
+        }
+        elem.age_at_initial_pathologic_diagno = dt.age_at_initial_pathologic_diagnosis;
+        if (dt.gender === "FEMALE") {
+            dt.gender = 0;
+        }
+        else {
+            dt.gender = 1;
+        }
+        elem.gender_code = dt.gender;
+
+        //elem.hist_code = dt.icd_o_3_histology; // N/A
+        elem.MeanB_median = dt.meanB_median;
+        elem.MeanG_median = dt.meanG_median;
+        elem.MeanR_median = dt.meanR_median;
+        elem.NumberOfPixels_median = dt.SizeInPixels_median;
+        elem.StdB_median = dt.stdB_median;
+        elem.StdG_median = dt.stdG_median;
+        elem.StdR_median = dt.stdR_median;
+        //elem.Tumor = dt.Study; // N/A
+        //elem.Stage = // N/A
+        elem.Study = dt.Study;
+        elem.Elongation_median = dt.Elongation_median;
+        elem.EquivalentEllipsoidDiameter0_median = dt.EquivalentEllipsoidDiameter0_median;
+        elem.EquivalentEllipsoidDiameter1_median = dt.EquivalentEllipsoidDiameter1_median;
+        elem.EquivalentSphericalPerimeter_median = dt.EquivalentSphericalPerimeter_median;
+        elem.EquivalentSphericalRadius_median = dt.EquivalentSphericalRadius_median;
+        elem.Flatness_median = dt.Flatness_median;
+        elem.Perimeter_median = dt.Perimeter_median;
+        elem.PrincipalMoments0_median = dt.PrincipalMoments0_median;
+        elem.PrincipalMoments1_median = dt.PrincipalMoments1_median;
+        elem.Roundness_median = dt.Roundness_median;
+
+        newData.push(elem);
+
+    });
+
+    return newData;
+}
+
+function showInfo(data) {
+    var tt = '', tumor = '', tumor1 = '';
+    if (data[0].Study) {
+        tt = data[0].Study;
+    }
+    else {
+        if (data[0].Tumor) {
+            tt = data[0].Tumor;
+        }
+    }
+
+    if (tt === '') {
+        console.log('Unknown tumor');
+    }
+    else {
+        if (isNaN(tt)) {
+            tumor = tt;
+            tumor1 = tt.toLowerCase();
+        }
+        else {
+
+            if (tt == 2) {
+                tumor = 'Lung Adenocarcinoma';
+                tumor1 = 'luad';
+            }
+            else {
+                console.log('Unknown tumor type ', tt);
+            }
+        }
+    }
+
+    document.getElementById('patientInfo').innerHTML = 'Morphology features extracted from image analysis of histology whole slide images for ' + data.length + ' ' + tumor + ' Patients of The Cancer Genome Atlas.';
+    document.getElementById('repositoryInfo').innerHTML = 'the <a href="https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/' + tumor1 + '/bcr/biotab/clin/" target="_blank">TCGA repository</a>.';
+
+}
+
+function plotData() {
+    // Plotly
+    // Add survival information
+    survivalPlot = function () {
+        trace0 = {
+            x: tab.months_followup,
+            y: tab.status,
+            mode: 'lines'
+        };
+
+        // convert status into survival
+        var x = [], y = [], ind = [];
+        trace0.x.forEach(function (v, i) {
+            var xi = trace0.x[i];
+            var yi = trace0.y[i];
+            if ((typeof(xi) == 'number') && (typeof(yi) == 'number')) {
+                x.push(xi);
+                y.push(yi);
+                ind.push(i)
+            }
+        });
+
+        var jj = jmat.sort(x)[1];
+        surv0 = { // calculating survival here
+            tt: [],
+            status: [], // survival, we'll have to calculate it
+            ind: []
+        };
+
+        jj.map(function (j, i) {
+            surv0.tt[i] = x[j];
+            surv0.status[i] = y[j]; // note this is the former y value (status)
+            surv0.ind[i] = ind[j]
+        });
+
+        // calculating survival for unique times
+        survCalc = function (x) { // x is the status, ordered chronologically
+            var y = [x[0]];
+            var n = x.length;
+            var s = [1];
+            for (var i = 1; i < n; i++) {
+                y[i] = y[i - 1] + x[i];
+                s[i] = s[i - 1] * (1 - x[i] / (n - i))
+            }
+            return s
+        };
+
+        surv0.yy = survCalc(surv0.status);
+        trace0.x = surv0.tt;
+        trace0.y = surv0.yy;
+
+        surv0.yy.forEach(function (yi, i) {
+            docs[surv0.ind[i]].KM = yi; // recording Kaplan Meier in the original docs
+        });
+
+        // now only for the selected patients
+        if (typeof(dcSurv) != "undefined") {
+            trace1 = (function () {
+                //console.log(9)
+                var xy = dcStatus.G.all().filter(function (xyi) {
+                    return xyi.value
+                });
+                var x = [], y = [];
+                xy.map(function (xyi, i) {
+                    x[i] = xyi.key[0];
+                    y[i] = xyi.key[1]
+                });
+                var ind = jmat.sort(x)[1];
+                x = [];
+                y = [];
+                ind.forEach(function (i, j) {
+                    if (xy[i].key[0] !== "") {
+                        x.push(xy[i].key[0]);
+                        y.push(xy[i].key[1])
+                    }
+                });
+
+                var n = x.length;
+                var s = [1];
+                for (var i = 1; i < n; i++) {
+                    s[i] = s[i - 1] * (1 - y[i] / (n - i))
+                }
+
+                return {
+                    x: x,
+                    y: s
+                }
+            })()
+        }
+
+        var layout = {
+            title: 'Blue - whole population; Orange - selected cohort',
+            showlegend: false,
+            xaxis: {
+                range: [0, 250],
+                type: "linear",
+                title: "months followup"
+            },
+            yaxis: {
+                range: [0, 1],
+                type: "linear",
+                title: "Survival (Kaplan Meier estimator)"
+            }
+        };
+
+        survival.style.width = '600px';
+        survival.style.height = '500px';
+
+        if (typeof(trace1) !== 'undefined') {
+            data = [trace0, trace1]
+        } else {
+            data = [trace0]
+        }
+
+        Plotly.newPlot('survival', data, layout);
+        //console.log('plotly',new Date)
+
+    };
+    survivalPlot();
+
+    x = docs;
+
+    // time for cross filter
+    var onFiltered = function (parm) {
+        //console.log(parm,new Date,gene)
+        survivalPlot(parm);
+
+    };
+
+
+    // Dimensional Charting
+    var cf = crossfilter(x);
+    gene = {};
+    genePlot = function (gn) { // gene name
+        gene[gn] = {};
+        gene[gn].R = {
+            low: 0,
+            high: 0,
+            NA: 0
+        };
+
+        gene[gn].C = dc.rowChart("#fig4_1_" + gn);
+        gene[gn].D = cf.dimension(function (d) {
+            if (d[gn + '_mutations_code'] === 0) {
+                return 'no mutation'
+            } else if (d[gn + '_mutations_code'] === 1) {
+                return 'mutation present'
+            } else {
+                return 'NA'
+            }
+        });
+
+        gene[gn].G = gene[gn].D.group().reduce(
+            // reduce in
+            function (p, v) {
+                if (v[gn + '_mutations_code'] === 0) {
+                    gene[gn].R.low += 1;
+                    return gene[gn].R.low
+                } else if (v[gn + '_mutations_code'] === 1) {
+                    gene[gn].R.high += 1;
+                    return gene[gn].R.high
+                } else {
+                    gene[gn].R.NA += 1;
+                    return gene[gn].R.NA
+                }
+            },
+            // reduce out
+            function (p, v) {
+                if (v[gn + '_mutations_code'] === 0) {
+                    gene[gn].R.low -= 1;
+                    return gene[gn].R.low
+                } else if (v[gn + '_mutations_code'] === 1) {
+                    gene[gn].R.high -= 1;
+                    return gene[gn].R.high
+                } else {
+                    gene[gn].R.NA -= 1;
+                    return gene[gn].R.NA
+                }
+            },
+            //ini
+            function () {
+                return 0
+            }
+        );
+
+        gene[gn].C
+            .width(500)
+            .height(100)
+            .margins({top: 10, right: 50, bottom: 30, left: 40})
+            .dimension(gene[gn].D)
+            .group(gene[gn].G)
+            .elasticX(true)
+            .colors(d3.scale.linear().domain([0, 0.5, 1]).range(["blue", "yellow", "red"]))
+            .colorAccessor(function (d, i) {
+                return d.value / (gene[gn].R.NA + gene[gn].R.high + gene[gn].R.low)
+            })
+            .on('filtered', function () {
+                onFiltered(gn)
+            });
+        return gene
+    };
+
+
+    genePlot('EGFR');
+    genePlot('KRAS');
+    genePlot('STK11_LKB1');
+    genePlot('TP53');
+    genePlot('NF1');
+    genePlot('BRAF');
+    genePlot('SETD2');
+
+
+    // morphPlot
+    morph = {};
+
+    morphPlot = function (divId, p) {
+        var div = document.getElementById(divId);
+        div.innerHTML += p + '<br>';
+        div.style.color = 'navy';
+        div.style.fontWeight = 'bold';
+        morph[p] = {};
+        morph[p].R = {};
+        morph[p].C = dc.barChart('#' + divId);
+        morph[p].D = cf.dimension(function (d) {
+            var v = d[p];
+            if (v !== "") {
+                return v
+            }
+
+        });
+
+        morph[p].G = morph[p].D.group();
+
+        var xx = tab[p].filter(function (v) {
+            return typeof(v) == 'number'
+        });
+
+        var Xmin = xx.reduce(function (a, b) {
+            return Math.min(a, b)
+        });
+
+        var Xmax = xx.reduce(function (a, b) {
+            return Math.max(a, b)
+        });
+
+        morph[p].C
+            .width(300)
+            .height(280)
+            //.x(d3.scale.linear())
+            //.xUnitCount(function(){return 10})
+            .xUnits(function () {
+                return 50
+            })
+            .renderHorizontalGridLines(true)
+            .renderVerticalGridLines(true)
+            //.y(d3.scale.log().domain([1,100]).range([0,280]))
+            .x(d3.scale.linear().domain([Xmin, Xmax]).range([0, 300]))
+            .y(d3.scale.linear())
+            //.y(d3.scale.log().domain([1,100]).range([1,100]))
+            .elasticY(true)
+            //.elasticX(true)
+            .dimension(morph[p].D)
+            .group(morph[p].G)
+            .on('filtered', function () {
+                onFiltered(p)
+            });
+
+        return morph
+
+    };
+
+
+    morphPlot("fig4_2_1", morphParm1.value);
+    morphPlot("fig4_2_2", morphParm1.value);
+    morphPlot("fig4_2_3", morphParm2.value);
+
+
+    // DC Survival
+    dcSurv = {
+        R: []
+    };
+
+    dcSurv.C = dc.scatterPlot('#' + 'dcSurvival');
+    dcSurv.D = cf.dimension(function (d) {
+        return [d.months_followup, d.KM]
+    });
+
+    dcSurv.G = dcSurv.D.group();
+    dcSurv.C
+        .width(500)
+        .height(300)
+        .x(d3.scale.linear().domain([0, 250])) //.domain([0, 20])
+        .y(d3.scale.linear().domain([0, 1]))
+        //.yAxisLabel("Survial (KM estimator)")
+        //.xAxisLabel("months followup")
+        //.symbolSize(8)
+        //.clipPadding(10)
+        .dimension(dcSurv.D)
+        .group(dcSurv.G);
+
+    dcStatus = {
+        R: []
+    };
+
+    dcStatus.C = dc.scatterPlot('#' + 'dcStatus');
+    dcStatus.D = cf.dimension(function (d) {
+        return [d.months_followup, d.status]
+    });
+
+    dcStatus.G = dcStatus.D.group();
+    dcStatus.C
+        .width(500)
+        .height(100)
+        .x(d3.scale.linear().domain([0, 250])) //.domain([0, 20])
+        .y(d3.scale.linear().domain([-1, 2]))
+        //.yAxisLabel("Survial (KM estimator)")
+        //.xAxisLabel("months followup")
+        //.symbolSize(8)
+        //.clipPadding(10)
+        .dimension(dcStatus.D)
+        .group(dcStatus.G);
+
+    // ready to render
+    dc.renderAll();
+    $('.dc-chart g.row text').css('fill', 'black');
+}
 
 window.onload = function () {
     fig4();
