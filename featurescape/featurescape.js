@@ -374,7 +374,7 @@ fscape.plot = function (x) { // when ready to do it
                     dd.forEach(function (d, j) {
                         ij++;
                         //var cut = 0.75
-                        if ((d < cut) & (i < j)) {
+                        if ((d < cut) && (i < j)) {
                             graph.links.push({
                                 source: i,
                                 target: j,
