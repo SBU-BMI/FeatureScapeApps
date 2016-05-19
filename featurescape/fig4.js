@@ -17,6 +17,7 @@ fig4 = function () {
 fig4.loadData = function (url) {
     $.getJSON(url).then(function (x) {
         console.log('loaded ' + x.length + ' records');
+        console.log(JSON.stringify(x));
 
         var msg = function (txt, clr) {
             if (!clr) {
