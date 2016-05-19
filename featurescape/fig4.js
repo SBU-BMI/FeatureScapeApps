@@ -279,6 +279,7 @@ window.onload = function () {
                 } else if (d[gn] === 1) {
                     return 'mutation present'
                 } else {
+                    // Value is empty string
                     return 'NA'
                 }
             });
