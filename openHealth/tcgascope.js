@@ -351,8 +351,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
                     var fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port + '?collection=patients&limit=' + pp.length + '&find={%22bcr_patient_barcode%22:{%22$in%22:[' +  ppp  + ']}}&db=' + openHealth.db;
 
-                    //moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="feature landscape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="fig4 (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
-                    moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="feature landscape (if available) for ' + pp.length + ' patients">&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="fig4 (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
+                    moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="feature landscape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="fig4 (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
 
                     fscapeButton.onclick = function () {
                         window.open(fscape)
