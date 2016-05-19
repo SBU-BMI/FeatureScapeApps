@@ -7,7 +7,7 @@ window.onload = function () {
         url = location.hash.slice(1);
     }
     else {
-        url = 'http://quip1.uhmc.sunysb.edu:4000?collection=patients&limit=200&find={}&db=u24_luad';
+        url = 'http://quip1.uhmc.sunysb.edu:4000?collection=patients&limit=522&find={}&db=u24_luad';
     }
 
     $.getJSON(url).then(function (data) {
@@ -24,9 +24,11 @@ window.onload = function () {
             }, 5000)
         };
         msg('loaded ' + data.length + ' records');
-        showInfo(data);
 
+        data = flatten(data);
         data = wrangle(data);
+
+        showInfo(data);
 
         //unpack data into table, tab
         tab = {};
@@ -50,7 +52,6 @@ window.onload = function () {
         h += '<h3 style="color:maroon">Gene Mutation</h3>';
         h += '<p style="color:maroon">Click on bars to select molecular cohorts,<br>Xaxis: # patients; Yaxis: mutation status<br>[<b style="color:blue">blue</b><b style="color:YellowGreen">-</b><b style="color:red">red</b>] color range indicates fraction of total.</p>';
 
-        console.log('genomic', genomic);
         genomic.forEach(function (gen) {
             h += '<h4 style="color:navy" id="fig4_1_' + gen + '">' + gen + '</h4>';
         });
@@ -372,6 +373,8 @@ window.onload = function () {
              return 0
              }
              )*/
+            
+            console.log('p', p);
 
             var xx = tab[p].filter(function (v) {
                 return typeof(v) == 'number'
@@ -469,34 +472,36 @@ window.onload = function () {
 
 };
 
-function checkData(propertyNames) {
-    // We would like to show these parameters
-    var newFeatures = [];
-    var newGenomic = [];
+function flatten(data) {
 
-    // Check to see if they exist in our data
-    features.forEach(function (mpp) {
-        if (propertyNames.indexOf(mpp) > -1) {
-            newFeatures.push(mpp);
-        }
-        else {
-            console.log('missing', mpp)
-        }
+    //imaging_features
+    //genomic_features
+    //clinical_features
+    var newArray = [];
+    data.forEach(function (item) {
+        var newObject = {};
+
+        var features = item.clinical_features;
+
+        features.forEach(function (f) {
+            newObject[f.name] = f.value;
+        });
+
+        features = item.genomic_features;
+        features.forEach(function (f) {
+            newObject[f.name] = f.value;
+        });
+
+        features = item.imaging_features;
+        features.forEach(function (f) {
+            newObject[f.name] = f.value;
+        });
+
+        newArray.push(newObject);
 
     });
 
-    genomic.forEach(function (mpp) {
-        if (propertyNames.indexOf(mpp) > -1) {
-            newGenomic.push(mpp);
-        }
-        else {
-            console.log('missing', mpp)
-        }
-
-    });
-
-    features = newFeatures;
-    genomic = newGenomic;
+    return newArray;
 
 }
 
@@ -552,8 +557,8 @@ function wrangle(oldArr) {
 
 function showInfo(data) {
     var tt = '', tumor = '', tumor1 = '';
-    if (data[0].study) {
-        tt = data[0].study;
+    if (data[0].Study) {
+        tt = data[0].Study;
     }
     else {
         if (data[0].tumor) {
@@ -586,8 +591,43 @@ function showInfo(data) {
 
 }
 
-var features = ["PrincipalMoments0_median", "PrincipalMoments1_median", "Elongation_median",
-    "Perimeter_median", "Roundness_median", "EquivalentSphericalRadius_median",
+function checkData(propertyNames) {
+    // We would like to show these parameters
+    var newFeatures = [];
+    var newGenomic = [];
+
+    // Check to see if they exist in our data
+    features.forEach(function (mpp) {
+        if (propertyNames.indexOf(mpp) > -1) {
+            newFeatures.push(mpp);
+        }
+        else {
+            console.log('missing', mpp)
+        }
+
+    });
+
+    genomic.forEach(function (mpp) {
+        if (propertyNames.indexOf(mpp) > -1) {
+            newGenomic.push(mpp);
+        }
+        else {
+            console.log('missing', mpp)
+        }
+
+    });
+
+    features = newFeatures;
+    genomic = newGenomic;
+
+}
+
+var features = ["PrincipalMoments0_median",
+    "PrincipalMoments1_median",
+    "Elongation_median",
+    "Perimeter_median",
+    "Roundness_median",
+    "EquivalentSphericalRadius_median",
     "EquivalentSphericalPerimeter_median",
     "EquivalentEllipsoidDiameter0_median",
     "EquivalentEllipsoidDiameter1_median",
