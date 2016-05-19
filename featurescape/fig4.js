@@ -645,7 +645,8 @@ var features = ["PrincipalMoments0_median",
 
 var genomic = ["EGFR",
     "KRAS",
+    "STK11_LKB1",
     "TP53",
     "NF1",
-    "SETD2",
-    "STK11_LKB1"];
+    "BRAF",
+    "SETD2"];
