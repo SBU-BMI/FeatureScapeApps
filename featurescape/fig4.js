@@ -26,6 +26,7 @@ window.onload = function () {
         msg('loaded ' + data.length + ' records');
 
         data = flatten(data);
+
         data = wrangle(data);
 
         showInfo(data);
@@ -42,7 +43,6 @@ window.onload = function () {
                 tab[p][i] = xi[p]
             })
         });
-        docs = data;
 
         checkData(parms);
 
@@ -75,7 +75,6 @@ window.onload = function () {
         h += '<p style="font-size:small">Zoomable KM estimator (i.e. select ranges, each dot is a patient)</p>';
         h += '<div id="dcSurvival"></div>';
         h += '<div id="dcStatus"></div>';
-
 
         h += '</td>';
         h += '</tr></table>';
@@ -184,7 +183,7 @@ window.onload = function () {
             trace0.y = surv0.yy;
 
             surv0.yy.forEach(function (yi, i) {
-                docs[surv0.ind[i]].KM = yi; // recording Kaplan Meier in the original docs
+                data[surv0.ind[i]].KM = yi; // recording Kaplan Meier in the original docs
             });
 
             // now only for the selected patients
@@ -240,19 +239,20 @@ window.onload = function () {
             survival.style.width = '600px';
             survival.style.height = '500px';
 
+
+            var plotData = [];
             if (typeof(trace1) !== 'undefined') {
-                data = [trace0, trace1]
+                plotData = [trace0, trace1]
             } else {
-                data = [trace0]
+                plotData = [trace0]
             }
 
-            Plotly.newPlot('survival', data, layout);
-            //console.log('plotly',new Date)
+            Plotly.newPlot('survival', plotData, layout);
+            //var plotDiv = document.getElementById('survival');
+            //console.log('plotly', plotDiv.data);
 
         };
         survivalPlot();
-
-        x = docs;
 
         // time for cross filter
         var onFiltered = function (parm) {
@@ -260,7 +260,7 @@ window.onload = function () {
             survivalPlot(parm)
         };
 
-        var cf = crossfilter(x);
+        var cf = crossfilter(data);
 
         gene = {};
 
@@ -279,7 +279,6 @@ window.onload = function () {
                 } else if (d[gn] === 1) {
                     return 'mutation present'
                 } else {
-                    // Value is empty string
                     return 'NA'
                 }
             });
@@ -374,8 +373,6 @@ window.onload = function () {
              return 0
              }
              )*/
-            
-            console.log('p', p);
 
             var xx = tab[p].filter(function (v) {
                 return typeof(v) == 'number'
@@ -436,7 +433,7 @@ window.onload = function () {
             .height(300)
             .x(d3.scale.linear().domain([0, 250])) //.domain([0, 20])
             .y(d3.scale.linear().domain([0, 1]))
-            //.yAxisLabel("Survial (KM estimator)")
+            //.yAxisLabel("Survival (KM estimator)")
             //.xAxisLabel("months followup")
             //.symbolSize(8)
             //.clipPadding(10)
@@ -458,7 +455,7 @@ window.onload = function () {
             .height(100)
             .x(d3.scale.linear().domain([0, 250])) //.domain([0, 20])
             .y(d3.scale.linear().domain([-1, 2]))
-            //.yAxisLabel("Survial (KM estimator)")
+            //.yAxisLabel("Survival (KM estimator)")
             //.xAxisLabel("months followup")
             //.symbolSize(8)
             //.clipPadding(10)
@@ -475,24 +472,23 @@ window.onload = function () {
 
 function flatten(data) {
 
-    //imaging_features
-    //genomic_features
-    //clinical_features
     var newArray = [];
     data.forEach(function (item) {
         var newObject = {};
 
+        //clinical_features
         var features = item.clinical_features;
-
         features.forEach(function (f) {
             newObject[f.name] = f.value;
         });
 
+        //genomic_features
         features = item.genomic_features;
         features.forEach(function (f) {
             newObject[f.name] = f.value;
         });
 
+        //imaging_features
         features = item.imaging_features;
         features.forEach(function (f) {
             newObject[f.name] = f.value;
@@ -509,15 +505,24 @@ function flatten(data) {
 function wrangle(oldArr) {
     return oldArr.map(function (item) {
 
+        // Alive = 0
+        // Dead = 1
         if ((item.vital_status != undefined) && isNaN(item.vital_status)) {
+
             if (item.vital_status === 'Alive') {
                 item.vital_status = 0;
             }
             else {
                 item.vital_status = 1;
             }
+
         }
 
+        if (item.status == undefined) {
+            item.status = item.vital_status;
+        }
+
+        // Convert days to last followup => months followup
         if (item.months_followup == undefined) {
 
             if (item.days_to_last_followup != undefined) {
@@ -537,6 +542,8 @@ function wrangle(oldArr) {
 
         }
 
+        // Female = 1
+        // Male = 0
         if ((item.gender != undefined) && isNaN(item.gender)) {
             if (item.gender === "FEMALE") {
                 item.gender = 0;
@@ -546,17 +553,13 @@ function wrangle(oldArr) {
             }
         }
 
-        if (item.status == undefined) {
-            item.status = item.vital_status;
-
-        }
-
         return item;
     });
 
 }
 
 function showInfo(data) {
+
     var tt = '', tumor = '', tumor1 = '';
     if (data[0].Study) {
         tt = data[0].Study;
@@ -646,7 +649,7 @@ var features = ["PrincipalMoments0_median",
 
 var genomic = ["EGFR",
     "KRAS",
-    "STK11_LKB1",
+    "STK11",
     "TP53",
     "NF1",
     "BRAF",
