@@ -22,7 +22,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         var selectTumorHTML = '<h3 style="color:navy">';
         selectTumorHTML += 'Tumor Type: <select onchange="tumorChanged(this)" style="font-color:navy;background-color:silver;font-size:large" id="selectTumor">';
 
-        var url = config.findAPI + ':' + config.port + '/?limit=5&collection=metadata&find={}&db=u24_meta';
+        var url = config.findAPI + ':' + config.port + '/?limit=10&collection=metadata&find={}&db=u24_meta';
 
         $.ajax({
             url: url,
@@ -134,12 +134,22 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
     // clinical_patient_xxx, biospecimen_slide_xxx, xxxDocs, xxxTab, xxxDx
     function drawGraphs(cancer_type, clinical_patient, biospecimen_slide, xxxDocs, xxxTab, xxxDx) {
 
-        //console.log(JSON.stringify(openHealth.tcga.dt[clinical_patient].karnofsky_score));
-
         // Extract AGE
-        openHealth.tcga.dt[clinical_patient].age = openHealth.tcga.dt[clinical_patient].age_at_initial_pathologic_diagnosis.map(function (xi) {
-            return parseInt(xi)
-        });
+        if (openHealth.tcga.dt[clinical_patient].age_at_initial_pathologic_diagnosis != null)
+        {
+            openHealth.tcga.dt[clinical_patient].age = openHealth.tcga.dt[clinical_patient].age_at_initial_pathologic_diagnosis.map(function (xi) {
+                return parseInt(xi)
+            });
+
+        }
+
+        if (openHealth.tcga.dt[clinical_patient].age_at_diagnosis != null)
+        {
+            openHealth.tcga.dt[clinical_patient].age = openHealth.tcga.dt[clinical_patient].age_at_diagnosis.map(function (xi) {
+                return parseInt(xi)
+            });
+
+        }
 
         // Extract SURVIVAL
         // "death_days_to":["days_to_death","CDE_ID: ...
@@ -156,7 +166,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         });
 
         //"karnofsky_score":["karnofsky_performance_score","CDE_ID: ...
-        if (openHealth.tcga.dt[clinical_patient].karnofsky_score) {
+        if (openHealth.tcga.dt[clinical_patient].karnofsky_score != null) {
             openHealth.tcga.dt[clinical_patient].score = openHealth.tcga.dt[clinical_patient].karnofsky_score.map(function (xi, i) {
                 if (!parseFloat(xi)) {
                     return NaN
@@ -220,7 +230,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
             var ks = '';
             var ks1 = '';
-            if (openHealth.cancer_type !== 'paad') {
+            if (openHealth.tcga.dt[clinical_patient].karnofsky_score != null) {
                 ks = '<div style="color:blue">Karnofsky Score:</div><div id="karnofsky_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div>';
                 ks1 = 'color indicates Karnofsky performance score (see framed bar chart);';
             }
@@ -519,7 +529,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             addRowChart('race', openHealth.unique(openHealth.tcga.dt[xxxTab].race));
 
 
-            if (openHealth.cancer_type !== 'paad') {
+            if (openHealth.tcga.dt[clinical_patient].karnofsky_score != null) {
                 addRowChart(
                     'karnofsky_score',
                     openHealth.unique(openHealth.tcga.dt[xxxTab].karnofsky_score),
