@@ -57,7 +57,6 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
     function get_biospecimen_slide(filename, cancer_type) {
 
         console.log('*** get_biospecimen_slide ***');
-        console.log(filename + ' ' + cancer_type);
 
         localforage.getItem(filename, function (x) {
             var clinical_patient = '',
@@ -73,7 +72,6 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
             if (!x) {
                 var str = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + filename + ".txt";
-                console.log(str);
                 openHealth.tcga.getTable(str,
                     function (x) {
                         openHealth.tcga.dt[filename] = x;
@@ -108,7 +106,6 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
             if (!x) {
                 var str = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + clinicalFile + ".txt";
-                console.log(str);
                 openHealth.tcga.getTable(str,
                     function (x) {
                         openHealth.tcga.dt[clinicalFile] = x;
@@ -249,7 +246,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                 // check DxImages available already
                 if (!openHealth.tcga.dt[xxxDx]) {
 
-                    var url = config.findAPI + ':' + config.port + '/?limit=500&collection=metadata&find={}&project={"_id":0,"image.subjectid":1,"image.caseid":1}&db=' + openHealth.db;
+                    var url = config.findAPI + ':' + config.port + '/?limit=1000&collection=metadata&find={"provenance.analysis_execution_id":"' + openHealth.execution_id + '"}&project={"_id":0,"image.subjectid":1,"image.caseid":1}&db=' + openHealth.db;
 
                     $.ajax({
                         url: url,
