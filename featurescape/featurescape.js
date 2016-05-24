@@ -15,17 +15,20 @@ fscape.UI = function () {
     console.log('assembling UI ...');
     var div = document.getElementById("featureScapeDiv");
     fscape.div = div;
+
     // load data
     $('<div id="loadDataDiv"></div>').appendTo(div);
     $('<div id="showLoadDataDiv"><a id="showLoadDataDivClick" href="javascript:void(0)" onclick="$(loadDataDiv).show(400);$(showLoadDataDiv).hide()">+ Load Data</a></div>').appendTo(div);
     $(showLoadDataDiv).hide();
     $('<h4>Load Data</h4>').appendTo(loadDataDiv);
     $('<div>URL: <input id="inputURL" style="width:50%"></div>').appendTo(loadDataDiv);
+
     inputURL.onkeyup = function (evt) {
         if (evt.keyCode == 13) {
             fscape.loadURL(inputURL.value)
         }
     };
+
     $('<div><input type="file" id="localFile" value="Local File"></div>').appendTo(loadDataDiv);
     $('<div id="dropBox-select"></div>').appendTo(loadDataDiv);
     $('<div id="loadingDropbox" style="color:red"> loading DropBox.com ... </div>').appendTo(loadDataDiv);
@@ -42,6 +45,7 @@ fscape.UI = function () {
         fscape.loadURL();
 
     }
+
     // load file
     localFile.onchange = function () {
         var f = this.files[0];
@@ -51,6 +55,7 @@ fscape.UI = function () {
         };
         reader.readAsText(f)
     };
+
     // load Box.com
     $.getScript("https://app.box.com/js/static/select.js").then(function () {
         $(document).ready(function () {
@@ -69,7 +74,6 @@ fscape.UI = function () {
     });
 
     // load DropBox
-
     var s = document.createElement('script');
     s.src = "https://www.dropbox.com/static/api/2/dropins.js";
     s.id = "dropboxjs";
@@ -112,10 +116,12 @@ fscape.loadBox = function (x) {
     })
 
 };
+
 fscape.loadDropbox = function (url) {
     console.log('loading data from Dropbox.com ...');
     fscape.loadURL(url)
 };
+
 fscape.loadFile = function (x, fname) {
     console.log('loading data from localFile ...');
     fscape.fun(JSON.parse(x), fname)
@@ -126,6 +132,7 @@ fscape.loadURL = function (url) {
     if (!url) {
         url = inputURL.value
     }
+
     localforage.getItem(url)
         .then(function (x) {
             if (!x) {
@@ -162,6 +169,7 @@ fscape.log = function (txt, color) {
 fscape.cleanUI = function () { // and create fscapeAnalysisDiv
     $(loadDataDiv).hide(400);
     $(showLoadDataDiv).show();
+
     // let's have some function
     if (!document.getElementById('fscapeAnalysisDiv')) {
         $('<hr><div id="fscapeAnalysisDiv"><span style="color:red">processing, please wait ...</span></div>').appendTo(fscape.div);
@@ -172,31 +180,41 @@ fscape.cleanUI = function () { // and create fscapeAnalysisDiv
     }
 };
 
-fscape.fun = function (x, url) {
+fscape.fun = function (data, url) {
 
-    // "VERSION 3"
-    x = x.map(function (xi) {
-        return xi.properties.scalar_features;
-        //return xi.features;
-    });
+    if (data.length == 0)
+    {
+        var patient = url.match('TCGA-[^%]+')[0];
+        document.getElementById('featureScapeDiv').innerHTML='<span style="color:red">Data not available for patient:</span><br>' + patient;
+        console.log('sorry, charlie!');
 
-    var nv = [];
-    x.forEach(function (item) {
-        var JSONArray = item[0]["nv"];
-
-        var features = {};
-        JSONArray.forEach(function (item) {
-            features[item.name] = item.value;
+    }
+    else {
+        // "VERSION 3"
+        data = data.map(function (xi) {
+            return xi.properties.scalar_features;
+            //return xi.features;
         });
 
-        nv.push(features);
-    });
+        var nv = [];
+        data.forEach(function (item) {
+            var JSONArray = item[0]["nv"];
 
-    var xx = nv;
-    fscape.log(xx.length + ' entries sampled from ' + url, 'blue');
-    fscape.cleanUI();
+            var features = {};
+            JSONArray.forEach(function (item) {
+                features[item.name] = item.value;
+            });
 
-    fscape.plot(xx)
+            nv.push(features);
+        });
+
+        var xx = nv;
+        fscape.log(xx.length + ' entries sampled from ' + url, 'blue');
+        fscape.cleanUI();
+
+        fscape.plot(xx)
+    }
+
 };
 
 fscape.clust2html = function (cl) {
@@ -207,6 +225,7 @@ fscape.clust2html = function (cl) {
             return Math.round(cij * 255)
         })
     });
+
     var h = '<h4 style="color:maroon">Cross-tabulated feature correlations</h4><table id="featurecrossTB">';
     ind.forEach(function (i, j) {
         h += '<tr><td>' + fscape.dt.parmNum[i] + '</td>';
@@ -229,7 +248,6 @@ fscape.clust2html = function (cl) {
 };
 
 // do it
-
 fscape.plot = function (x) { // when ready to do it
     fscapeAnalysisDiv.innerHTML = '<table id="fscapeAnalysisTab"><tr><td id="featurecrossTD" style="vertical-align:top">featurecross</td><td id="featuremapTD" style="vertical-align:top">featuremap</td></tr><tr><td id="featureElseTD" style="vertical-align:top"></td><td id="featurecompTD" style="vertical-align:top"></td></tr></table><div id="featurecomputeDIV"></div>';
     //fscapeAnalysisDiv
@@ -238,6 +256,7 @@ fscape.plot = function (x) { // when ready to do it
             docs: x,
             tab: {}
         };
+
         Object.getOwnPropertyNames(x[0]).forEach(function (p) {
             fscape.dt.tab[p] = x.map(function (xi) {
                 return xi[p]
@@ -268,7 +287,9 @@ fscape.plot = function (x) { // when ready to do it
 
         })
     });
+
     ij2remove = jmat.unique(ij2remove).sort().reverse();
+
     ij2remove.forEach(function (i) {
         xx = xx.map(function (xi) {
             xi.splice(i, 1);
@@ -279,9 +300,11 @@ fscape.plot = function (x) { // when ready to do it
     var cc = jmat.arrayfun(jmat.crosstab(xx), function (cij) {
         return 1 - Math.abs(cij)
     });
+
     cc.forEach(function (ci, i) {
         ci[i] = 0; // diagonal by definition
     });
+
     var cl = jmat.cluster(cc);  // remember this has three output arguments
     fscape.dt.cl = cl; // this may be better kept as a structure
     fscape.dt.parmNum = parmNum;
@@ -289,6 +312,7 @@ fscape.plot = function (x) { // when ready to do it
 
     // featuremapTD
     featuremapTD.innerHTML = 'processing ...';
+
     setTimeout(function () {
         var tdfun = function () {
             var ij = JSON.parse('[' + this.id + ']');
@@ -316,6 +340,7 @@ fscape.plot = function (x) { // when ready to do it
                 }, 0)
             }
         };
+
         var tdover = function (cut) {
             var ij = JSON.parse('[' + this.id + ']');
             if (ij.length > 0) {
@@ -333,11 +358,13 @@ fscape.plot = function (x) { // when ready to do it
                 4
             }
         };
+
         $('td', featurecrossTB).click(tdfun);
         $('td', featurecrossTB).mouseover(tdover);
         //featuremapTD.innerHTML='<span style="color:blue">(click on symbols for densities)</span>'
         featuremoreTD.innerHTML = '<span style="color:blue"></span>';
         featuremapTD.innerHTML = '<span style="color:blue">(click on symbols for densities)</span>';
+
         setTimeout(function () {
             //featureNet.innerHTML='featureNet :-)'
             var doNet = function (cut) {
@@ -350,14 +377,17 @@ fscape.plot = function (x) { // when ready to do it
                     .linkDistance(30)
                     .size([width, height]);
                 featureNet.innerHTML = '';
+
                 var svg = d3.select(featureNet).append("svg")
                     .attr("width", width)
                     .attr("height", height);
+
                 // assemble network JSON
                 var graph = {
                     nodes: [],
                     links: []
                 };
+
                 // node
                 fscape.dt.parmNum.forEach(function (p) {
                     graph.nodes.push({
@@ -383,7 +413,6 @@ fscape.plot = function (x) { // when ready to do it
                         }
                     })
                 });
-
 
                 force
                     .nodes(graph.nodes)
@@ -459,8 +488,8 @@ fscape.plot = function (x) { // when ready to do it
                 jQuery('.link').css('stroke', '#999');
                 jQuery('.link').css('stroke', '.6')
             };
-            // threshold slider
 
+            // threshold slider
             d3.select('#featureNetSlider').call(
                 d3.slider()
                     .scale(d3.scale.linear()
@@ -485,7 +514,6 @@ fscape.plot = function (x) { // when ready to do it
 };
 
 // fscape.featuremap
-
 fscape.featuremap = function (i, j) {
     // cross filter from hereon
     //cf = crossfilter(fscape.dt.docs)
@@ -493,21 +521,26 @@ fscape.featuremap = function (i, j) {
     var ii = ind.indexOf(i), jj = ind.indexOf(j);
     var fi = fscape.dt.parmNum[i];
     var fj = fscape.dt.parmNum[j];
+
     if (!fscape.dt.dtmemb) { // if the data was not normalized already
         fscape.dt.dtmemb = {}; // distributions
         fscape.dt.parmNum.forEach(function (p) {
             fscape.dt.dtmemb[p] = jmat.memb(fscape.dt.tab[p])
         })
     }
+
     if (!fscape.dt.tabmemb) {
         fscape.dt.tabmemb = {}
     }
+
     if (!fscape.dt.tabmemb[fi]) {
         fscape.dt.tabmemb[fi] = jmat.memb(fscape.dt.tab[fi], fscape.dt.dtmemb[fi])
     }
+
     if (!fscape.dt.tabmemb[fj]) {
         fscape.dt.tabmemb[fj] = jmat.memb(fscape.dt.tab[fj], fscape.dt.dtmemb[fj])
     }
+
     //
     if ($('#featuremapTD > table').length == 0) { // assemblemap
         fscape.dt.n = 20//fscape.dt.docs.length/100  // for a n x n table
@@ -534,11 +567,13 @@ fscape.featuremap = function (i, j) {
         });
         hh += '</table>';
         featuremapTableTD.innerHTML = hh;
+
         var mapTDover = function () {
             featuremapMoreDiv.innerHTML = this.id;
             var qij = JSON.parse('[' + this.id.slice(3).replace('_', ',') + ']').map(function (q) {
                 return q / fscape.dt.n
             });
+
             var vi = jmat.interp1(fscape.dt.dtmemb[fi][1], fscape.dt.dtmemb[fi][0], [qij[0], qij[0] + 1 / fscape.dt.n]);
             var vj = jmat.interp1(fscape.dt.dtmemb[fj][1], fscape.dt.dtmemb[fj][0], [qij[1], qij[1] + 1 / fscape.dt.n]);
             var c = this.style.backgroundColor;
@@ -551,6 +586,7 @@ fscape.featuremap = function (i, j) {
             h += '<p style="background-color:' + c + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
             featuremapMoreDiv.innerHTML = h
         };
+
         $('#featureheatmapTable >>> td').mouseover(mapTDover);
         legendFi.style.transform = "rotate(-90deg)";
         quantileMap.style.visibility = "visible";
@@ -559,24 +595,29 @@ fscape.featuremap = function (i, j) {
     } else {
         fscape.scatterPlot(document.getElementById("2DscatterPlot"), i, j)
     }
+
     // legends
     legendFi.textContent = fi;
     legendFj.textContent = fj;
+
     // calculate densities
     var M = jmat.zeros(fscape.dt.n, fscape.dt.n);
     var N = fscape.dt.n - 1 / fscape.dt.tab[fi].length; // to shave the ceiling
+
     //var tii=jmat.range(0,fscape.dt.n-1)
     //var tjj=jmat.range(0,fscape.dt.n-1)
     var s = fscape.dt.n / (fscape.dt.tabmemb[fi].length); // step increase
     jmat.transpose([fscape.dt.tabmemb[fi], fscape.dt.tabmemb[fj]]).forEach(function (xij) {
         M[Math.floor(xij[0] * N)][Math.floor(xij[1] * N)] += s
     });
+
     // prepare the colormap
     var cmap = jmat.colormap().map(function (ci) {
         return ci.map(function (cij) {
             return Math.round(cij * 255)
         })
     });
+
     var ij = jmat.range(0, fscape.dt.n - 1);
     ij.forEach(function (ti) {
         ij.forEach(function (tj) {
@@ -600,7 +641,6 @@ fscape.featuremap = function (i, j) {
         featuremoreTD.innerHTML = '<hr><p style="background-color:' + c + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p><p style="color:navy">Pearson correlation between <li style="color:navy">' + fi + ' </li><li style="color:navy">' + fj + '</li> corr(' + ii + ',' + jj + ')= ' + Math.round((1 - fscape.dt.cl[1][ii][jj]) * 1000) / 1000 + '</p><p style="background-color:' + c + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>'
     };
 
-
     4
 };
 
@@ -609,6 +649,7 @@ fscape.scatterPlot = function (div0, i, j) {
     if (typeof(div0) == 'string') {
         div0 = document.getElementById(div0)
     }
+
     div0.innerHTML = '';
     var div = document.createElement('div');
     //div.id="lala"
@@ -619,6 +660,7 @@ fscape.scatterPlot = function (div0, i, j) {
     var y = fscape.dt.tab[fj];
     div.style.width = '600px';
     div.style.height = '500px';
+
     var trace0 = {
         mode: 'markers',
         type: 'scatter',
@@ -629,6 +671,7 @@ fscape.scatterPlot = function (div0, i, j) {
         x: x,
         y: y
     };
+
     var layout = {
         //title: 'Quarter 1 Growth',
         xaxis: {
@@ -653,6 +696,7 @@ fscape.scatterPlot = function (div0, i, j) {
         var divZ = document.createElement('div');
         var bt = divZ.innerHTML = '<p><button id="resampleBt" style="color:red">Resample from selected region (under development)</button></p><p id="resampleMsg"></p>';
         div.appendChild(divZ);
+
         resampleBt.onclick = function () {
             var round = function (x) {
                 return Math.round(x * 10000000000) / 10000000000
@@ -680,7 +724,6 @@ fscape.scatterPlot = function (div0, i, j) {
     }
 
 };
-
 
 // ini
 $(document).ready(function () {
