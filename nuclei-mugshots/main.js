@@ -1,7 +1,6 @@
 /**
  * Created by tdiprima.
  */
-log('Hello from mugshots.js');
 
 mugshots = function () {
     log('location: ' + location);
@@ -46,6 +45,8 @@ function buildQueryString(q) {
     var ymin = getQueryVariable('ymin', q);
     var ymax = getQueryVariable('ymax', q);
     var db = getQueryVariable('db', q);
+
+    mugshots.db = db;
 
     // Remember it stops at '='
     // https://falcon.bmi.stonybrook.edu:4500/?limit
@@ -182,8 +183,8 @@ mugshots.fun = function (data, size) {
     var slideHeight = 0;
 
     if (sameCaseId) {
-        var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={' + config.quot + 'case_id' + config.quot + ':' + config.quot + prevCaseId + config.quot + '}';
-        log(url);
+        var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={' + config.quot + 'case_id' + config.quot + ':' + config.quot + prevCaseId + config.quot + '}&db=' + mugshots.db;
+        log(' *** ' + url);
 
         $.ajax({
             url: url,
@@ -199,7 +200,8 @@ mugshots.fun = function (data, size) {
     }
 
     randomMembers.forEach(function (doc) {
-        var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={' + config.quot + 'case_id' + config.quot + ':' + config.quot + doc.provenance.image.case_id + config.quot + '}';
+        var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={' + config.quot + 'case_id' + config.quot + ':' + config.quot + doc.provenance.image.case_id + config.quot + '}&db=' + mugshots.db;
+        log(' *** ' + url);
 
         if (!sameCaseId) {
             $.ajax({
