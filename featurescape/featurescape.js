@@ -186,7 +186,7 @@ fscape.fun = function (data, url) {
     {
         var patient = url.match('TCGA-[^%]+')[0];
         document.getElementById('featureScapeDiv').innerHTML='<span style="color:red">Data not available for patient:</span><br>' + patient;
-        console.log('sorry, charlie!');
+        featureScapeLog.textContent = '';
 
     }
     else {
