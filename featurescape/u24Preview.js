@@ -38,7 +38,7 @@ u24p.buildUI = function (id) { // build User Interface
             var ip = $('input', this)[0];
             var v = parseInt(ip.value);
             var msg = this.parentElement.children[this.parentElement.children.length - 1];
-            if ((v >= 100) & (v <= 10000)) {
+            if ((v >= 100) && (v <= 10000)) {
                 ip.value = v;
                 msg.textContent = ''
             } else {
@@ -55,13 +55,9 @@ u24p.buildUI = function (id) { // build User Interface
 
             var sz = $('input', spSize)[0].value;
 
-            var _static = config.quot + 'provenance.analysis.execution_id' + config.quot + ':' + config.quot + u24p.anexid + config.quot;
+            var _static = '"provenance.analysis.execution_id":"' + u24p.anexid + '"';
             // Yes, we really do need absolute path for this url:
-            var url = config.domain + '/featurescape/?' + u24p.findApi + '?limit=' + sz + '&find={' + config.quot + 'randval' + config.quot + ':{' + config.quot + '$gte' + config.quot + ':' + sp.textContent + '},' + _static + ',' + config.quot + 'provenance.image.case_id' + config.quot + ':' + config.quot + '' + caseId + '' + config.quot + '}&db=' + u24p.db;
-            if (config.mongoUrl)
-            {
-                url = url + '&mongoUrl=' + config.mongoUrl;
-            }
+            var url = config.domain + '/featurescape/?' + u24p.findApi + '?limit=' + sz + '&find={"randval":{"$gte":' + sp.textContent + '},' + _static + ',"provenance.image.case_id":"' + caseId + '"}&db=' + u24p.db;
             window.open(url);
 
         }
@@ -73,21 +69,12 @@ u24p.buildUI = function (id) { // build User Interface
 // ini
 $(document).ready(function () {
     u24p.cases = [];
-    u24p.ftrs = ["NumberOfPixels", "PhysicalSize", "NumberOfPixelsOnBorder", "FeretDiameter", "PrincipalMoments0", "PrincipalMoments1", "Elongation", "Perimeter", "Roundness", "EquivalentSphericalRadius", "EquivalentSphericalPerimeter", "EquivalentEllipsoidDiameter0", "EquivalentEllipsoidDiameter1", "Flatness", "MeanR", "MeanG", "MeanB", "StdR", "StdG", "StdB"];
-
     u24p.findApi = config.findAPI + ':' + config.port + '/';
-    u24p.anexid = config.analysis_execution_id;
+    u24p.anexid = config.default_execution_id;
     u24p.db = config.default_db;
 
-    var url = u24p.findApi + '?limit=38&collection=metadata&find={%22provenance.analysis_execution_id%22:%22' + u24p.anexid + '%22}&db=' + u24p.db
+    var url = u24p.findApi + '?limit=38&collection=metadata&find={"provenance.analysis_execution_id":"' + u24p.anexid + '"}&db=' + u24p.db;
     console.log(url);
-
-    if (config.mongoUrl)
-    {
-        url = url + '&mongoUrl=' + config.mongoUrl;
-        console.log('&mongoUrl=' + config.mongoUrl);
-    }
-
 
     $.ajax({
         url: url,
