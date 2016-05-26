@@ -14,6 +14,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         openHealth.cancer_type = partsOfStr[0];
         openHealth.db = partsOfStr[1];
         openHealth.execution_id = partsOfStr[2];
+
         getTcgaData(openHealth.cancer_type);
     };
 
@@ -330,6 +331,8 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                 diagnosticImagesHeader.textContent = ' Diagnostic Images (...):';
                 tcgaPatients.innerHTML = "";
                 slideImages.innerHTML = "";
+
+                document.getElementById('patientinfo').innerHTML = ss.length + ' slide images for ' + pp.length + ' TCGA patients with ' + openHealth.cancer_type;
 
 
                 openHealth.tcga.resultsPatient = function (x) {
