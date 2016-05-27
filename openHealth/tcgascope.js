@@ -335,8 +335,8 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                 // DATA REFERENCE
                 var tw = 'https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/';
                 document.getElementById('patientinfo').innerHTML = '<strong>Charts display clinical information from TCGA:</strong><br>'
-                    + '<a href="' + tw + openHealth.clinicalFile + '" target="_blank">' + openHealth.tcgaWebsite + openHealth.clinicalFile + '</a><br>'
-                    + '<a href="' + tw + openHealth.biosFile + '" target="_blank">' + openHealth.tcgaWebsite + openHealth.biosFile + '</a><br><br>'
+                    + '<a href="' + tw + openHealth.clinicalFile + '" target="_blank">' + tw + openHealth.clinicalFile + '</a><br>'
+                    + '<a href="' + tw + openHealth.biosFile + '" target="_blank">' + tw + openHealth.biosFile + '</a><br><br>'
                     + '<strong><a href="#anchor">Slides</a></strong> '
                     + 'for ' + pp.length + ' TCGA patients with ' + (openHealth.cancer_type).toUpperCase();
 
