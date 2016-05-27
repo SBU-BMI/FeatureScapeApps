@@ -3,6 +3,7 @@ console.log('fig4.js loaded');
 window.onload = function () {
 
     var url = '';
+    var docs = [];
     if (location.hash.length > 1) {
         url = location.hash.slice(1);
     }
@@ -71,12 +72,18 @@ function getPatientArrayFromUrl(url) {
 
 function doPatients(data, url) {
     var fig4cases = document.getElementById('fig4cases');
-    var patients = getPatientArrayFromUrl(url);
 
-    console.log('wanted ' + patients.length + ' patients');
-    console.log('got ' + data.length + ' patients');
+    var h = '';
+    if (url)
+    {
+        var patients = getPatientArrayFromUrl(url);
+        h = 'Found ' + data.length + ' out of the ' + patients.length + ' patients that were requested:<br>';
+    }
+    else
+    {
+        h = 'Found ' + data.length + ' patients:<br>';
+    }
 
-    var h = 'Found ' + data.length + ' out of the ' + patients.length + ' patients that were requested:<br>';
     var t = '<table id="patientSlideTable"><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">' + h + '</td></tr>';
 
     data.forEach(function (dd) {
@@ -121,6 +128,8 @@ function doFigure4(data) {
             tab[p][i] = xi[p]
         })
     });
+
+    docs = data;
 
     checkData(parms);
 
@@ -332,10 +341,17 @@ function doFigure4(data) {
     };
     survivalPlot();
 
+    docs = data;
+
     // time for cross filter
     var onFiltered = function (parm) {
         //console.log(parm,new Date,gene)
         survivalPlot(parm)
+        var ind = [];
+        var bcr = [];
+        dcStatus.G.all().forEach(function(d,i){if(d.value>0){ind.push(i)}});
+        ind.forEach(function(i){bcr.push(docs[i])});
+        doPatients(bcr);
     };
 
     var cf = crossfilter(data);
@@ -544,6 +560,7 @@ function doFigure4(data) {
     // ready to render
     dc.renderAll();
     $('.dc-chart g.row text').css('fill', 'black');
+
 }
 
 function flatten(data) {
