@@ -2,8 +2,8 @@ console.log('fig4.js loaded');
 
 window.onload = function () {
 
-    var url = '';
-    var docs = [];
+    url = '';
+    docs = [];
     if (location.hash.length > 1) {
         url = location.hash.slice(1);
     }
@@ -74,26 +74,45 @@ function doPatients(data, url) {
     var fig4cases = document.getElementById('fig4cases');
 
     var h = '';
-    if (url)
-    {
+    if (url) {
         var patients = getPatientArrayFromUrl(url);
-        h = 'Found ' + data.length + ' out of the ' + patients.length + ' patients that were requested:<br>';
+        if (patients.length > data.length)
+        {
+            h = 'Found ' + data.length + ' out of the ' + patients.length + ' patients that were requested';
+        }
+        else
+        {
+            h = 'Found ' + data.length + ' patients:';
+        }
+
     }
-    else
-    {
-        h = 'Found ' + data.length + ' patients:<br>';
+    else {
+        h = 'Found ' + data.length + ' patients:';
     }
 
-    var t = '<table id="patientSlideTable"><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">' + h + '</td></tr>';
+    var t = '<table id="patientSlideTable"><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">' + h + '</td></tr><tr><td><em>Click button to view FeatureScape</em></td></tr>';
 
     data.forEach(function (dd) {
-        t += '<tr><td>' + dd.bcr_patient_barcode + '</td></tr>';
+        t += '<tr><td><button onclick="goFeature(this)">' + dd.bcr_patient_barcode + '</button></td></tr>';
     });
     t += '</table>';
 
     fig4cases.innerHTML = t;
 
 }
+
+goFeature = function (x) {
+    var v = 0.95 * Math.random();
+    var textContent = v.toString().slice(0, 5);
+    //var exec = '"provenance.analysis.execution_id":"' + execution_id + '"';
+    //var find = '{"randval":{"$gte":' + textContent + '},' + exec + ',"provenance.image.subject_id":"' + patient[x.textContent]["bcr_patient_barcode"] + '"}&db=' + openHealth.db;
+
+    // FEATURESCAPE
+    var db = url.substring(url.indexOf('db=') + 3);
+    var find = '{"randval":{"$gte":' + textContent + '},"provenance.image.subject_id":"' + x.innerHTML + '"}&db=' + db;
+    var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
+    window.open(fscape);
+};
 
 function doFigure4(data) {
     console.log('loaded ' + data.length + ' records');
@@ -346,11 +365,17 @@ function doFigure4(data) {
     // time for cross filter
     var onFiltered = function (parm) {
         //console.log(parm,new Date,gene)
-        survivalPlot(parm)
+        survivalPlot(parm);
         var ind = [];
         var bcr = [];
-        dcStatus.G.all().forEach(function(d,i){if(d.value>0){ind.push(i)}});
-        ind.forEach(function(i){bcr.push(docs[i])});
+        dcStatus.G.all().forEach(function (d, i) {
+            if (d.value > 0) {
+                ind.push(i)
+            }
+        });
+        ind.forEach(function (i) {
+            bcr.push(docs[i])
+        });
         doPatients(bcr);
     };
 
