@@ -355,7 +355,7 @@ mugshots.draw = function (targetDiv, data, layout) {
     // Write the table to the html div.
     div.appendChild(fragment);
 
-    // Clean hash.
+    // Clear hash.
     location.hash = '';
 
 };

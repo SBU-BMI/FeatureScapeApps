@@ -15,43 +15,17 @@ window.onload = function () {
 
 };
 
-function getData(url)
-{
+function getData(url) {
     $.getJSON(url).then(function (data) {
 
-        if (data.length == 0)
-        {
+        if (data.length == 0) {
             var h = '<span style="color:red">Data not available for patients:</span><br>';
 
-            if (url.indexOf('bcr_patient_barcode') > -1)
-            {
-                var str = url.substring(url.indexOf('bcr_patient_barcode'));
-                if (str.indexOf('%22') > -1)
-                {
-                    str = str.replace(/%22/g, '');
+            var patients = getPatientArrayFromUrl(url);
 
-                }
-
-                if (str.indexOf('[') > -1)
-                {
-                    str = str.substring(str.indexOf('[') + 1, str.indexOf(']'));
-                    //str = str.slice(0, -1);
-                }
-
-                if (str.indexOf(',') > -1)
-                {
-                    var b = [];
-                    b = str.split(',');
-
-                    b.forEach(function (bb) {
-                        h += bb + '<br>';
-                    });
-                }
-                else {
-                    h += str;
-                }
-
-            }
+            patients.forEach(function (bb) {
+                h += bb + '<br>';
+            });
 
             document.getElementById('fig4div').innerHTML = h;
             document.getElementById('dataOrigin').innerHTML = '';
@@ -59,13 +33,62 @@ function getData(url)
         }
         else {
             doFigure4(data);
+            doPatients(data, url);
         }
 
     })
 }
 
-function doFigure4(data)
-{
+function getPatientArrayFromUrl(url) {
+    var patients = [];
+    if (url.indexOf('bcr_patient_barcode') > -1) {
+        var str = url.substring(url.indexOf('bcr_patient_barcode'));
+        if (str.indexOf('%22') > -1) {
+            str = str.replace(/%22/g, '');
+
+        }
+
+        if (str.indexOf('"') > -1) {
+            str = str.replace(/"/g, '');
+        }
+
+        if (str.indexOf('[') > -1) {
+            str = str.substring(str.indexOf('[') + 1, str.indexOf(']'));
+            //str = str.slice(0, -1);
+        }
+
+        if (str.indexOf(',') > -1) {
+            patients = str.split(',');
+        }
+        else {
+            patients[0] = str;
+        }
+
+    }
+
+    return patients;
+}
+
+function doPatients(data, url) {
+    var fig4cases = document.getElementById('fig4cases');
+    var patients = getPatientArrayFromUrl(url);
+
+    console.log('wanted ' + patients.length + ' patients');
+    console.log('got ' + data.length + ' patients');
+
+    var h = 'Found ' + data.length + ' out of the ' + patients.length + ' patients that were requested:<br>';
+    var t = '<table id="patientSlideTable"><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">' + h + '</td></tr>';
+
+    data.forEach(function (dd) {
+        t += '<tr><td>' + dd.bcr_patient_barcode + '</td></tr>';
+    });
+    t += '</table>';
+
+    fig4cases.innerHTML = t;
+
+}
+
+function doFigure4(data) {
     console.log('loaded ' + data.length + ' records');
 
     var msg = function (txt, clr) {
