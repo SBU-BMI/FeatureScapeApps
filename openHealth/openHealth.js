@@ -1,8 +1,7 @@
 console.log('tcgascope.js loaded');
-openHealth.tcgaWebsite = 'https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/';
 
 openHealth.require(config.domain + '/openHealth/tcga.js', function () {
-
+    openHealth.tcgaWebsite = 'https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/';
     openHealthJob.innerHTML = selectBox() + '<div id="openHealthJobMsg" style="color:red">processing ...</div><div id="openHealthJobDC"></div>';
 
     tumorChanged = function (evt) {
