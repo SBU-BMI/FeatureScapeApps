@@ -1,7 +1,6 @@
 console.log('tcgascope.js loaded');
 
 openHealth.require(config.domain + '/openHealth/tcga.js', function () {
-
     openHealthJob.innerHTML = selectBox() + '<div id="openHealthJobMsg" style="color:red">processing ...</div><div id="openHealthJobDC"></div>';
 
     tumorChanged = function (evt) {
@@ -9,6 +8,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
         console.log('*** tumorChanged ***');
         console.log(opt);
+        window.location.hash = '';
 
         var partsOfStr = opt.split(',');
         openHealth.cancer_type = partsOfStr[0];
@@ -72,7 +72,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             dx = cancer_type + 'Dx';
 
             if (!x) {
-                var str = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + filename + ".txt";
+                var str = openHealth.biosFile = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + filename + ".txt";
                 openHealth.tcga.getTable(str,
                     function (x) {
                         openHealth.tcga.dt[filename] = x;
@@ -106,7 +106,8 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         localforage.getItem(clinicalFile, function (x) {
 
             if (!x) {
-                var str = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + clinicalFile + ".txt";
+                var str = openHealth.clinicalFile = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + clinicalFile + ".txt";
+
                 openHealth.tcga.getTable(str,
                     function (x) {
                         openHealth.tcga.dt[clinicalFile] = x;
@@ -133,16 +134,14 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
     function drawGraphs(cancer_type, clinical_patient, biospecimen_slide, xxxDocs, xxxTab, xxxDx) {
 
         // Extract AGE
-        if (openHealth.tcga.dt[clinical_patient].age_at_initial_pathologic_diagnosis != null)
-        {
+        if (openHealth.tcga.dt[clinical_patient].age_at_initial_pathologic_diagnosis != null) {
             openHealth.tcga.dt[clinical_patient].age = openHealth.tcga.dt[clinical_patient].age_at_initial_pathologic_diagnosis.map(function (xi) {
                 return parseInt(xi)
             });
 
         }
 
-        if (openHealth.tcga.dt[clinical_patient].age_at_diagnosis != null)
-        {
+        if (openHealth.tcga.dt[clinical_patient].age_at_diagnosis != null) {
             openHealth.tcga.dt[clinical_patient].age = openHealth.tcga.dt[clinical_patient].age_at_diagnosis.map(function (xi) {
                 return parseInt(xi)
             });
@@ -235,7 +234,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
             openHealthJobDC.innerHTML = '<table cellpadding="10px"><tr><td style="vertical-align:top"><table><tr><td style="vertical-align:top"><div>% Necrotic Cells:</div><div id="percent_necrosis"></div><div>% Tumor Nuclei:</div><div id="percent_tumor_nuclei"></div><div>Location:</div><div id="section_location"></div></td><td style="vertical-align:top"><div>% Tumor Cells:</div><div id="percent_tumor_cells"></div><div>% Lymphocyte Infiltration:</div><div id="percent_lymphocyte_infiltration"></div><div>Race:</div><div id="race"></div><div>Gender:</div><div id="gender"></div></td><td style="vertical-align:top"><div>% Stromal Cells:</div><div id="percent_stromal_cells"></div>'
                 + ks + '<div>% Monocyte Infiltration:</div><div id="percent_monocyte_infiltration"></div><div>% Neutrophil Infiltration:</div><div id="percent_neutrophil_infiltration"></div></td></tr></table></td><td style="vertical-align:top"><h3>' + (openHealth.cancer_type).toUpperCase() + ' Tumor progression</h3><div id="tumorProgression"></div><b>Legend</b>: '
-                + ks1 + ' diameter indicates number of images</td></tr></table><table><tr><td style="vertical-align:top"><table id="patientSlideTable"><thead><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">TCGA patients:</td><td id="diagnosticImagesHeader" style="color:maroon;font-weight:bold">Diagnostic Images:</td></tr></thead><tbody id="patientSlideTableBody"></tbody></table></td><td id="moreInfo" style="vertical-align:top"></td></tr></table><table id="hiddenTable" hidden=true><tr><td style="vertical-align:top"><div id="tcgaPatientsHeader_">TCGA patients:</div><div id="tcgaPatients"></div></td><td style="vertical-align:top"><div id="slideImagesHeader">Slide Images:</div><div id="slideImages"></div></td><td style="vertical-align:top"><div id="diagnosticImagesHeader_">Diagnostic Images:</div><div id="diagnosticImages"></div></td><td style="vertical-align:top"><div id="buttonResults"></div></td></tr></table>';
+                + ks1 + ' diameter indicates number of images</td></tr></table><table><tr><td style="vertical-align:top"><a name="anchor"></a><table id="patientSlideTable"><thead><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">TCGA patients:</td><td id="diagnosticImagesHeader" style="color:maroon;font-weight:bold">Diagnostic Images:</td></tr></thead><tbody id="patientSlideTableBody"></tbody></table></td><td id="moreInfo" style="vertical-align:top"></td></tr></table><table id="hiddenTable" hidden=true><tr><td style="vertical-align:top"><div id="tcgaPatientsHeader_">TCGA patients:</div><div id="tcgaPatients"></div></td><td style="vertical-align:top"><div id="slideImagesHeader">Slide Images:</div><div id="slideImages"></div></td><td style="vertical-align:top"><div id="diagnosticImagesHeader_">Diagnostic Images:</div><div id="diagnosticImages"></div></td><td style="vertical-align:top"><div id="buttonResults"></div></td></tr></table>';
 
             var docs = openHealth.tcga.dt[xxxDocs];
 
@@ -248,6 +247,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                 if (!openHealth.tcga.dt[xxxDx]) {
 
                     var url = config.findAPI + ':' + config.port + '/?limit=1000&collection=metadata&find={"provenance.analysis_execution_id":"' + openHealth.execution_id + '"}&project={"_id":0,"image.subjectid":1,"image.caseid":1}&db=' + openHealth.db;
+                    console.log(url);
 
                     $.ajax({
                         url: url,
@@ -332,8 +332,13 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                 tcgaPatients.innerHTML = "";
                 slideImages.innerHTML = "";
 
-                document.getElementById('patientinfo').innerHTML = ss.length + ' slide images for ' + pp.length + ' TCGA patients with ' + openHealth.cancer_type;
-
+                // DATA REFERENCE
+                var tw = 'https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/';
+                document.getElementById('patientinfo').innerHTML = '<strong>Charts display clinical information from TCGA:</strong><br>'
+                    + '<a href="' + tw + openHealth.clinicalFile + '" target="_blank">' + openHealth.tcgaWebsite + openHealth.clinicalFile + '</a><br>'
+                    + '<a href="' + tw + openHealth.biosFile + '" target="_blank">' + openHealth.tcgaWebsite + openHealth.biosFile + '</a><br><br>'
+                    + '<strong><a href="#anchor">Slides</a></strong> '
+                    + 'for ' + pp.length + ' TCGA patients with ' + (openHealth.cancer_type).toUpperCase();
 
                 openHealth.tcga.resultsPatient = function (x) {
 
@@ -341,25 +346,21 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
                     var v = 0.95 * Math.random();
                     var textContent = v.toString().slice(0, 5);
-                    var exec = config.quot + 'provenance.analysis.execution_id' + config.quot + ':' + config.quot + openHealth.execution_id + config.quot;
-                    var find = '{' + config.quot + 'randval' + config.quot + ':{' + config.quot + '$gte' + config.quot + ':' + textContent + '},' + exec + ',' + config.quot + 'provenance.image.subject_id' + config.quot + ':' + config.quot + patient[x.textContent]["bcr_patient_barcode"] + config.quot + '}&db=' + openHealth.db;
-
+                    var exec = '"provenance.analysis.execution_id":"' + openHealth.execution_id + '"';
+                    var find = '{"randval":{"$gte":' + textContent + '},' + exec + ',"provenance.image.subject_id":"' + patient[x.textContent]["bcr_patient_barcode"] + '"}&db=' + openHealth.db;
                     // FEATURESCAPE
                     var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
-                    if (config.mongoUrl) {
-                        fscape = fscape + '&mongoUrl=' + config.mongoUrl;
-                    }
 
                     // FIGURE4
                     //bcr_patient_barcode: { $in: [<value1>, <value2>, ... <valueN> ] }
                     var ppp = '';
                     pp.forEach(function (p) {
-                        ppp += '%22' + p + '%22,';
+                        ppp += '"' + p + '",';
 
                     });
                     ppp = ppp.slice(0, -1);
 
-                    var fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port + '?collection=patients&limit=' + pp.length + '&find={%22bcr_patient_barcode%22:{%22$in%22:[' +  ppp  + ']}}&db=' + openHealth.db;
+                    var fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port + '?collection=patients&limit=' + pp.length + '&find={"bcr_patient_barcode":{"$in":[' + ppp + ']}}&db=' + openHealth.db;
 
                     moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="feature landscape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="fig4 (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
 
@@ -645,7 +646,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             document.getElementById('openHealth').className = "";
             openHealthJobMsg.textContent = ""
 
-        })
+        });
 
     }
 
