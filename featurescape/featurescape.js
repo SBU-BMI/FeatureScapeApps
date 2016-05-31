@@ -182,9 +182,10 @@ fscape.cleanUI = function () { // and create fscapeAnalysisDiv
 
 fscape.fun = function (data, url) {
 
+    var patient = url.match('TCGA-[^%]+')[0];
+
     if (data.length == 0)
     {
-        var patient = url.match('TCGA-[^%]+')[0];
         document.getElementById('featureScapeDiv').innerHTML='<span style="color:red">Data not available for patient:</span><br>' + patient;
         featureScapeLog.textContent = '';
 
@@ -209,7 +210,8 @@ fscape.fun = function (data, url) {
         });
 
         var xx = nv;
-        fscape.log(xx.length + ' entries sampled from ' + url, 'blue');
+        //fscape.log(xx.length + ' entries sampled from ' + url, 'blue');
+        fscape.log(xx.length + ' sets of features sampled from <strong>' + patient + '</strong>', 'blue');
         fscape.cleanUI();
 
         fscape.plot(xx)
