@@ -12,7 +12,6 @@ window.onload = function () {
         url = 'http://quip1.uhmc.sunysb.edu:4000?collection=patients&limit=522&find={}&db=u24_luad';
     }
     console.log('url', url);
-
     getData(url);
 
 };
@@ -77,12 +76,10 @@ function doPatients(data, url) {
     var h = '';
     if (url) {
         var patients = getPatientArrayFromUrl(url);
-        if (patients.length > data.length)
-        {
+        if (patients.length > data.length) {
             h = 'Found ' + data.length + ' out of the ' + patients.length + ' patients that were requested';
         }
-        else
-        {
+        else {
             h = 'Found ' + data.length + ' patients:';
         }
 
@@ -709,8 +706,11 @@ function showInfo(data) {
         }
     }
 
-    document.getElementById('patientInfo').innerHTML = 'Morphology features extracted from image analysis of histology whole slide images for ' + data.length + ' ' + tumor + ' Patients of The Cancer Genome Atlas.';
-    document.getElementById('repositoryInfo').innerHTML = 'the <a href="https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/' + tumor1 + '/bcr/biotab/clin/" target="_blank">TCGA repository</a>.';
+    document.getElementById('patientInfo').innerHTML = 'Morphology features extracted from image analysis of histology whole slide images for '
+        + data.length + ' ' + tumor + ' Patients of The Cancer Genome Atlas.';
+
+    document.getElementById('repositoryInfo').innerHTML = 'Genomic data compiled with <a href="http://www.cbioportal.org/" target="_blank">MSKCC cBioPortal</a> tool, demographic and clinical data from '
+        + 'the <a href="https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/' + tumor1 + '/bcr/biotab/clin/" target="_blank">TCGA repository</a>.';
 
 }
 
