@@ -684,7 +684,7 @@ function setupDimensionalChart(clinical_patient) {
     html += '<div id="percent_neutrophil_infiltration"></div></td>';
     html += '</tr>';
     html += '</table></td>';
-    html += '<td style="vertical-align:top"><h3>GBM Tumor progression</h3>';
+    html += '<td style="vertical-align:top"><h3>' + (openHealth.cancer_type).toUpperCase() + ' Tumor progression</h3>';
     html += '<div id="tumorProgression"></div>';
     html += '<b>Legend</b>: ' + ks1 + ' diameter indicates number of images</td>';
     html += '</tr>';
