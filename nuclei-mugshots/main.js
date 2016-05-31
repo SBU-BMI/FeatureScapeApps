@@ -18,19 +18,14 @@ mugshots = function () {
     else {
         // Default data url
         var rand = Math.random();
-
-        var _static = config.quot + 'provenance.analysis.execution_id' + config.quot + ':' + config.quot + config.analysis_execution_id + config.quot;
-        url = mugshots.findApi + "?collection=objects&limit=12&find={" + _static + ',' + config.quot + "randval" + config.quot + ":{" + config.quot + "$gte" + config.quot + ":" + rand + "}}";
-        if (config.mongoUrl) {
-            url = url + '&mongoUrl=' + config.mongoUrl;
-
-        }
+        var _static = config.quot + 'provenance.analysis.execution_id":"' + config.analysis_execution_id + '"';
+        mugshots.db = config.default_db;
+        url = mugshots.findApi + '?collection=objects&limit=12&find={' + _static + ',"randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
         log('*** Random nuclei were selected for you. ***');
 
     }
 
     log('url: ' + url);
-
     mugshots.loadData(url);
 };
 
@@ -60,7 +55,6 @@ function buildQueryString(q) {
     find = find.substring(0, find.length - 1);
 
     // Build our "find"
-
     var range_a = config.quot + '$and' + config.quot + ':[{'
         + config.quot + 'properties.scalar_features' + config.quot + ':{'
         + config.quot + '$elemMatch' + config.quot + ':{'
@@ -125,15 +119,15 @@ mugshots.loadData = function (url) {
     /*
      $.getJSON(url)
      .done(function (data) {
-     log("Got JSON Data");
+     //log("Got JSON Data");
      //document.write(JSON.stringify(data));
      mugshots.draw('mugshotDiv', data);
 
      })
      .error(function (jqXHR, textStatus, error) {
-     log('jqXHR.responseText: ' + jqXHR.responseText);
+     //log('jqXHR.responseText: ' + jqXHR.responseText);
      var err = textStatus + ", " + error;
-     log("Request Failed: " + err);
+     //log("Request Failed: " + err);
      });
      // .fail in jQuery 1.8
      */
@@ -166,12 +160,12 @@ mugshots.fun = function (data, size) {
     var newData = [];
 
     var randomMembers = getRandomSubarrayPartialShuffle(data, size);
-    log(randomMembers);
+    //log(randomMembers);
 
     var sameCaseId = true;
     var prevCaseId = '';
     randomMembers.forEach(function (doc) {
-        console.log(doc);
+        
         if (prevCaseId != '' && prevCaseId != doc.provenance.image.case_id) {
             sameCaseId = false;
         }
@@ -184,7 +178,6 @@ mugshots.fun = function (data, size) {
 
     if (sameCaseId) {
         var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={' + config.quot + 'case_id' + config.quot + ':' + config.quot + prevCaseId + config.quot + '}&db=' + mugshots.db;
-        log(' *** ' + url);
 
         $.ajax({
             url: url,
@@ -201,7 +194,7 @@ mugshots.fun = function (data, size) {
 
     randomMembers.forEach(function (doc) {
         var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={' + config.quot + 'case_id' + config.quot + ':' + config.quot + doc.provenance.image.case_id + config.quot + '}&db=' + mugshots.db;
-        log(' *** ' + url);
+        //log(' *** ' + url);
 
         if (!sameCaseId) {
             $.ajax({
