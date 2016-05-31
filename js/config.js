@@ -8,8 +8,8 @@ var config = {
     port: 4000,
     quipUrl: 'http://quip.bmi.stonybrook.edu/camicroscope_latest/osdCamicroscope.php',
     reserve4Url: 'http://reserve4.informatics.stonybrook.edu/dev1/osdCamicroscope.php',
-    analysis_execution_id: 'luad:20160215',
-    default_execution_id: 'luad:20160215',
+    analysis_execution_id: 'luad:bg:20160520',
+    default_execution_id: 'luad:bg:20160520',
     default_db: 'u24_luad',    
     imgcoll: 'images',
     quot: "%22"
