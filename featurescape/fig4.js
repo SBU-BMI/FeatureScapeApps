@@ -11,6 +11,7 @@ window.onload = function () {
         // Default
         url = 'http://quip1.uhmc.sunysb.edu:4000?collection=patients&limit=522&find={}&db=u24_luad';
     }
+    console.log('url', url);
 
     getData(url);
 
