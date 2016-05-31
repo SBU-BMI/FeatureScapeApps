@@ -18,7 +18,7 @@ mugshots = function () {
     else {
         // Default data url
         var rand = Math.random();
-        var _static = config.quot + 'provenance.analysis.execution_id":"' + config.analysis_execution_id + '"';
+        var _static = '"provenance.analysis.execution_id":"' + config.analysis_execution_id + '"';
         mugshots.db = config.default_db;
         url = mugshots.findApi + '?collection=objects&limit=12&find={' + _static + ',"randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
         log('*** Random nuclei were selected for you. ***');
@@ -55,47 +55,10 @@ function buildQueryString(q) {
     find = find.substring(0, find.length - 1);
 
     // Build our "find"
-    var range_a = config.quot + '$and' + config.quot + ':[{'
-        + config.quot + 'properties.scalar_features' + config.quot + ':{'
-        + config.quot + '$elemMatch' + config.quot + ':{'
-        + config.quot + 'nv' + config.quot + ':{'
-        + config.quot + '$elemMatch' + config.quot + ':{'
-        + config.quot + 'name' + config.quot + ':' + config.quot + fx + config.quot + ','
-        + config.quot + 'value' + config.quot + ':{'
-        + config.quot + '$gte' + config.quot + ':' + xmin +
-        '}}}}}},{'
-        + config.quot + 'properties.scalar_features' + config.quot + ':{'
-        + config.quot + '$elemMatch' + config.quot + ':{'
-        + config.quot + 'nv' + config.quot + ':{'
-        + config.quot + '$elemMatch' + config.quot + ':{'
-        + config.quot + 'name' + config.quot + ':' + config.quot + fx + config.quot + ','
-        + config.quot + 'value' + config.quot + ':{'
-        + config.quot + '$lte' + config.quot + ':' + xmax +
-        '}}}}}}]';
+    var range_a = '"$and":[{' + '"properties.scalar_features":{' + '"$elemMatch":{' + '"nv":{' + '"$elemMatch":{' + '"name":"' + fx + '",' + '"value":{' + '"$gte":' + xmin + '}}}}}},{' + '"properties.scalar_features":{' + '"$elemMatch":{' + '"nv":{' + '"$elemMatch":{' + '"name":"' + fx + '",' + '"value":{' + '"$lte":' + xmax + '}}}}}}]';
+    var range_b = '"$and":[{' + '"properties.scalar_features":{' + '"$elemMatch":{' + '"nv":{' + '"$elemMatch":{' + '"name":"' + fy + '",' + '"value":{' + '"$gte":' + ymin + '}}}}}},{' + '"properties.scalar_features":{' + '"$elemMatch":{' + '"nv":{' + '"$elemMatch":{' + '"name":"' + fy + '",' + '"value":{' + '"$lte":' + ymax + '}}}}}}]';
 
-    var range_b = config.quot + '$and' + config.quot + ':[{'
-        + config.quot + 'properties.scalar_features' + config.quot + ':{'
-        + config.quot + '$elemMatch' + config.quot + ':{'
-        + config.quot + 'nv' + config.quot + ':{'
-        + config.quot + '$elemMatch' + config.quot + ':{'
-        + config.quot + 'name' + config.quot + ':' + config.quot + fy + config.quot + ','
-        + config.quot + 'value' + config.quot + ':{'
-        + config.quot + '$gte' + config.quot + ':' + ymin +
-        '}}}}}},{'
-        + config.quot + 'properties.scalar_features' + config.quot + ':{'
-        + config.quot + '$elemMatch' + config.quot + ':{'
-        + config.quot + 'nv' + config.quot + ':{'
-        + config.quot + '$elemMatch' + config.quot + ':{'
-        + config.quot + 'name' + config.quot + ':' + config.quot + fy + config.quot + ','
-        + config.quot + 'value' + config.quot + ':{'
-        + config.quot + '$lte' + config.quot + ':' + ymax +
-        '}}}}}}]';
-
-    var myUrl = base + '&find=' + find + ',' + config.quot + '$and' + config.quot + ':[{' + range_a + '},{' + range_b + '}]}';
-    if (config.mongoUrl) {
-        myUrl = myUrl + '&mongoUrl=' + config.mongoUrl;
-
-    }
+    var myUrl = base + '&find=' + find + ',"$and":[{' + range_a + '},{' + range_b + '}]}';
 
     if (db) {
         myUrl = myUrl + '&db=' + db;
@@ -165,7 +128,7 @@ mugshots.fun = function (data, size) {
     var sameCaseId = true;
     var prevCaseId = '';
     randomMembers.forEach(function (doc) {
-        
+
         if (prevCaseId != '' && prevCaseId != doc.provenance.image.case_id) {
             sameCaseId = false;
         }
