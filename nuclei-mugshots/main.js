@@ -12,6 +12,8 @@ mugshots = function () {
         mugshots.n = getQueryVariable('n', hash);
         mugshots.m = getQueryVariable('m', hash);
 
+        thisisrandom = false;
+
         url = buildQueryString(hash);
 
     }
@@ -22,7 +24,7 @@ mugshots = function () {
         mugshots.db = config.default_db;
         url = mugshots.findApi + '?collection=objects&limit=12&find={' + _static + ',"randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
         log('*** Random nuclei were selected for you. ***');
-
+        thisisrandom = true;
     }
 
     log('url: ' + url);
@@ -140,7 +142,7 @@ mugshots.fun = function (data, size) {
     var slideHeight = 0;
 
     if (sameCaseId) {
-        var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={' + config.quot + 'case_id' + config.quot + ':' + config.quot + prevCaseId + config.quot + '}&db=' + mugshots.db;
+        var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + prevCaseId + '"}&db=' + mugshots.db;
 
         $.ajax({
             url: url,
@@ -155,8 +157,10 @@ mugshots.fun = function (data, size) {
 
     }
 
+    var h = '';
     randomMembers.forEach(function (doc) {
-        var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={' + config.quot + 'case_id' + config.quot + ':' + config.quot + doc.provenance.image.case_id + config.quot + '}&db=' + mugshots.db;
+        var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + doc.provenance.image.case_id + '"}&db=' + mugshots.db;
+        h += doc.provenance.image.case_id + '<br>';
         //log(' *** ' + url);
 
         if (!sameCaseId) {
@@ -182,6 +186,23 @@ mugshots.fun = function (data, size) {
             slideHeight: slideHeight
         })
     });
+
+    var div = document.getElementById('patientInfo');
+    if (thisisrandom) {
+        div.innerHTML = 'Displaying ' + newData.length + ' nuclear images from random caseIDs:<br>' + h;
+    }
+    else {
+        var fx = getQueryVariable('fx', location.hash);
+        var xmin = getQueryVariable('xmin', location.hash);
+        var xmax = getQueryVariable('xmax', location.hash);
+        var fy = getQueryVariable('fy', location.hash);
+        var ymin = getQueryVariable('ymin', location.hash);
+        var ymax = getQueryVariable('ymax', location.hash);
+        div.innerHTML = 'Displaying ' + newData.length + ' nuclear images having morphologic ranges selected from caseID <strong>' + prevCaseId + '</strong>:<br>'
+            + fx + ' between ' + xmin + ' and ' + xmax + '<br>'
+            + fy + ' between ' + ymin + ' and ' + ymax;
+
+    }
 
     return newData;
 
@@ -218,6 +239,7 @@ mugshots.draw = function (targetDiv, data, layout) {
     }
     else {
         data = mugshots.fun(data, size);
+
     }
 
     var div = document.getElementById(targetDiv);
@@ -228,7 +250,6 @@ mugshots.draw = function (targetDiv, data, layout) {
 
     var tbl = document.createElement('table');
     fragment.appendChild(tbl);
-
 
     var ind = 0;
     for (var i = 0; i < tableRows; i++) {
@@ -261,6 +282,7 @@ mugshots.draw = function (targetDiv, data, layout) {
             obj.h = Math.round(obj.h);
 
             // IIIF Image Request URI Syntax
+            // TODO: server = 'quip1.uhmc.sunysb.edu'
             var scheme = 'http',
                 server = 'quip.bmi.stonybrook.edu',
                 prefix = 'fastcgi-bin/iipsrv.fcgi?iiif=',
