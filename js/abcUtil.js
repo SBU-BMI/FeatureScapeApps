@@ -3,13 +3,13 @@
  */
 abcUtil = {
 
-    selectBox: function (url) {
+    selectBox: function (trace, globalObject) {
         // Dropdown menu
-        var selectTumorHTML = '<h3 style="color:navy">';
-        selectTumorHTML += 'Tumor Type: <select onchange="tumorChanged(this)" style="font-color:navy;background-color:silver;font-size:large" id="selectTumor">';
+        var selectTumorHTML = '<h3 style="color:' + trace.font_color + '">';
+        selectTumorHTML += trace.text + ': <select onchange="' + trace.onchange + '" style="font-color:' + trace.font_color + ';background-color:' + trace.bg_color + ';font-size:' + trace.font_size + '" id="' + trace.id + '">';
 
         $.ajax({
-            url: url,
+            url: trace.url,
             async: false,
             dataType: 'json',
             success: function (arr) {
@@ -18,11 +18,11 @@ abcUtil = {
                     var value = tm + ',' + item.db + ',' + item.execution_id;
                     var attr = '';
 
-                    if (!openHealth.cancer_type) {
-                        if (tm === 'luad') {
-                            openHealth.db = item.db;
-                            openHealth.execution_id = item.execution_id;
-                            openHealth.cancer_type = item.cancer_type;
+                    if (!globalObject.cancer_type) {
+                        if (tm === trace.selected) {
+                            globalObject.db = item.db;
+                            globalObject.execution_id = item.execution_id;
+                            globalObject.cancer_type = item.cancer_type;
                             attr = 'selected';
                         }
                     }
