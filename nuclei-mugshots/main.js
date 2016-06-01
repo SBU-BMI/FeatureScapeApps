@@ -20,7 +20,7 @@ mugshots = function () {
     else {
         // Default data url
         var rand = Math.random();
-        var _static = '"provenance.analysis.execution_id":"' + config.analysis_execution_id + '"';
+        var _static = '"provenance.analysis.execution_id":"' + config.default_execution_id + '"';
         mugshots.db = config.default_db;
         url = mugshots.findApi + '?collection=objects&limit=12&find={' + _static + ',"randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
         log('*** Random nuclei were selected for you. ***');

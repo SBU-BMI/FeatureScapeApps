@@ -9,7 +9,6 @@ var config = {
     //quipUrl: 'http://quip.bmi.stonybrook.edu/camicroscope_latest/osdCamicroscope.php',
     quipUrl: 'http://quip1.uhmc.sunysb.edu/camicroscope/osdCamicroscope.php',
     reserve4Url: 'http://reserve4.informatics.stonybrook.edu/dev1/osdCamicroscope.php',
-    analysis_execution_id: 'luad:bg:20160520',
     default_execution_id: 'luad:bg:20160520',
     default_db: 'u24_luad',    
     imgcoll: 'images',

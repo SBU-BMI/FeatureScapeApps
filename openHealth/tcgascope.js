@@ -3,21 +3,8 @@ console.log('tcgascope.js loaded');
 
 openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
-    var trace = {
-        url: config.findAPI + ':' + config.port + '/?limit=12&collection=metadata&find={}&db=u24_meta',
-        id: 'selectTumor',
-        onchange: 'tumorChanged(this)',
-        font_color: 'navy',
-        bg_color: 'silver',
-        font_size: 'large',
-        text: 'Tumor Type',
-        selected: 'luad'
-    };
+    selectObject = trace = {};
 
-    selectObject = {};
-    //selectObject.cancer_type = openHealth.cancer_type;
-    
-    
     openHealthJob.innerHTML = abcUtil.selectBox(trace, selectObject)
         + '<div id="openHealthJobMsg" style="color:red">processing ...</div><div id="openHealthJobDC"></div>';
 
