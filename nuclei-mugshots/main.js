@@ -84,21 +84,6 @@ function getQueryVariable(variable, queryString) {
 }
 
 mugshots.loadData = function (url) {
-    /*
-     $.getJSON(url)
-     .done(function (data) {
-     //log("Got JSON Data");
-     //document.write(JSON.stringify(data));
-     mugshots.draw('mugshotDiv', data);
-
-     })
-     .error(function (jqXHR, textStatus, error) {
-     //log('jqXHR.responseText: ' + jqXHR.responseText);
-     var err = textStatus + ", " + error;
-     //log("Request Failed: " + err);
-     });
-     // .fail in jQuery 1.8
-     */
     $.ajax({
         url: url,
         async: true,
@@ -285,7 +270,6 @@ mugshots.draw = function (targetDiv, data, layout) {
             obj.h = Math.round(obj.h);
 
             // IIIF Image Request URI Syntax
-            // TODO: server = 'quip1.uhmc.sunysb.edu'
             var scheme = 'http',
                 server = 'quip.bmi.stonybrook.edu',
                 prefix = 'fastcgi-bin/iipsrv.fcgi?iiif=',
@@ -294,8 +278,6 @@ mugshots.draw = function (targetDiv, data, layout) {
                 rotation = '0',
                 quality = 'default',
                 format = 'jpg';
-
-            var quipUrl = config.quipUrl + '?tissueId=';
 
             var canvas = document.createElement('canvas');
             canvas.width = 150;
@@ -313,7 +295,7 @@ mugshots.draw = function (targetDiv, data, layout) {
             var uri = scheme + "://" + server + "/" + prefix + data[ind].identifier + "/" + region + "/" + size + "/" + rotation + "/" + quality + "." + format;
 
             var link = document.createElement('a');
-            link.setAttribute("href", quipUrl + data[ind].caseid + "&x=" + obj.x + "&y=" + obj.y);
+            link.setAttribute("href", config.quipUrl + '?tissueId=' + data[ind].caseid + "&cancerType=" + (mugshots.db).substring(4) + "&x=" + obj.x + "&y=" + obj.y);
             link.setAttribute("target", "_blank");
             var col = document.createElement('td');
 

@@ -22,7 +22,11 @@ abcUtil = {
 
         // Dropdown menu
         var selectTumorHTML = '<h3 style="color:' + trace.font_color + '">';
-        selectTumorHTML += trace.text + ': <select onchange="' + trace.onchange + '" style="font-color:' + trace.font_color + ';background-color:' + trace.bg_color + ';font-size:' + trace.font_size + '" id="' + trace.id + '">';
+        selectTumorHTML += trace.text
+            + ': <select onchange="' + trace.onchange
+            + '" style="font-color:' + trace.font_color
+            + ';background-color:' + trace.bg_color
+            + ';font-size:' + trace.font_size + '" id="' + trace.id + '">';
 
         $.ajax({
             url: trace.url,
@@ -43,8 +47,14 @@ abcUtil = {
                         }
                     }
 
-                    selectTumorHTML += '<option value="' + value + '" ' + attr + '>'
+                    /*
+                    selectTumorHTML += '<option disabled>execution_id ' + item.execution_id + '</option>';
+                    selectTumorHTML += '<option value="' + value + '" ' + attr + '>&nbsp;&nbsp;'
                         + tm.toUpperCase() + ' - ' + item.name + '</option>';
+                    */
+
+                    selectTumorHTML += '<option value="' + value + '" ' + attr + '>'
+                        + tm.toUpperCase() + ' - ' + item.name + ' - ' + item.execution_id + '</option>';
 
                 });
             }
