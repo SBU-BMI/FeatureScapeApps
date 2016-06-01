@@ -2,6 +2,22 @@ console.log('fig4.js loaded');
 
 window.onload = function () {
 
+    selectObject = trace = {};
+    selectDiv = document.getElementById('selectDiv');
+    selectDiv.innerHTML = abcUtil.selectBox(trace, selectObject);
+
+    tumorChanged = function (evt) {
+        var opt = evt.selectedOptions[0].value;
+        var partsOfStr = opt.split(',');
+
+        selectObject.cancer_type = partsOfStr[0];
+        selectObject.db = partsOfStr[1];
+        selectObject.execution_id = partsOfStr[2];
+        url = 'http://quip1.uhmc.sunysb.edu:4000?collection=patients&limit=1000&find={}&db=' + selectObject.db;
+
+        getData(url);
+    };
+
     url = '';
     docs = [];
     if (location.hash.length > 1) {
@@ -9,7 +25,7 @@ window.onload = function () {
     }
     else {
         // Default
-        url = 'http://quip1.uhmc.sunysb.edu:4000?collection=patients&limit=522&find={}&db=u24_luad';
+        url = 'http://quip1.uhmc.sunysb.edu:4000?collection=patients&limit=1000&find={}&db=u24_luad';
     }
     console.log('url', url);
     getData(url);
@@ -17,20 +33,24 @@ window.onload = function () {
 };
 
 function getData(url) {
+
     $.getJSON(url).then(function (data) {
 
         if (data.length == 0) {
-            var h = '<span style="color:red">Data not available for patients:</span><br>';
-
+            var h = '<span style="color:red;font-weight:bold;">Data not available';
             var patients = getPatientArrayFromUrl(url);
 
-            patients.forEach(function (bb) {
-                h += bb + '<br>';
-            });
-
-            document.getElementById('fig4div').innerHTML = h;
-            document.getElementById('dataOrigin').innerHTML = '';
-
+            if (patients.length == 0) {
+                h += '</span><br>';
+                mmsg(h);
+            }
+            else {
+                h += ' for patients:</span><br>';
+                patients.forEach(function (bb) {
+                    h += bb + '<br>';
+                });
+                mmsg(h);
+            }
         }
         else {
             doFigure4(data);
@@ -38,6 +58,23 @@ function getData(url) {
         }
 
     })
+}
+
+function mmsg(h) {
+    var a = document.getElementById('fig4msg');
+    a.innerHTML = h;
+
+    a = document.getElementById('patientInfo');
+    a.innerHTML = '';
+    a = document.getElementById('repositoryInfo');
+    a.innerHTML = '';
+
+    a = document.getElementById('fig4cases');
+    a.innerHTML = '';
+
+    a = document.getElementById('fig4div');
+    a.innerHTML = '';
+
 }
 
 function getPatientArrayFromUrl(url) {
@@ -115,17 +152,19 @@ goFeature = function (x) {
 function doFigure4(data) {
     console.log('loaded ' + data.length + ' records');
 
-    var msg = function (txt, clr) {
-        if (!clr) {
-            clr = "blue"
-        }
-        fig4msg.textContent = '> ' + txt;
-        fig4msg.style.color = clr;
-        setTimeout(function () {
-            fig4msg.textContent = ""
-        }, 5000)
-    };
-    msg('loaded ' + data.length + ' records');
+    /*
+     var msg = function (txt, clr) {
+     if (!clr) {
+     clr = "blue"
+     }
+     fig4msg.textContent = '> ' + txt;
+     fig4msg.style.color = clr;
+     setTimeout(function () {
+     fig4msg.textContent = ""
+     }, 5000)
+     };
+     msg('loaded ' + data.length + ' records');
+     */
 
     data = flatten(data);
 
