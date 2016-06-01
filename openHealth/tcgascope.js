@@ -2,7 +2,9 @@ console.log('tcgascope.js loaded');
 
 
 openHealth.require(config.domain + '/openHealth/tcga.js', function () {
-    openHealthJob.innerHTML = selectBox() + '<div id="openHealthJobMsg" style="color:red">processing ...</div><div id="openHealthJobDC"></div>';
+    
+    openHealthJob.innerHTML = abcUtil.selectBox(config.findAPI + ':' + config.port + '/?limit=12&collection=metadata&find={}&db=u24_meta')
+        + '<div id="openHealthJobMsg" style="color:red">processing ...</div><div id="openHealthJobDC"></div>';
 
     tumorChanged = function (evt) {
         var opt = evt.selectedOptions[0].value;
@@ -19,42 +21,6 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         getTcgaData(openHealth.cancer_type);
     };
 
-    // Dropdown menu
-    function selectBox() {
-        var selectTumorHTML = '<h3 style="color:navy">';
-        selectTumorHTML += 'Tumor Type: <select onchange="tumorChanged(this)" style="font-color:navy;background-color:silver;font-size:large" id="selectTumor">';
-
-        var url = config.findAPI + ':' + config.port + '/?limit=10&collection=metadata&find={}&db=u24_meta';
-
-        $.ajax({
-            url: url,
-            async: false,
-            dataType: 'json',
-            success: function (arr) {
-                arr.forEach(function (item) {
-                    var tm = item.cancer_type;
-                    var value = tm + ',' + item.db + ',' + item.execution_id;
-                    var attr = '';
-
-                    if (!openHealth.cancer_type) {
-                        if (tm === 'luad') {
-                            openHealth.db = item.db;
-                            openHealth.execution_id = item.execution_id;
-                            openHealth.cancer_type = item.cancer_type;
-                            attr = 'selected';
-                        }
-                    }
-
-                    selectTumorHTML += '<option value="' + value + '" ' + attr + '>' + tm.toUpperCase() + ' - ' + item.name + '</option>';
-
-                });
-            }
-        });
-
-        selectTumorHTML += "</select>";
-        selectTumorHTML += "</h3>";
-        return selectTumorHTML;
-    }
 
     function get_biospecimen_slide(filename, cancer_type) {
 
@@ -629,12 +595,12 @@ var listDxSlides = function (pp, xxxDx) {
 
 var listSlides = function (R, S, P, xxxDx, patient) {
     slideImages.parentNode.hidden = "true";
-    console.log('Psection_location', JSON.stringify(P['section_location']));
-    console.log();
-    console.log('Rsection_location', JSON.stringify(R['section_location']));
-    console.log();
-    console.log('Ssection_location', JSON.stringify(S['section_location']));
-    console.log();
+    //console.log('Psection_location', JSON.stringify(P['section_location']));
+    //console.log();
+    //console.log('Rsection_location', JSON.stringify(R['section_location']));
+    //console.log();
+    //console.log('Ssection_location', JSON.stringify(S['section_location']));
+    //console.log();
 
     if (R.gender.FEMALE.c + R.gender.MALE.c > R.section_location.BOTTOM.c + R.section_location.TOP.c) {
         var parm = 'section_location'
