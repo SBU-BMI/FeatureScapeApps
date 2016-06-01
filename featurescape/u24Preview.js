@@ -2,22 +2,35 @@ console.log('u24Preview.js loaded');
 
 
 u24p = function () {
-    // ini
-    u24p.buildUI('u24PreviewDiv')
 
 };
 
+u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Interface
 
-u24p.buildUI = function (id) { // build User Interface
-    var div = document.getElementById(id);
-    div.innerHTML = '<h3> preview Case IDs</h3>';
+    var dataOriginDiv = document.getElementById(dataOriginDivId);
+    dataOriginDiv.innerHTML = 'The following case IDs are from <strong>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + ' slides.</strong>';
+
+    var dataDiv = document.getElementById(dataDivId);
+    dataDiv.innerHTML = '<h3>preview Case IDs</h3>';
+
     var ol = document.createElement('ol');
-    div.appendChild(ol);
-    u24p.cases.forEach(function (c) {
-        c = c.image.caseid;
+    dataDiv.appendChild(ol);
+
+    data.forEach(function (c) {
+        if (c.image.caseid != undefined)
+        {
+            tissueId = c.image.caseid;
+        }
+
+        if (c.image.case_id != undefined)
+        {
+            tissueId = c.image.case_id;
+        }
+
         var li = document.createElement('li');
         ol.appendChild(li);
-        li.innerHTML = '<a href="' + config.quipUrl + '?tissueId=' + c + '" target="_blank">' + c + '</a>, (<a href="http://www.cbioportal.org/case.do?cancer_study_id=luad_tcga&case_id=' + c.slice(0, 12) + '" target="_blank" style="color:red">cbio</a>) random seed:';
+        li.innerHTML = '<a href="' + config.quipUrl + '?tissueId=' + tissueId + '" target="_blank">' + tissueId + '</a>, (<a href="http://www.cbioportal.org/case.do?cancer_study_id=' + c.provenance.study_id + '_tcga&case_id=' + c.image.subjectid + '" target="_blank" style="color:red">cbio</a>) random seed:';
+
         var sp = document.createElement('span');
         li.appendChild(sp);
         //http://www.cbioportal.org/case.do?cancer_study_id=luad_tcga&case_id=TCGA-05-4395
@@ -51,13 +64,9 @@ u24p.buildUI = function (id) { // build User Interface
             sp.style.color = 'rgb(' + Math.round(255 * v) + ',' + Math.round(255 * (1 - v)) + ',0)'
         }, (1000 + Math.random() * 1000));
         btFeature.onclick = function () {
-            var caseId = c;
-
             var sz = $('input', spSize)[0].value;
-
-            var _static = '"provenance.analysis.execution_id":"' + u24p.anexid + '"';
             // Yes, we really do need absolute path for this url:
-            var url = config.domain + '/featurescape/?' + u24p.findApi + '?limit=' + sz + '&find={"randval":{"$gte":' + sp.textContent + '},' + _static + ',"provenance.image.case_id":"' + caseId + '"}&db=' + u24p.db;
+            var url = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '?limit=' + sz + '&find={"randval":{"$gte":' + sp.textContent + '},"provenance.analysis.execution_id":"' + selectObject.execution_id + '","provenance.image.case_id":"' + tissueId + '"}&db=' + selectObject.db;
             window.open(url);
 
         }
@@ -65,24 +74,40 @@ u24p.buildUI = function (id) { // build User Interface
 
 };
 
-
-// ini
-$(document).ready(function () {
-    u24p.cases = [];
-    u24p.findApi = config.findAPI + ':' + config.port + '/';
-    u24p.anexid = config.default_execution_id;
-    u24p.db = config.default_db;
-
-    var url = u24p.findApi + '?limit=38&collection=metadata&find={"provenance.analysis_execution_id":"' + u24p.anexid + '"}&db=' + u24p.db;
-    console.log(url);
+function getData()
+{
+    var url = config.findAPI + ':' + config.port + '/?limit=50&collection=metadata&find={"provenance.analysis_execution_id":"' + selectObject.execution_id + '"}&db=' + selectObject.db;
+    console.log('selectObject', selectObject);
+    console.log('url', url);
 
     $.ajax({
         url: url,
         async: false,
         dataType: 'json',
         success: function (json) {
-            u24p.cases = json;
-            u24p();
+            u24p.buildUI('dataOrigin', 'u24PreviewDiv', json);
         }
     });
+
+}
+
+
+$(document).ready(function () {
+
+    selectObject = trace = {};
+    selectDiv = document.getElementById('selectDiv');
+    selectDiv.innerHTML = abcUtil.selectBox(trace, selectObject);
+    getData();
+
+    tumorChanged = function (evt) {
+        var opt = evt.selectedOptions[0].value;
+        var partsOfStr = opt.split(',');
+
+        selectObject.cancer_type = partsOfStr[0];
+        selectObject.db = partsOfStr[1];
+        selectObject.execution_id = partsOfStr[2];
+
+        getData();
+    };
+
 });

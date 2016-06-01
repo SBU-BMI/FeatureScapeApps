@@ -2,6 +2,7 @@
 <head>
     <title>u24Preview</title>
     <script src="../js/config.js"></script>
+    <script src="../js/abcUtil.js"></script>
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
@@ -33,11 +34,11 @@
             </p>
         </i>
     </h3>
-    <p id="dataOrigin">The following case IDs are from 38 lung adenocarcinoma slides.<br>
+    <p><div id="dataOrigin"></div>
         For an interactive visualization of Pathology results (including links to the cBio record) see <a
                 href="../openHealth" target="_blank">TCGAscope.</a></p>
     <hr>
-    <p id="fmsg"></p>
+    <div id="selectDiv"></div>
     <div id="u24PreviewDiv"><span style="color:red">loading ...</span></div>
     <script src="u24Preview.js"></script>
 </div>
