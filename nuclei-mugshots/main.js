@@ -27,6 +27,9 @@ mugshots = function () {
         thisisrandom = true;
     }
 
+    mugshotLog.textContent = 'loading, please wait ...';
+    mugshotLog.style.color = 'red';
+
     log('url: ' + url);
     mugshots.loadData(url);
 };
@@ -335,6 +338,10 @@ mugshots.draw = function (targetDiv, data, layout) {
 
     // Clear hash.
     location.hash = '';
+
+    // And finally...
+    mugshotLog.textContent = 'Click on any patch to go to the location in caMicroscope, to view it in the context of the whole slide image.';
+    mugshotLog.style.color = 'blue';
 
 };
 
