@@ -15,7 +15,7 @@ abcUtil = {
                 font_color: 'navy',
                 bg_color: 'silver',
                 font_size: 'large',
-                text: 'Tumor Type',
+                text: 'Select',
                 selected: 'luad'
             };
         }
