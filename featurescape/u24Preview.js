@@ -17,16 +17,9 @@ u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Inter
     dataDiv.appendChild(ol);
 
     data.forEach(function (c) {
-        if (c.image.caseid != undefined)
-        {
-            tissueId = c.image.caseid;
-        }
 
-        if (c.image.case_id != undefined)
-        {
-            tissueId = c.image.case_id;
-        }
-
+        tissueId = c.image.case_id;
+        
         var li = document.createElement('li');
         ol.appendChild(li);
         li.innerHTML = '<a href="' + config.quipUrl + '?tissueId=' + tissueId + '" target="_blank">' + tissueId + '</a>, (<a href="http://www.cbioportal.org/case.do?cancer_study_id=' + c.provenance.study_id + '_tcga&case_id=' + c.image.subjectid + '" target="_blank" style="color:red">cbio</a>) random seed:';

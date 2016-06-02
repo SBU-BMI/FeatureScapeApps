@@ -534,7 +534,7 @@ var listDxSlides = function (pp, xxxDx) {
     // check DxImages available already
     if (!openHealth.tcga.dt[xxxDx]) {
 
-        var url = config.findAPI + ':' + config.port + '/?limit=1000&collection=metadata&find={"provenance.analysis_execution_id":"' + selectObject.execution_id + '"}&project={"_id":0,"image.subjectid":1,"image.caseid":1}&db=' + selectObject.db;
+        var url = config.findAPI + ':' + config.port + '/?limit=1000&collection=metadata&find={"provenance.analysis_execution_id":"' + selectObject.execution_id + '"}&project={"_id":0,"image.subject_id":1,"image.case_id":1}&db=' + selectObject.db;
         console.log(url);
 
         $.ajax({
@@ -546,8 +546,8 @@ var listDxSlides = function (pp, xxxDx) {
                 var a = [];
                 arr.forEach(function (item) {
                     var b = {};
-                    b.patientid = item.image.subjectid;
-                    b.caseid = item.image.caseid;
+                    b.patientid = item.image.subject_id;
+                    b.caseid = item.image.case_id;
                     a.push(b);
 
                 });
