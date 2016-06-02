@@ -177,7 +177,7 @@ mugshots.fun = function (data, size) {
 
     var div = document.getElementById('patientInfo');
     if (thisisrandom) {
-        div.innerHTML = 'Displaying ' + newData.length + ' nuclear images from random caseIDs:<br>' + h;
+        div.innerHTML = '<strong>Displaying ' + newData.length + ' nuclear images from random ' + ((mugshots.db).substring(4)).toUpperCase() + ' caseIDs:</strong><br>' + h;
     }
     else {
         var fx = getQueryVariable('fx', location.hash);
