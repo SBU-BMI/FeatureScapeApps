@@ -469,7 +469,7 @@ fscape.scatterPlot = function (div0, i, j) {
             var ymin = div._fullLayout.yaxis._tmin;
             var ymax = div._fullLayout.yaxis._tmax;
 
-            var h = '<h3 style="color:maroon">resampling (under development)</h3>';
+            var h = '<h3 style="color:maroon">resampling (x,y ranges)</h3>';
             h += '<p style="color:blue">' + fi + ': ' + xmin + ' , ' + xmax + '</p>';
             h += '<p style="color:blue">' + fj + ': ' + ymin + ' , ' + ymax + '</p>';
             resampleMsg.innerHTML = h;
