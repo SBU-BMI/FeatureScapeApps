@@ -13,7 +13,7 @@ window.onload = function () {
         selectObject.cancer_type = partsOfStr[0];
         selectObject.db = partsOfStr[1];
         selectObject.execution_id = partsOfStr[2];
-        url = 'http://quip1.uhmc.sunysb.edu:4000?collection=patients&limit=1000&find={}&db=' + selectObject.db;
+        url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
 
         getData(url);
     };
@@ -25,14 +25,16 @@ window.onload = function () {
     }
     else {
         // Default
-        url = 'http://quip1.uhmc.sunysb.edu:4000?collection=patients&limit=1000&find={}&db=u24_luad';
+        url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + config.default_db;
     }
-    console.log('url', url);
+
     getData(url);
 
 };
 
 function getData(url) {
+
+    console.log('url', url);
 
     $.getJSON(url).then(function (data) {
 
@@ -42,14 +44,14 @@ function getData(url) {
 
             if (patients.length == 0) {
                 h += '</span><br>';
-                mmsg(h);
+                clrMsg(h);
             }
             else {
                 h += ' for patients:</span><br>';
                 patients.forEach(function (bb) {
                     h += bb + '<br>';
                 });
-                mmsg(h);
+                clrMsg(h);
             }
         }
         else {
@@ -60,7 +62,7 @@ function getData(url) {
     })
 }
 
-function mmsg(h) {
+function clrMsg(h) {
     var a = document.getElementById('fig4msg');
     a.innerHTML = h;
 

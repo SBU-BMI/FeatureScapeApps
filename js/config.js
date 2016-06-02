@@ -12,6 +12,10 @@ var config = {
     default_execution_id: 'luad:bg:20160520',
     default_db: 'u24_luad',    
     imgcoll: 'images',
-    quot: "%22"
+    quot: "%22",
+    //iiifServer: 'quip.bmi.stonybrook.edu',
+    //iiifPrefix: 'fastcgi-bin/iipsrv.fcgi?iiif=',
+    iiifServer: 'quip1.uhmc.sunysb.edu',
+    iiifPrefix: 'fcgi-bin/iipsrv.fcgi?iiif='
     //mongoUrl: 'mongodb://172.17.0.1:27015/u24_version3'
 };

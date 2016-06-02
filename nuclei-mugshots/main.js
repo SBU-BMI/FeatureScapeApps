@@ -271,8 +271,8 @@ mugshots.draw = function (targetDiv, data, layout) {
 
             // IIIF Image Request URI Syntax
             var scheme = 'http',
-                server = 'quip.bmi.stonybrook.edu',
-                prefix = 'fastcgi-bin/iipsrv.fcgi?iiif=',
+                server = config.iiifServer,
+                prefix = config.iiifPrefix,
                 region = '',
                 size = 'full',
                 rotation = '0',
