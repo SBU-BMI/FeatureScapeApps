@@ -135,7 +135,7 @@ abcUtil = {
                     var tp = document.getElementById('dxSlide_' + pt); // target patient element
                     var dx = document.createElement('p');
                     dx.id = "link_" + p;
-                    dx.innerHTML = '<a href="' + config.quipUrl + '?tissueId=' + p + '" target=_blank>' + p + '</a>';
+                    dx.innerHTML = '<a href="' + abcUtil.caMicroLink(p, selectObject.cancer_type) + '" target=_blank>' + p + '</a>';
                     tp.appendChild(dx)
                 }
 
@@ -202,7 +202,7 @@ abcUtil = {
 
             var fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port + '?collection=patients&limit=' + pp.length + '&find={"bcr_patient_barcode":{"$in":[' + ppp + ']}}&db=' + selectObject.db;
 
-            moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="feature landscape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
+            moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="Feature Landscape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
 
             fscapeButton.onclick = function () {
                 window.open(fscape)
@@ -234,7 +234,8 @@ abcUtil = {
 
         ss.sort().forEach(function (s, i) {
             var pr = document.createElement('p');
-            pr.innerHTML = ' ' + i + ') <button onclick="resultsSlide(this)">' + s + '</button> <a href="' + config.quipUrl + '?tissueId=' + s + '" target=_blank> caMicroscope </a>.';
+            pr.innerHTML = ' ' + i + ') <button onclick="resultsSlide(this)">' + s + '</button> '
+                + '<a href="' + abcUtil.caMicroLink(s, selectObject.cancer_type) + '?tissueId=' + s + '" target=_blank> caMicroscope </a>.';
             slideImages.appendChild(pr)
         });
 

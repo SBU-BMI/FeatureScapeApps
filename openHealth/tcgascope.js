@@ -202,8 +202,6 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
             var C = {}, D = {}, G = {}, U = {}, R = {};
             var P = {}, S = {};  // list patients and slides
-            // listDxSlides()
-            // listSlides()
 
             var cf = crossfilter(docs);
 
@@ -501,6 +499,9 @@ function setupDimensionalChart(clinical_patient) {
     html += '<b>Legend</b>: ' + ks1 + ' diameter indicates number of images</td>';
     html += '</tr>';
     html += '</table>';
+
+    html += '<a name="anchor"></a>';
+
     html += '<table>';
     html += '<tr>';
     html += '<td style="vertical-align:top"><table id="patientSlideTable">';
@@ -527,5 +528,6 @@ function setupDimensionalChart(clinical_patient) {
     html += '<td style="vertical-align:top"><div id="buttonResults"></div></td>';
     html += '</tr>';
     html += '</table>';
+
     return html;
 }
