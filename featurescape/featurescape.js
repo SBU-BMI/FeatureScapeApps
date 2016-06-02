@@ -13,13 +13,11 @@ fscape = function (x) {
 
 fscape.UI = function () {
     console.log('assembling UI ...');
-    var div = document.getElementById("featureScapeDiv");
-    fscape.div = div;
+    fscape.div = document.getElementById("featureScapeDiv");
 
     //  check for data URL
     if (location.search.length > 1) {
-        featureScapeLog.textContent = 'loading, please wait ...';
-        featureScapeLog.style.color = 'red';
+        fscape.log('featureScapeLog', 'loading, please wait ...', 'red');
         var ss = location.search.slice(1).split(';');
         fscape.loadURL(ss[0]);
 
@@ -30,6 +28,7 @@ fscape.loadURL = function (url) {
     console.log('url', url);
     // get URL from input
     if (!url) {
+        // TODO:
         //url = inputURL.value
     }
 
@@ -57,20 +56,20 @@ fscape.loadURL = function (url) {
         })
 };
 
-fscape.log = function (txt, color) {
-    featureScapeLog.innerHTML = txt;
-    if (!color) {
-        color = 'navy'
-    }
-    featureScapeLog.style.color = color;
-    //console.log(txt)
+fscape.log = function (divID, txt, color) {
+
+    var d = document.getElementById(divID);
+    d.textContent = txt;
+    d.style.color = ((!color) ? 'navy' : color);
+    d.style.fontWeight = 'bold';
+
 };
 
 fscape.cleanUI = function () { // and create fscapeAnalysisDiv
 
     // let's have some function
     if (!document.getElementById('fscapeAnalysisDiv')) {
-        $('<hr><div id="fscapeAnalysisDiv"><span style="color:red">processing, please wait ...</span></div>').appendTo(fscape.div);
+        $('<div id="fscapeAnalysisDiv"><span style="color:red">processing, please wait ...</span></div>').appendTo(fscape.div);
         fscapeAnalysisDiv.hidden = true;
         $(fscapeAnalysisDiv).show(1000)
     } else {
@@ -80,11 +79,13 @@ fscape.cleanUI = function () { // and create fscapeAnalysisDiv
 
 fscape.fun = function (data, url) {
 
+    // TODO:
     var patient = url.match('TCGA-[^%]+')[0];
+    console.log('patient', patient);
 
     if (data.length == 0) {
         document.getElementById('featureScapeDiv').innerHTML = '<span style="color:red">Data not available for patient:</span><br>' + patient;
-        featureScapeLog.textContent = '';
+        fscape.log('featureScapeLog', '');
 
     }
     else {
@@ -107,8 +108,10 @@ fscape.fun = function (data, url) {
         });
 
         var xx = nv;
-        //fscape.log(xx.length + ' entries sampled from ' + url, 'blue');
-        fscape.log(xx.length + ' sets of features sampled from <strong>' + patient + '</strong>', 'blue');
+        // xx.length + ' entries sampled from ' + url
+        fscape.log('featureScapeLog', '');
+        fscape.log('patientInfo', xx.length + ' sets of features sampled from ' + patient, 'black');
+
         fscape.cleanUI();
 
         fscape.plot(xx)
@@ -125,7 +128,8 @@ fscape.clust2html = function (cl) {
         })
     });
 
-    var h = '<h4 style="color:maroon">Cross-tabulated feature correlations</h4><table id="featurecrossTB">';
+    var h = '<h4 style="color:maroon">Cross-tabulated feature correlations</h4>'
+        + '<table id="featurecrossTB"><tr><td colspan="' + T.length + '" align="right"><em>(click on symbols for densities)</em></td></tr>';
     ind.forEach(function (i, j) {
         h += '<tr><td>' + fscape.dt.parmNum[i] + '</td>';
         T.forEach(function (c, k) {
@@ -142,7 +146,7 @@ fscape.clust2html = function (cl) {
         });
         h += '</tr>'
     });
-    h += '</table><p id="featuremoreTD" style="color:blue">(click on symbols for densities)</p>';
+    h += '</table><p id="featuremoreTD"></p>';
 
     return h
 };
@@ -150,8 +154,8 @@ fscape.clust2html = function (cl) {
 // do it
 fscape.plot = function (x) { // when ready to do it
     fscapeAnalysisDiv.innerHTML = '<table id="fscapeAnalysisTab">'
-        + '<tr><td id="featurecrossTD" style="vertical-align:top">featurecross</td>'
-        + '<td id="featuremapTD" style="vertical-align:top">featuremap</td></tr>'
+        + '<tr><td id="featurecrossTD" style="vertical-align:top"></td>'
+        + '<td id="featuremapTD" style="vertical-align:top"></td></tr>'
         + '<tr><td id="featureElseTD" style="vertical-align:top"></td>'
         + '<td id="featurecompTD" style="vertical-align:top"></td></tr></table>'
         + '<div id="featurecomputeDIV"></div>';
@@ -215,9 +219,6 @@ fscape.plot = function (x) { // when ready to do it
     fscape.dt.parmNum = parmNum;
     featurecrossTD.innerHTML = fscape.clust2html(cl);
 
-    // featuremapTD
-    featuremapTD.innerHTML = 'processing ...';
-
     setTimeout(function () {
         var tdfun = function () {
             var ij = JSON.parse('[' + this.id + ']');
@@ -226,7 +227,10 @@ fscape.plot = function (x) { // when ready to do it
                 var fi = fscape.dt.parmNum[i];
                 var fj = fscape.dt.parmNum[j];
                 if ($('#featuremapTD > table').length == 0) {
-                    featuremapTD.innerHTML = 'zooming into <br><li style="color:blue">' + fi + '</li><li style="color:blue">' + fj + '</li><span style="color:red">processing ...</red>'
+                    featuremapTD.innerHTML = 'zooming into <br>'
+                        + '<li style="color:blue">' + fi + '</li>'
+                        + '<li style="color:blue">' + fj + '</li>'
+                        + '<span style="color:red">processing ...</red>'
                 }
                 // place an X on selected td, after clearing it all to "O"
                 for (var tri = 0; tri < this.parentElement.parentElement.children.length; tri++) {
@@ -257,17 +261,20 @@ fscape.plot = function (x) { // when ready to do it
                 var cBack = JSON.parse('[' + this.style.color.slice(4, -1).split(', ') + ']').map(function (c) {
                     return 255 - c
                 }).toString();
-                //featuremoreTD.innerHTML='<hr><p style="background-color:'+this.style.color+';color:rgb('+cBack+')">Pearson correlation between <br>'+fi+' <br>'+fj+'<br> = '+Math.round((1-fscape.dt.cl[1][j][i])*100)/100+'</p>'
-                featuremoreTD.innerHTML = '<hr><p style="background-color:' + this.style.color + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p><p style="color:navy">Pearson correlation between <li style="color:navy">' + fi + ' </li><li style="color:navy">' + fj + '</li> |corr(' + ii + ',' + jj + ')|= ' + jmat.toPrecision(1 - fscape.dt.cl[1][ii][jj]) + '</p><p style="background-color:' + this.style.color + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
+                featuremoreTD.innerHTML = '<p style="background-color:' + this.style.color + ';font-size:3">'
+                    + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>'
+                    + '<p style="color:navy">Pearson correlation between '
+                    + '<li style="color:navy">' + fi + ' </li>'
+                    + '<li style="color:navy">' + fj + '</li> '
+                    + '|corr(' + ii + ',' + jj + ')|= '
+                    + jmat.toPrecision(1 - fscape.dt.cl[1][ii][jj])
+                    + '</p><p style="background-color:' + this.style.color + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
                 $(this).tooltip()[0].title = '< ' + fi + ' , ' + fj + ' >';
             }
         };
 
         $('td', featurecrossTB).click(tdfun);
         $('td', featurecrossTB).mouseover(tdover);
-        //featuremapTD.innerHTML='<span style="color:blue">(click on symbols for densities)</span>'
-        featuremoreTD.innerHTML = '<span style="color:blue"></span>';
-        featuremapTD.innerHTML = '<span style="color:blue">(click on symbols for densities)</span>';
 
         //featureNet.innerHTML='featureNet :-)'
         //setTimeout(function () {...}
@@ -340,7 +347,7 @@ fscape.featuremap = function (i, j) {
             var vi = jmat.interp1(fscape.dt.dtmemb[fi][1], fscape.dt.dtmemb[fi][0], [qij[0], qij[0] + 1 / fscape.dt.n]);
             var vj = jmat.interp1(fscape.dt.dtmemb[fj][1], fscape.dt.dtmemb[fj][0], [qij[1], qij[1] + 1 / fscape.dt.n]);
             var c = this.style.backgroundColor;
-            var h = '<hr><p style="background-color:' + c + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
+            var h = '<p style="background-color:' + c + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
             h += '<li>' + fj + ' = [' + jmat.toPrecision(vj) + ']</li>';
             h += 'Quantile = [' + jmat.toPrecision([qij[1], qij[1] + 1 / fscape.dt.n]) + ']';
             h += '<li>' + fi + ' = [' + jmat.toPrecision(vi) + ']</li>';
@@ -401,7 +408,7 @@ fscape.featuremap = function (i, j) {
         var cBack = JSON.parse('[' + this.style.color.slice(4, -1).split(', ') + ']').map(function (c) {
             return 255 - c
         }).toString();
-        featuremoreTD.innerHTML = '<hr><p style="background-color:' + c + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p><p style="color:navy">Pearson correlation between <li style="color:navy">' + fi + ' </li><li style="color:navy">' + fj + '</li> corr(' + ii + ',' + jj + ')= ' + Math.round((1 - fscape.dt.cl[1][ii][jj]) * 1000) / 1000 + '</p><p style="background-color:' + c + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>'
+        featuremoreTD.innerHTML = '<p style="background-color:' + c + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p><p style="color:navy">Pearson correlation between <li style="color:navy">' + fi + ' </li><li style="color:navy">' + fj + '</li> corr(' + ii + ',' + jj + ')= ' + Math.round((1 - fscape.dt.cl[1][ii][jj]) * 1000) / 1000 + '</p><p style="background-color:' + c + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>'
     };
 
 };
@@ -458,7 +465,8 @@ fscape.scatterPlot = function (div0, i, j) {
     if (location.search.match(config.findAPI)) {
         var divZ = document.createElement('div');
         divZ.setAttribute('align', 'center');
-        divZ.innerHTML = '<p><button id="resampleBt" style="color:red">Nuclei mugshots from selected region</button></p><p id="resampleMsg"></p>';
+        divZ.innerHTML = '<p><button id="resampleBt" style="color:red">Nuclei mugshots from selected region</button></p>'
+            + '<p id="resampleMsg"></p>';
         div.appendChild(divZ);
 
         resampleBt.onclick = function () {
@@ -469,11 +477,14 @@ fscape.scatterPlot = function (div0, i, j) {
             var ymin = div._fullLayout.yaxis._tmin;
             var ymax = div._fullLayout.yaxis._tmax;
 
-            var h = '<h3 style="color:maroon">resampling (x,y ranges)</h3>';
+            var h = '<h4 style="color:maroon">resampling (x, y ranges)</h4>';
             h += '<p style="color:blue">' + fi + ': ' + xmin + ' , ' + xmax + '</p>';
             h += '<p style="color:blue">' + fj + ': ' + ymin + ' , ' + ymax + '</p>';
             resampleMsg.innerHTML = h;
+            
+            // TODO:
             var patient = location.search.match('TCGA-[^%]+')[0];
+            console.log('patient', patient);
             var parm = 'caseid';
             if (patient.length == 12) {
                 parm = 'subjectid';

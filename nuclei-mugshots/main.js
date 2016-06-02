@@ -1,9 +1,8 @@
 /**
- * Created by tdiprima.
+ * Nuclei Mugshots.
  */
-
 mugshots = function () {
-    log('location: ' + location);
+    console.log('location: ' + location);
     var url = '';
     var hash = '';
     if (location.hash.length > 1) {
@@ -23,14 +22,14 @@ mugshots = function () {
         var _static = '"provenance.analysis.execution_id":"' + config.default_execution_id + '"';
         mugshots.db = config.default_db;
         url = mugshots.findApi + '?collection=objects&limit=12&find={' + _static + ',"randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
-        log('*** Random nuclei were selected for you. ***');
+        console.log('*** Random nuclei were selected for you. ***');
         thisisrandom = true;
     }
 
     mugshotLog.textContent = 'loading, please wait ...';
     mugshotLog.style.color = 'red';
 
-    log('url: ' + url);
+    console.log('url: ' + url);
     mugshots.loadData(url);
 };
 
@@ -113,7 +112,7 @@ mugshots.fun = function (data, size) {
     var newData = [];
 
     var randomMembers = getRandomSubarrayPartialShuffle(data, size);
-    //log(randomMembers);
+    //console.log(randomMembers);
 
     var sameCaseId = true;
     var prevCaseId = '';
@@ -149,7 +148,7 @@ mugshots.fun = function (data, size) {
     randomMembers.forEach(function (doc) {
         var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + doc.provenance.image.case_id + '"}&db=' + mugshots.db;
         h += doc.provenance.image.case_id + '<br>';
-        //log(' *** ' + url);
+        //console.log(' *** ' + url);
 
         if (!sameCaseId) {
             $.ajax({
@@ -246,7 +245,7 @@ mugshots.draw = function (targetDiv, data, layout) {
         tbl.appendChild(row);
 
         for (var j = 0; j < tds; j++) {
-            //log(ind + ': ' + JSON.stringify(data[ind]));
+            //console.log(ind + ': ' + JSON.stringify(data[ind]));
 
             var obj = {
                 x: data[ind].markup[0],
@@ -295,7 +294,8 @@ mugshots.draw = function (targetDiv, data, layout) {
             var uri = scheme + "://" + server + "/" + prefix + data[ind].identifier + "/" + region + "/" + size + "/" + rotation + "/" + quality + "." + format;
 
             var link = document.createElement('a');
-            link.setAttribute("href", config.quipUrl + '?tissueId=' + data[ind].caseid + "&cancerType=" + (mugshots.db).substring(4) + "&x=" + obj.x + "&y=" + obj.y);
+            link.setAttribute("href",
+                abcUtil.caMicroLink(data[ind].caseid, (mugshots.db).substring(4), obj.x, obj.y));
             link.setAttribute("target", "_blank");
             var col = document.createElement('td');
 

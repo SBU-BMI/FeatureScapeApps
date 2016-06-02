@@ -1,8 +1,24 @@
 /**
- * Created by tdiprima on 6/1/16.
  * abcUtil.js: A container for utility stuff.
  */
 abcUtil = {
+
+    caMicroLink: function(case_id, cancer_type, x, y)
+    {
+        var arr = [];
+
+        if (x == undefined && y == undefined)
+        {
+            arr = [config.quipUrl, '?tissueId=', case_id, '&cancerType=', cancer_type];
+        }
+        else
+        {
+            arr = [config.quipUrl, '?tissueId=', case_id, '&cancerType=', cancer_type, '&x=', x, '&y=', y];
+        }
+
+        return arr.join("");
+
+    },
 
     selectBox: function (trace, globalObject) {
 
@@ -65,8 +81,7 @@ abcUtil = {
     },
 
     listDxSlides: function (pp, data) {
-        // check DxImages available already
-        //if (!openHealth.tcga.dt[xxxDx]) {
+        // check DxImages available
         if (!data) {
 
             var url = config.findAPI + ':' + config.port + '/?limit=1000&collection=metadata&find={"provenance.analysis_execution_id":"' + selectObject.execution_id + '"}&project={"_id":0,"image.subject_id":1,"image.case_id":1}&db=' + selectObject.db;
@@ -99,19 +114,16 @@ abcUtil = {
 
                     // SUBJECT ID: CASE IDs
                     data = y;
-                    //openHealth.tcga.dt[xxxDx] = y;
                     abcUtil.listDxSlides(pp, data)
                 }
             });
 
         } else {
             var pp0 = pp.filter(function (pi) {
-                //return openHealth.tcga.dt[xxxDx][pi]
                 return data[pi];
             });
             pp = [];
             pp0.map(function (pi) {
-                //pp = pp.concat(openHealth.tcga.dt[xxxDx][pi])
                 pp = pp.concat(data[pi])
             });
             diagnosticImagesHeader.textContent = ' Diagnostic Images (' + pp.length + '):';
@@ -162,7 +174,7 @@ abcUtil = {
 
         // DATA REFERENCE
         var tw = 'https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/';
-        document.getElementById('patientinfo').innerHTML = '<strong>Charts display clinical information from TCGA:</strong><br>'
+        document.getElementById('patientInfo').innerHTML = '<strong>Charts display clinical information from TCGA:</strong><br>'
             + '<a href="' + tw + openHealth.clinicalFile + '" target="_blank">' + tw + openHealth.clinicalFile + '</a><br>'
             + '<a href="' + tw + openHealth.biosFile + '" target="_blank">' + tw + openHealth.biosFile + '</a><br><br>'
             + '<strong><a href="#anchor">Slides</a></strong> '
