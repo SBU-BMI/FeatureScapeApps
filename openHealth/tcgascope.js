@@ -194,7 +194,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         openHealth.getScript(["https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js", "https://www.google.com/jsapi", "https://square.github.io/crossfilter/crossfilter.v1.min.js", "https://dc-js.github.io/dc.js/js/dc.js", "https://dc-js.github.io/dc.js/css/dc.css"], function () { // after satisfying d3 dependency
             openHealthJobMsg.textContent = "Assembling charts ...";
 
-            openHealthJobDC.innerHTML = setupDimensionalChart(clinical_patient);
+            openHealthJobDC.innerHTML = abcUtil.setupDimensionalChart(openHealth.tcga.dt[clinical_patient].karnofsky_score);
 
             var docs = openHealth.tcga.dt[xxxDocs];
 
@@ -453,81 +453,3 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
     }
 
 });
-
-function setupDimensionalChart(clinical_patient) {
-
-    var ks = '';
-    var ks1 = '';
-    if (openHealth.tcga.dt[clinical_patient].karnofsky_score != null) {
-
-        ks = '<div style="color:blue">Karnofsky Score:</div>'
-            + '<div id="karnofsky_performance_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div>';
-
-        ks1 = 'color indicates Karnofsky performance score (see framed bar chart);';
-    }
-
-    var html = '';
-    html += '<table cellpadding="10px">';
-    html += '<tr>';
-    html += '<td style="vertical-align:top"><table>';
-    html += '<tr>';
-    html += '<td style="vertical-align:top"><div>% Necrotic Cells:</div>';
-    html += '<div id="percent_necrosis"></div>';
-    html += '<div>% Tumor Nuclei:</div>';
-    html += '<div id="percent_tumor_nuclei"></div>';
-    html += '<div>Location:</div>';
-    html += '<div id="section_location"></div></td>';
-    html += '<td style="vertical-align:top"><div>% Tumor Cells:</div>';
-    html += '<div id="percent_tumor_cells"></div>';
-    html += '<div>% Lymphocyte Infiltration:</div>';
-    html += '<div id="percent_lymphocyte_infiltration"></div>';
-    html += '<div>Race:</div>';
-    html += '<div id="race"></div>';
-    html += '<div>Gender:</div>';
-    html += '<div id="gender"></div></td>';
-    html += '<td style="vertical-align:top"><div>% Stromal Cells:</div>';
-    html += '<div id="percent_stromal_cells"></div>';
-    html += ks;
-    html += '<div>% Monocyte Infiltration:</div>';
-    html += '<div id="percent_monocyte_infiltration"></div>';
-    html += '<div>% Neutrophil Infiltration:</div>';
-    html += '<div id="percent_neutrophil_infiltration"></div></td>';
-    html += '</tr>';
-    html += '</table></td>';
-    html += '<td style="vertical-align:top"><h3>' + (selectObject.cancer_type).toUpperCase() + ' Tumor progression</h3>';
-    html += '<div id="tumorProgression"></div>';
-    html += '<b>Legend</b>: ' + ks1 + ' diameter indicates number of images</td>';
-    html += '</tr>';
-    html += '</table>';
-
-    html += '<a name="anchor"></a>';
-
-    html += '<table>';
-    html += '<tr>';
-    html += '<td style="vertical-align:top"><table id="patientSlideTable">';
-    html += '<thead>';
-    html += '<tr>';
-    html += '<td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">TCGA patients:</td>';
-    html += '<td id="diagnosticImagesHeader" style="color:maroon;font-weight:bold">Diagnostic Images:</td>';
-    html += '</tr>';
-    html += '</thead>';
-    html += '<tbody id="patientSlideTableBody">';
-    html += '</tbody>';
-    html += '</table></td>';
-    html += '<td id="moreInfo" style="vertical-align:top"></td>';
-    html += '</tr>';
-    html += '</table>';
-    html += '<table id="hiddenTable" hidden=true>';
-    html += '<tr>';
-    html += '<td style="vertical-align:top"><div id="tcgaPatientsHeader_">TCGA patients:</div>';
-    html += '<div id="tcgaPatients"></div></td>';
-    html += '<td style="vertical-align:top"><div id="slideImagesHeader">Slide Images:</div>';
-    html += '<div id="slideImages"></div></td>';
-    html += '<td style="vertical-align:top"><div id="diagnosticImagesHeader_">Diagnostic Images:</div>';
-    html += '<div id="diagnosticImages"></div></td>';
-    html += '<td style="vertical-align:top"><div id="buttonResults"></div></td>';
-    html += '</tr>';
-    html += '</table>';
-
-    return html;
-}

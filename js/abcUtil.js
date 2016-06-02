@@ -3,16 +3,13 @@
  */
 abcUtil = {
 
-    caMicroLink: function(case_id, cancer_type, x, y)
-    {
+    caMicroLink: function (case_id, cancer_type, x, y) {
         var arr = [];
 
-        if (x == undefined && y == undefined)
-        {
+        if (x == undefined && y == undefined) {
             arr = [config.quipUrl, '?tissueId=', case_id, '&cancerType=', cancer_type];
         }
-        else
-        {
+        else {
             arr = [config.quipUrl, '?tissueId=', case_id, '&cancerType=', cancer_type, '&x=', x, '&y=', y];
         }
 
@@ -126,8 +123,9 @@ abcUtil = {
             pp0.map(function (pi) {
                 pp = pp.concat(data[pi])
             });
+
             diagnosticImagesHeader.textContent = ' Diagnostic Images (' + pp.length + '):';
-            diagnosticImages.innerHTML = ""; // clear
+            //diagnosticImages.innerHTML = ""; // clear
 
             pp.map(function (p) {
                 if (!document.getElementById("link_" + p)) {
@@ -146,7 +144,7 @@ abcUtil = {
     },
 
     listSlides: function (R, S, P, data, patient, selectObject) {
-        slideImages.parentNode.hidden = "true";
+        //slideImages.parentNode.hidden = "true";
         var parm = '';
 
         if (R.gender.FEMALE.c + R.gender.MALE.c > R.section_location.BOTTOM.c + R.section_location.TOP.c) {
@@ -166,11 +164,12 @@ abcUtil = {
                 pp.push(p)
             }
         });
-        slideImagesHeader.textContent = ' Slide Images (' + ss.length + '):';
+
+        //slideImagesHeader.textContent = ' Slide Images (' + ss.length + '):';
         tcgaPatientsHeader.textContent = ' TCGA patients (' + pp.length + '):';
         diagnosticImagesHeader.textContent = ' Diagnostic Images (...):';
-        tcgaPatients.innerHTML = "";
-        slideImages.innerHTML = "";
+        //tcgaPatients.innerHTML = "";
+        //slideImages.innerHTML = "";
 
         // DATA REFERENCE
         var tw = 'https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/';
@@ -182,7 +181,7 @@ abcUtil = {
 
         resultsPatient = function (x) {
 
-            buttonResults.innerHTML = '<pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
+            //buttonResults.innerHTML = '<pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
 
             var v = 0.95 * Math.random();
             var textContent = v.toString().slice(0, 5);
@@ -216,30 +215,108 @@ abcUtil = {
 
         resultsSlide = function (x) {
             var d = openHealth.findOne(openHealth.tcga.dt[xxxDocs], 'bcr_slide_barcode', x.textContent);
-            buttonResults.innerHTML = '<pre>' + JSON.stringify(d, null, 3) + '</pre>'
+            // TODO:
+            console.log('does this get called resultsSlide');
+            //buttonResults.innerHTML = '<pre>' + JSON.stringify(d, null, 3) + '</pre>'
         };
 
         patientSlideTableBody.innerHTML = ""; // clear tbody
         pp.sort().forEach(function (p, i) {
-            var pr = document.createElement('p');
-            pr.innerHTML = ' ' + i + ') <button onclick="resultsPatient(this)">' + p + '</button> <a href="http://www.cbioportal.org/case.do?case_id=' + p + '&cancer_study_id=' + selectObject.cancer_type + '_tcga" target=_blank>cBio</a>... ';
-            pr.id = "patient" + p;
-            tcgaPatients.appendChild(pr);
+
+            //var pr = document.createElement('p');
+            //pr.innerHTML = ' ' + i + ') <button onclick="resultsPatient(this)">' + p + '</button> <a href="http://www.cbioportal.org/case.do?case_id=' + p + '&cancer_study_id=' + selectObject.cancer_type + '_tcga" target=_blank>cBio</a>... ';
+            //pr.id = "patient" + p;
+            //tcgaPatients.appendChild(pr);
+
             var tr = document.createElement('tr');
             tr.id = 'tr_' + p;
-            tr.innerHTML = '<td id="tdPatient_' + p + '" style="vertical-align:top">' + i + ') <button onclick="resultsPatient(this)">' + p + '</button>(<a href="http://www.cbioportal.org/case.do?case_id=' + p + '&cancer_study_id=' + selectObject.cancer_type + '_tcga" target=_blank>cBio</a>)</td><td id="dxSlide_' + p + '" style="vertical-align:top;font-size:12"></td>';
+            var num = i + 1;
+
+            tr.innerHTML = '<td id="tdPatient_' + p + '" style="vertical-align:top">' + (num <= 9 ? '0' : '') + num + ') '
+                + '<button onclick="resultsPatient(this)">' + p + '</button>&nbsp;'
+                + '(<a href="http://www.cbioportal.org/case.do?case_id=' + p + '&cancer_study_id=' + selectObject.cancer_type + '_tcga" target=_blank>cBio</a>)'
+                + '</td>'
+                + '<td id="dxSlide_' + p + '" style="vertical-align:top;font-size:12"></td>';
             patientSlideTableBody.appendChild(tr);
 
         });
 
-        ss.sort().forEach(function (s, i) {
-            var pr = document.createElement('p');
-            pr.innerHTML = ' ' + i + ') <button onclick="resultsSlide(this)">' + s + '</button> '
-                + '<a href="' + abcUtil.caMicroLink(s, selectObject.cancer_type) + '?tissueId=' + s + '" target=_blank> caMicroscope </a>.';
-            slideImages.appendChild(pr)
-        });
+        //ss.sort().forEach(function (s, i) {
+        //var pr = document.createElement('p');
+        //pr.innerHTML = ' ' + i + ') <button onclick="resultsSlide(this)">' + s + '</button> '
+        //    + '<a href="' + abcUtil.caMicroLink(s, selectObject.cancer_type) + '?tissueId=' + s + '" target=_blank> caMicroscope </a>.';
+        //slideImages.appendChild(pr)
+        //});
 
         abcUtil.listDxSlides(pp, data)
+    },
+
+    setupDimensionalChart: function (karnofsky_score) {
+
+    var ks = '';
+    var ks1 = '';
+    if (karnofsky_score != null) {
+
+        ks = '<div style="color:blue">Karnofsky Score:</div>'
+            + '<div id="karnofsky_performance_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div>';
+
+        ks1 = 'color indicates Karnofsky performance score (see framed bar chart);';
     }
+
+    var html = '';
+    html += '<table cellpadding="10px">';
+    html += '<tr>';
+    html += '<td style="vertical-align:top"><table>';
+    html += '<tr>';
+    html += '<td style="vertical-align:top"><div>% Necrotic Cells:</div>';
+    html += '<div id="percent_necrosis"></div>';
+    html += '<div>% Tumor Nuclei:</div>';
+    html += '<div id="percent_tumor_nuclei"></div>';
+    html += '<div>Location:</div>';
+    html += '<div id="section_location"></div></td>';
+    html += '<td style="vertical-align:top"><div>% Tumor Cells:</div>';
+    html += '<div id="percent_tumor_cells"></div>';
+    html += '<div>% Lymphocyte Infiltration:</div>';
+    html += '<div id="percent_lymphocyte_infiltration"></div>';
+    html += '<div>Race:</div>';
+    html += '<div id="race"></div>';
+    html += '<div>Gender:</div>';
+    html += '<div id="gender"></div></td>';
+    html += '<td style="vertical-align:top"><div>% Stromal Cells:</div>';
+    html += '<div id="percent_stromal_cells"></div>';
+    html += ks;
+    html += '<div>% Monocyte Infiltration:</div>';
+    html += '<div id="percent_monocyte_infiltration"></div>';
+    html += '<div>% Neutrophil Infiltration:</div>';
+    html += '<div id="percent_neutrophil_infiltration"></div></td>';
+    html += '</tr>';
+    html += '</table></td>';
+    html += '<td style="vertical-align:top"><h3>' + (selectObject.cancer_type).toUpperCase() + ' Tumor progression</h3>';
+    html += '<div id="tumorProgression"></div>';
+    html += '<b>Legend</b>: ' + ks1 + ' diameter indicates number of images</td>';
+    html += '</tr>';
+    html += '</table>';
+
+    html += '<a name="anchor"></a>';
+
+    html += '<table>';
+    html += '<tr>';
+    html += '<td style="vertical-align:top">';
+    html += '<table id="patientSlideTable">';
+    html += '<thead>';
+    html += '<tr>';
+    html += '<td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">TCGA patients:</td>';
+    html += '<td id="diagnosticImagesHeader" style="color:maroon;font-weight:bold">Diagnostic Images:</td>';
+    html += '</tr>';
+    html += '</thead>';
+    html += '<tbody id="patientSlideTableBody"></tbody>';
+    html += '</table>';
+    html += '</td>';
+    html += '<td id="moreInfo" style="vertical-align:top"></td>';
+    html += '</tr>';
+    html += '</table>';
+
+    return html;
+}
 
 };
