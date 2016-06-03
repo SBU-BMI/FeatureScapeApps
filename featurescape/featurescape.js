@@ -2,7 +2,7 @@ console.log('featurescape.js loaded');
 
 fscape = function (x) {
     // being used to ini UI
-    if ((!x) && (document.getElementById("featureScapeDiv"))) {
+    if ((!x) && (document.getElementById("section"))) {
         fscape.UI()
     } else if (x) { //creating an fscape grid instance
         return new fscape.grid(x)
@@ -13,11 +13,11 @@ fscape = function (x) {
 
 fscape.UI = function () {
     console.log('assembling UI ...');
-    fscape.div = document.getElementById("featureScapeDiv");
+    fscape.div = document.getElementById("section");
 
     //  check for data URL
     if (location.search.length > 1) {
-        fscape.log('featureScapeLog', 'loading, please wait ...', 'red');
+        fscape.log('msg', 'loading, please wait ...', 'red');
         var ss = location.search.slice(1).split(';');
         fscape.loadURL(ss[0]);
 
@@ -84,8 +84,8 @@ fscape.fun = function (data, url) {
     console.log('patient', patient);
 
     if (data.length == 0) {
-        document.getElementById('featureScapeDiv').innerHTML = '<span style="color:red">Data not available for patient:</span><br>' + patient;
-        fscape.log('featureScapeLog', '');
+        document.getElementById('section').innerHTML = '<span style="color:red">Data not available for patient:</span><br>' + patient;
+        fscape.log('msg', '');
 
     }
     else {
@@ -109,8 +109,8 @@ fscape.fun = function (data, url) {
 
         var xx = nv;
         // xx.length + ' entries sampled from ' + url
-        fscape.log('featureScapeLog', '');
-        fscape.log('patientInfo', xx.length + ' sets of features sampled from ' + patient, 'black');
+        fscape.log('msg', '');
+        fscape.log('info1', xx.length + ' sets of features sampled from ' + patient, 'black');
 
         fscape.cleanUI();
 
@@ -141,8 +141,8 @@ fscape.clust2html = function (cl) {
             v = Math.min(v, 50);
             v = Math.max(v, 0);
             var cm = 'rgb(' + cmap[v].toString() + ')';
-            h += '<td id="' + i + ',' + ind[k] + '" style="color:' + cm + ';font-size:' + (14 - 4 * c[j]) + '">O</td>';
-            //h+='<td style="color:rgb(255,">X</td>'
+            h += '<td id="' + i + ',' + ind[k] + '" style="color: ' + cm + '; font-size: ' + (14 - 4 * c[j]) + 'px">O</td>';
+
         });
         h += '</tr>'
     });
@@ -261,14 +261,16 @@ fscape.plot = function (x) { // when ready to do it
                 var cBack = JSON.parse('[' + this.style.color.slice(4, -1).split(', ') + ']').map(function (c) {
                     return 255 - c
                 }).toString();
-                featuremoreTD.innerHTML = '<p style="background-color:' + this.style.color + ';font-size:3">'
+
+                featuremoreTD.innerHTML = '<p style="background-color: ' + this.style.color + '; font-size: 3px">'
                     + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>'
                     + '<p style="color:navy">Pearson correlation between '
                     + '<li style="color:navy">' + fi + ' </li>'
                     + '<li style="color:navy">' + fj + '</li> '
                     + '|corr(' + ii + ',' + jj + ')|= '
                     + jmat.toPrecision(1 - fscape.dt.cl[1][ii][jj])
-                    + '</p><p style="background-color:' + this.style.color + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
+                    + '</p><p style="background-color: ' + this.style.color + '; font-size: 3px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
+
                 $(this).tooltip()[0].title = '< ' + fi + ' , ' + fj + ' >';
             }
         };
@@ -347,13 +349,13 @@ fscape.featuremap = function (i, j) {
             var vi = jmat.interp1(fscape.dt.dtmemb[fi][1], fscape.dt.dtmemb[fi][0], [qij[0], qij[0] + 1 / fscape.dt.n]);
             var vj = jmat.interp1(fscape.dt.dtmemb[fj][1], fscape.dt.dtmemb[fj][0], [qij[1], qij[1] + 1 / fscape.dt.n]);
             var c = this.style.backgroundColor;
-            var h = '<p style="background-color:' + c + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
+            var h = '<p style="background-color: ' + c + '; font-size: 3px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
             h += '<li>' + fj + ' = [' + jmat.toPrecision(vj) + ']</li>';
             h += 'Quantile = [' + jmat.toPrecision([qij[1], qij[1] + 1 / fscape.dt.n]) + ']';
             h += '<li>' + fi + ' = [' + jmat.toPrecision(vi) + ']</li>';
             h += 'Quantile = [' + jmat.toPrecision([qij[0], qij[0] + 1 / fscape.dt.n]) + ']';
             h += '<p style="color:blue">distribution density: ' + jmat.toPrecision(this.d) + '</p>';
-            h += '<p style="background-color:' + c + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
+            h += '<p style="background-color: ' + c + '; font-size: 3px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
             featuremapMoreDiv.innerHTML = h
         };
 
@@ -408,7 +410,7 @@ fscape.featuremap = function (i, j) {
         var cBack = JSON.parse('[' + this.style.color.slice(4, -1).split(', ') + ']').map(function (c) {
             return 255 - c
         }).toString();
-        featuremoreTD.innerHTML = '<p style="background-color:' + c + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p><p style="color:navy">Pearson correlation between <li style="color:navy">' + fi + ' </li><li style="color:navy">' + fj + '</li> corr(' + ii + ',' + jj + ')= ' + Math.round((1 - fscape.dt.cl[1][ii][jj]) * 1000) / 1000 + '</p><p style="background-color:' + c + ';font-size:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>'
+        featuremoreTD.innerHTML = '<p style="background-color: ' + c + '; font-size: 3px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p><p style="color:navy">Pearson correlation between <li style="color:navy">' + fi + ' </li><li style="color:navy">' + fj + '</li> corr(' + ii + ',' + jj + ')= ' + Math.round((1 - fscape.dt.cl[1][ii][jj]) * 1000) / 1000 + '</p><p style="background-color: ' + c + '; font-size: 3px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>'
     };
 
 };

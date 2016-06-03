@@ -81,7 +81,7 @@ function getData()
         async: false,
         dataType: 'json',
         success: function (json) {
-            u24p.buildUI('dataOrigin', 'u24PreviewDiv', json);
+            u24p.buildUI('info2', 'section', json);
         }
     });
 
@@ -91,8 +91,8 @@ function getData()
 $(document).ready(function () {
 
     selectObject = trace = {};
-    selectDiv = document.getElementById('selectDiv');
-    selectDiv.innerHTML = abcUtil.selectBox(trace, selectObject);
+    select = document.getElementById('select');
+    select.innerHTML = abcUtil.selectBox(trace, selectObject);
     getData();
 
     tumorChanged = function (evt) {
