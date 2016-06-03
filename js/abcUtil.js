@@ -304,7 +304,7 @@ abcUtil = {
     html += '<table>';
     html += '<tr>';
     html += '<td style="vertical-align:top">';
-    html += '<table id="patientSlideTable">';
+    html += '<table border="1" id="patientSlideTable">';
     html += '<thead>';
     html += '<tr>';
     html += '<td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">TCGA patients:</td>';
