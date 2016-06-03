@@ -26,8 +26,8 @@ mugshots = function () {
         thisisrandom = true;
     }
 
-    mugshotLog.textContent = 'loading, please wait ...';
-    mugshotLog.style.color = 'red';
+    msg.textContent = 'loading, please wait ...';
+    msg.style.color = 'red';
 
     console.log('url: ' + url);
     mugshots.loadData(url);
@@ -88,7 +88,7 @@ mugshots.loadData = function (url) {
         async: true,
         dataType: 'json',
         success: function (json) {
-            mugshots.draw('mugshotDiv', json);
+            mugshots.draw('section', json);
         }
     });
 };
@@ -174,9 +174,11 @@ mugshots.fun = function (data, size) {
         })
     });
 
-    var div = document.getElementById('patientInfo');
+    var div = document.getElementById('info1');
     if (thisisrandom) {
-        div.innerHTML = '<strong>Displaying ' + newData.length + ' nuclear images from random ' + ((mugshots.db).substring(4)).toUpperCase() + ' caseIDs:</strong><br>' + h;
+        div.textContent = 'Displaying ' + newData.length + ' nuclear images from random ' + ((mugshots.db).substring(4)).toUpperCase() + ' caseIDs:';
+        document.getElementById('info2').innerHTML = h;
+
     }
     else {
         var fx = getQueryVariable('fx', location.hash);
@@ -185,9 +187,10 @@ mugshots.fun = function (data, size) {
         var fy = getQueryVariable('fy', location.hash);
         var ymin = getQueryVariable('ymin', location.hash);
         var ymax = getQueryVariable('ymax', location.hash);
-        div.innerHTML = 'Displaying ' + newData.length + ' nuclear images having morphologic ranges selected from caseID <strong>' + prevCaseId + '</strong>:<br>'
-            + fx + ' between ' + xmin + ' and ' + xmax + '<br>'
-            + fy + ' between ' + ymin + ' and ' + ymax;
+        div.textContent = 'Displaying ' + newData.length + ' nuclear images having morphologic ranges selected from caseID ' + prevCaseId + ':';
+        document.getElementById('info2').innerHTML =
+            fx + ' between ' + xmin + ' and ' + xmax + '<br>' +
+            fy + ' between ' + ymin + ' and ' + ymax;
 
     }
 
@@ -322,8 +325,8 @@ mugshots.draw = function (targetDiv, data, layout) {
     location.hash = '';
 
     // And finally...
-    mugshotLog.textContent = 'Click on any patch to go to the location in caMicroscope, to view it in the context of the whole slide image.';
-    mugshotLog.style.color = 'blue';
+    msg.textContent = 'Click on any patch to go to the location in caMicroscope, to view it in the context of the whole slide image.';
+    msg.style.color = 'blue';
 
 };
 

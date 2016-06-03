@@ -1,6 +1,8 @@
 /**
  * abcUtil.js: A container for utility stuff.
  */
+console.log('abcUtil.js');
+
 abcUtil = {
 
     caMicroLink: function (case_id, cancer_type, x, y) {

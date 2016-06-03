@@ -1,50 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nuclei Mugshots</title>
+    <script src="http://www.w3schools.com/lib/w3data.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script src="../js/config.js"></script>
     <script src="../js/abcUtil.js"></script>
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="main.js"></script>
-    <style>
-        body {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            margin-left: 10px;
-            margin-right: 10px;
-        }
-    </style>
-    <title>Nuclei Mugshots</title>
 </head>
 <body>
-<div class="container" id="mcontainer">
-
-    <i style="font-family:Palatino;color:maroon">
-        <a href="https://github.com/SBU-BMI/FeatureScapeApps" target="_blank" style="color:maroon">
-            <img src="../img/BMI.png" height="50px" style="vertical-align:bottom">
-        </a>
-        <p>
-        <h3>
-            <a href="https://github.com/SBU-BMI/FeatureScapeApps" target="_blank" id="githubLink">
-                Nuclei Mugshots &ndash; Wanted: for robbery (of good health!)
+<div w3-include-html="../header.html"></div>
+<script>
+    w3IncludeHTML();
+</script>
+<div id="header">
+    <h3>
+        <i style="font-family:Palatino;color:maroon">
+            <a href="https://github.com/SBU-BMI/FeatureScapeApps" target="_blank">
+                <strong>Nuclei Mugshots</strong> &ndash; Wanted: for robbery (of good health!)
                 <i class="fa fa-github-alt" style="color:maroon"></i>
-            </a></h3>
-        </p>
-    </i>
-
-    <p id="dataOrigin">
-    <div id="patientInfo"></div>
-    <div id="repositoryInfo"></div>
+            </a>
+        </i>
+    </h3>
+    <div id="info1" style="font-weight: bold;"></div>
+    <div id="info2"></div>
     <hr>
-    <p id="mugshotLog"></p>
-    <div id="mugshotDiv"></div>
-
 </div>
+<div id="msg"></div><br>
+<div id="section">
+</div>
+<div id="footer"></div>
 </body>
 </html>
