@@ -17,33 +17,30 @@
             margin-right: 10px;
         }
     </style>
-</head>
-<body>
-
-<div class="container" id="openHealth">
-    <h3>
-        <i style="font-family:Palatino;color:maroon">
-            <a href="https://github.com/SBU-BMI/FeatureScapeApps" target="_blank" style="color:maroon">
-                <img src="../img/BMI.png" height="50px" style="vertical-align:bottom">
-            </a>
-            <p>
-                <a href="https://github.com/SBU-BMI/FeatureScapeApps" target="_blank">
-                    <b>TCGAscope</b> - Web Computing for openHealth
-                    <i class="fa fa-github-alt" style="color:maroon"></i>
-                </a>
-            </p>
-        </i>
-    </h3>
-    <p id="dataOrigin">
-    <div id="patientInfo"></div>
-    </p>
-    <hr>
     <script>
         localforage.clear();
         if (document.location.search.length == 0) {
             document.location.search = config.domain + "/openHealth/tcgascope.js";
         }
     </script>
+</head>
+<body>
+<div id="header">
+    <h3>
+        <i style="font-family:Palatino;color:maroon">
+            <a href="https://github.com/SBU-BMI/FeatureScapeApps" target="_blank">
+                <strong>FeatureScape</strong> &ndash; Interactive representation and analysis of feature landscapes
+                <i class="fa fa-github-alt" style="color:maroon"></i>
+            </a>
+        </i>
+    </h3>
+    <div id="info1" style="font-weight: bold;"></div>
+    <div id="info2"></div>
+    <hr>
 </div>
+<div id="msg"></div>
+<div id="select"></div>
+<div id="section"></div>
+<div id="footer"></div>
 </body>
 </html>

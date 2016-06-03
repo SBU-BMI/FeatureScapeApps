@@ -84,7 +84,6 @@ abcUtil = {
         if (!data) {
 
             var url = config.findAPI + ':' + config.port + '/?limit=1000&collection=metadata&find={"provenance.analysis_execution_id":"' + selectObject.execution_id + '"}&project={"_id":0,"image.subject_id":1,"image.case_id":1}&db=' + selectObject.db;
-            console.log(url);
 
             $.ajax({
                 url: url,
@@ -126,12 +125,19 @@ abcUtil = {
                 pp = pp.concat(data[pi])
             });
 
+
             diagnosticImagesHeader.textContent = ' Diagnostic Images (' + pp.length + '):';
-            //diagnosticImages.innerHTML = ""; // clear
 
             pp.map(function (p) {
                 if (!document.getElementById("link_" + p)) {
-                    var pt = p.match(/TCGA-\w+-\w+/)[0];
+                    var pt = '';
+                    if (typeof p == 'string') {
+                        pt = p.match(/TCGA-\w+-\w+/)[0];
+                    }
+                    else {
+                        pt = p[0].match(/TCGA-\w+-\w+/);
+                    }
+
                     var tp = document.getElementById('dxSlide_' + pt); // target patient element
                     var dx = document.createElement('p');
                     dx.id = "link_" + p;
@@ -145,55 +151,67 @@ abcUtil = {
 
     },
 
-    listSlides: function (R, S, P, data, patient, selectObject) {
+    listSlides: function (patient, selectObject, data, R, S, P) {
         //slideImages.parentNode.hidden = "true";
         var parm = '';
-
-        if (R.gender.FEMALE.c + R.gender.MALE.c > R.section_location.BOTTOM.c + R.section_location.TOP.c) {
-            parm = 'section_location'
-        } else {
-            parm = 'gender'
-        }
         var ss = []; // list of slides
         var pp = []; // list of patients
-        Object.getOwnPropertyNames(S[parm]).forEach(function (s) {
-            if (S[parm][s].c > 0) {
-                ss.push(s)
+        if (R != undefined && S != undefined && P != undefined) {
+            if (R.gender.FEMALE.c + R.gender.MALE.c > R.section_location.BOTTOM.c + R.section_location.TOP.c) {
+                parm = 'section_location'
+            } else {
+                parm = 'gender'
             }
-        });
-        Object.getOwnPropertyNames(P[parm]).forEach(function (p) {
-            if (P[parm][p].c > 0) {
-                pp.push(p)
-            }
-        });
 
-        //slideImagesHeader.textContent = ' Slide Images (' + ss.length + '):';
+            Object.getOwnPropertyNames(S[parm]).forEach(function (s) {
+                if (S[parm][s].c > 0) {
+                    ss.push(s)
+                }
+            });
+            Object.getOwnPropertyNames(P[parm]).forEach(function (p) {
+                if (P[parm][p].c > 0) {
+                    pp.push(p)
+                }
+            });
+
+        }
+
+        if (pp.length == 0) {
+            // object to array
+            pp = $.map(patient, function (value, index) {
+                return [value];
+            });
+        }
+
         tcgaPatientsHeader.textContent = ' TCGA patients (' + pp.length + '):';
         diagnosticImagesHeader.textContent = ' Diagnostic Images (...):';
-        //tcgaPatients.innerHTML = "";
-        //slideImages.innerHTML = "";
 
         // DATA REFERENCE
         var tw = 'https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/';
-        document.getElementById('patientInfo').innerHTML = '<strong>Charts display clinical information from TCGA:</strong><br>'
-            + '<a href="' + tw + openHealth.clinicalFile + '" target="_blank">' + tw + openHealth.clinicalFile + '</a><br>'
-            + '<a href="' + tw + openHealth.biosFile + '" target="_blank">' + tw + openHealth.biosFile + '</a><br><br>'
-            + '<strong><a href="#anchor">Slides</a></strong> '
-            + 'for ' + pp.length + ' TCGA patients with ' + (selectObject.cancer_type).toUpperCase();
+        var d = document.getElementById('info2');
+
+        if (typeof openHealth != 'undefined') {
+            d.innerHTML = '<strong>Charts display clinical information from TCGA:</strong><br>'
+                + '<a href="' + tw + openHealth.clinicalFile + '" target="_blank">' + tw + openHealth.clinicalFile + '</a><br>'
+                + '<a href="' + tw + openHealth.biosFile + '" target="_blank">' + tw + openHealth.biosFile + '</a><br><br>'
+                + '<strong><a href="#anchor">Slides</a></strong> '
+                + 'for ' + pp.length + ' TCGA patients with ' + (selectObject.cancer_type).toUpperCase();
+        }
+        else {
+            d.innerHTML = '<strong><a href="#anchor">Slides</a></strong> '
+                + 'for ' + pp.length + ' TCGA patients with ' + (selectObject.cancer_type).toUpperCase();
+        }
 
         resultsPatient = function (x) {
-
-            //buttonResults.innerHTML = '<pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
 
             var v = 0.95 * Math.random();
             var textContent = v.toString().slice(0, 5);
             var exec = '"provenance.analysis.execution_id":"' + selectObject.execution_id + '"';
-            var find = '{"randval":{"$gte":' + textContent + '},' + exec + ',"provenance.image.subject_id":"' + patient[x.textContent]["bcr_patient_barcode"] + '"}&db=' + selectObject.db;
+            var find = '{"randval":{"$gte":' + textContent + '},' + exec + ',"provenance.image.subject_id":"' + (typeof patient[x.textContent] == 'undefined' ? x.textContent : patient[x.textContent]["bcr_patient_barcode"]) + '"}&db=' + selectObject.db;
             // FEATURESCAPE
             var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
 
             // FIGURE4
-            //bcr_patient_barcode: { $in: [<value1>, <value2>, ... <valueN> ] }
             var ppp = '';
             pp.forEach(function (p) {
                 ppp += '"' + p + '",';
@@ -215,22 +233,14 @@ abcUtil = {
 
         };
 
-        resultsSlide = function (x) {
-            var d = openHealth.findOne(openHealth.tcga.dt[xxxDocs], 'bcr_slide_barcode', x.textContent);
-            // TODO:
-            console.log('does this get called resultsSlide');
-            //buttonResults.innerHTML = '<pre>' + JSON.stringify(d, null, 3) + '</pre>'
-        };
 
         patientSlideTableBody.innerHTML = ""; // clear tbody
         pp.sort().forEach(function (p, i) {
 
-            //var pr = document.createElement('p');
-            //pr.innerHTML = ' ' + i + ') <button onclick="resultsPatient(this)">' + p + '</button> <a href="http://www.cbioportal.org/case.do?case_id=' + p + '&cancer_study_id=' + selectObject.cancer_type + '_tcga" target=_blank>cBio</a>... ';
-            //pr.id = "patient" + p;
-            //tcgaPatients.appendChild(pr);
-
             var tr = document.createElement('tr');
+            if (typeof p == 'object') {
+                p = p.bcr_patient_barcode;
+            }
             tr.id = 'tr_' + p;
             var num = i + 1;
 
@@ -243,82 +253,81 @@ abcUtil = {
 
         });
 
-        //ss.sort().forEach(function (s, i) {
-        //var pr = document.createElement('p');
-        //pr.innerHTML = ' ' + i + ') <button onclick="resultsSlide(this)">' + s + '</button> '
-        //    + '<a href="' + abcUtil.caMicroLink(s, selectObject.cancer_type) + '?tissueId=' + s + '" target=_blank> caMicroscope </a>.';
-        //slideImages.appendChild(pr)
-        //});
-
         abcUtil.listDxSlides(pp, data)
     },
 
-    setupDimensionalChart: function (karnofsky_score) {
+    setupDC1: function (karnofsky_score) {
 
-    var ks = '';
-    var ks1 = '';
-    if (karnofsky_score != null) {
+        var ks = '';
+        var ks1 = '';
+        if (karnofsky_score != null) {
 
-        ks = '<div style="color:blue">Karnofsky Score:</div>'
-            + '<div id="karnofsky_performance_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div>';
+            ks = '<div style="color:blue">Karnofsky Score:</div>'
+                + '<div id="karnofsky_performance_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div>';
 
-        ks1 = 'color indicates Karnofsky performance score (see framed bar chart);';
+            ks1 = 'color indicates Karnofsky performance score (see framed bar chart);';
+        }
+
+        var html = '';
+        html += '<table cellpadding="10px">';
+        html += '<tr>';
+        html += '<td style="vertical-align:top"><table>';
+        html += '<tr>';
+        html += '<td style="vertical-align:top"><div>% Necrotic Cells:</div>';
+        html += '<div id="percent_necrosis"></div>';
+        html += '<div>% Tumor Nuclei:</div>';
+        html += '<div id="percent_tumor_nuclei"></div>';
+        html += '<div>Location:</div>';
+        html += '<div id="section_location"></div></td>';
+        html += '<td style="vertical-align:top"><div>% Tumor Cells:</div>';
+        html += '<div id="percent_tumor_cells"></div>';
+        html += '<div>% Lymphocyte Infiltration:</div>';
+        html += '<div id="percent_lymphocyte_infiltration"></div>';
+        html += '<div>Race:</div>';
+        html += '<div id="race"></div>';
+        html += '<div>Gender:</div>';
+        html += '<div id="gender"></div></td>';
+        html += '<td style="vertical-align:top"><div>% Stromal Cells:</div>';
+        html += '<div id="percent_stromal_cells"></div>';
+        html += ks;
+        html += '<div>% Monocyte Infiltration:</div>';
+        html += '<div id="percent_monocyte_infiltration"></div>';
+        html += '<div>% Neutrophil Infiltration:</div>';
+        html += '<div id="percent_neutrophil_infiltration"></div></td>';
+        html += '</tr>';
+        html += '</table></td>';
+        html += '<td style="vertical-align:top"><h3>' + (selectObject.cancer_type).toUpperCase() + ' Tumor progression</h3>';
+        html += '<div id="tumorProgression"></div>';
+        html += '<b>Legend</b>: ' + ks1 + ' diameter indicates number of images</td>';
+        html += '</tr>';
+        html += '</table>';
+
+        return html;
+    },
+
+    setupDC2: function (karnofsky_score) {
+
+        var html = '';
+        html += '<a name="anchor"></a>';
+
+        html += '<table>';
+        html += '<tr>';
+        html += '<td style="vertical-align:top">';
+        html += '<table border="1" id="patientSlideTable">';
+        html += '<thead>';
+        html += '<tr>';
+        html += '<td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">TCGA patients:</td>';
+        html += '<td id="diagnosticImagesHeader" style="color:maroon;font-weight:bold">Diagnostic Images:</td>';
+        html += '</tr>';
+        html += '</thead>';
+        html += '<tbody id="patientSlideTableBody"></tbody>';
+        html += '</table>';
+        html += '</td>';
+        html += '<td id="moreInfo" style="vertical-align:top"></td>';
+        html += '</tr>';
+        html += '</table>';
+
+        return html;
     }
-
-    var html = '';
-    html += '<table cellpadding="10px">';
-    html += '<tr>';
-    html += '<td style="vertical-align:top"><table>';
-    html += '<tr>';
-    html += '<td style="vertical-align:top"><div>% Necrotic Cells:</div>';
-    html += '<div id="percent_necrosis"></div>';
-    html += '<div>% Tumor Nuclei:</div>';
-    html += '<div id="percent_tumor_nuclei"></div>';
-    html += '<div>Location:</div>';
-    html += '<div id="section_location"></div></td>';
-    html += '<td style="vertical-align:top"><div>% Tumor Cells:</div>';
-    html += '<div id="percent_tumor_cells"></div>';
-    html += '<div>% Lymphocyte Infiltration:</div>';
-    html += '<div id="percent_lymphocyte_infiltration"></div>';
-    html += '<div>Race:</div>';
-    html += '<div id="race"></div>';
-    html += '<div>Gender:</div>';
-    html += '<div id="gender"></div></td>';
-    html += '<td style="vertical-align:top"><div>% Stromal Cells:</div>';
-    html += '<div id="percent_stromal_cells"></div>';
-    html += ks;
-    html += '<div>% Monocyte Infiltration:</div>';
-    html += '<div id="percent_monocyte_infiltration"></div>';
-    html += '<div>% Neutrophil Infiltration:</div>';
-    html += '<div id="percent_neutrophil_infiltration"></div></td>';
-    html += '</tr>';
-    html += '</table></td>';
-    html += '<td style="vertical-align:top"><h3>' + (selectObject.cancer_type).toUpperCase() + ' Tumor progression</h3>';
-    html += '<div id="tumorProgression"></div>';
-    html += '<b>Legend</b>: ' + ks1 + ' diameter indicates number of images</td>';
-    html += '</tr>';
-    html += '</table>';
-
-    html += '<a name="anchor"></a>';
-
-    html += '<table>';
-    html += '<tr>';
-    html += '<td style="vertical-align:top">';
-    html += '<table border="1" id="patientSlideTable">';
-    html += '<thead>';
-    html += '<tr>';
-    html += '<td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">TCGA patients:</td>';
-    html += '<td id="diagnosticImagesHeader" style="color:maroon;font-weight:bold">Diagnostic Images:</td>';
-    html += '</tr>';
-    html += '</thead>';
-    html += '<tbody id="patientSlideTableBody"></tbody>';
-    html += '</table>';
-    html += '</td>';
-    html += '<td id="moreInfo" style="vertical-align:top"></td>';
-    html += '</tr>';
-    html += '</table>';
-
-    return html;
-}
 
 };

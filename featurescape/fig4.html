@@ -1,6 +1,8 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>FeatureExplorer</title>
+    <script src="http://www.w3schools.com/lib/w3data.js"></script>
     <script src="../js/config.js"></script>
     <script src="../js/abcUtil.js"></script>
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
@@ -15,27 +17,25 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="../js/jmat.js"></script>
     <script src="fig4.js"></script>
+
 </head>
 <body>
-<div class="container" id="fig4container">
+<div w3-include-html="../header.html"></div>
+<script>
+    w3IncludeHTML();
+</script>
+<div id="header">
     <h3>
         <i style="font-family:Palatino;color:maroon">
-            <a href="https://github.com/SBU-BMI/FeatureScapeApps" target="_blank" style="color:maroon">
-                <img src="../img/BMI.png" height="50px" style="vertical-align:bottom">
+            <a href="https://github.com/SBU-BMI/FeatureScapeApps" target="_blank">
+                <strong>FeatureExplorer</strong> &ndash; Interactive Tool to Allow Feature Exploration Across
+                Multiple Dimensions
+                <i class="fa fa-github-alt" style="color:maroon"></i>
             </a>
-            <p>
-                <a href="https://github.com/SBU-BMI/FeatureScapeApps" target="_blank" id="githubLink">
-                    <strong>FeatureExplorer</strong> &ndash; Interactive Tool to Allow Feature Exploration Across
-                    Multiple Dimensions
-                    <i class="fa fa-github-alt" style="color:maroon"></i>
-                </a>
-            </p>
         </i>
     </h3>
-    <p id="dataOrigin">
-    <div id="patientInfo"></div>
-    <div id="repositoryInfo"></div>
-    </p>
+    <div id="info1" style="font-weight: bold;"></div>
+    <div id="info2"></div>
     <b style="color:navy">Two video stories:</b>
     <a href="https://www.youtube.com/watch?v=DheaWtyKoes" target="_blank">
         the roundness&amp;EGFR email
@@ -46,10 +46,11 @@
         <i class="fa fa-youtube" style="color:maroon;font-size:30px;"></i>
     </a>
     <hr>
-    <p id="fig4msg"></p>
-    <div id="selectDiv"></div>
-    <div id="fig4div"><span style="color:red">loading ...</span></div>
-    <div id="fig4cases"></div>
 </div>
+<div id="msg"></div>
+<div id="select"></div>
+<div id="section"></div>
+<div id="ptslides"></div>
+<div id="footer"></div>
 </body>
 </html>

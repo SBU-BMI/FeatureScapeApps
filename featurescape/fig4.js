@@ -3,8 +3,8 @@ console.log('fig4.js loaded');
 window.onload = function () {
 
     selectObject = trace = {};
-    selectDiv = document.getElementById('selectDiv');
-    selectDiv.innerHTML = abcUtil.selectBox(trace, selectObject);
+    select = document.getElementById('select');
+    select.innerHTML = abcUtil.selectBox(trace, selectObject);
 
     tumorChanged = function (evt) {
         var opt = evt.selectedOptions[0].value;
@@ -34,7 +34,7 @@ window.onload = function () {
 
 function getData(url) {
 
-    console.log('url', url);
+    document.getElementById('msg').textContent = '';
 
     $.getJSON(url).then(function (data) {
 
@@ -63,20 +63,29 @@ function getData(url) {
 }
 
 function clrMsg(h) {
-    var a = document.getElementById('fig4msg');
+    var a = document.getElementById('msg');
     a.innerHTML = h;
 
-    a = document.getElementById('patientInfo');
-    a.innerHTML = '';
-    a = document.getElementById('repositoryInfo');
+    /*
+     a = document.getElementById('patientInfo');
+     a.innerHTML = '';
+
+     a = document.getElementById('repositoryInfo');
+     a.innerHTML = '';
+
+     */
+
+    a = document.getElementById('info1');
     a.innerHTML = '';
 
-    a = document.getElementById('fig4cases');
+    a = document.getElementById('info2');
     a.innerHTML = '';
 
-    a = document.getElementById('fig4div');
+    a = document.getElementById('section');
     a.innerHTML = '';
 
+    a = document.getElementById('ptslides');
+    a.innerHTML = '';
 }
 
 function getPatientArrayFromUrl(url) {
@@ -110,7 +119,16 @@ function getPatientArrayFromUrl(url) {
 }
 
 function doPatients(data, url) {
-    var fig4cases = document.getElementById('fig4cases');
+    var ptslides = document.getElementById('ptslides');
+
+    ptslides.innerHTML = abcUtil.setupDC2();
+
+    /*
+     // TODO:
+     setTimeout(function () {
+     abcUtil.listSlides(data, selectObject);
+     }, 1000);
+     */
 
     var h = '';
     if (url) {
@@ -134,7 +152,8 @@ function doPatients(data, url) {
     });
     t += '</table>';
 
-    fig4cases.innerHTML = t;
+    ptslides.innerHTML = t;
+
 
 }
 
@@ -155,17 +174,17 @@ function doFigure4(data) {
     console.log('loaded ' + data.length + ' records');
 
     /*
-     var msg = function (txt, clr) {
+     var msg1 = function (txt, clr) {
      if (!clr) {
      clr = "blue"
      }
-     fig4msg.textContent = '> ' + txt;
-     fig4msg.style.color = clr;
+     msg.textContent = '> ' + txt;
+     msg.style.color = clr;
      setTimeout(function () {
-     fig4msg.textContent = ""
+     msg.textContent = ""
      }, 5000)
      };
-     msg('loaded ' + data.length + ' records');
+     msg1('loaded ' + data.length + ' records');
      */
 
     data = flatten(data);
@@ -223,7 +242,7 @@ function doFigure4(data) {
 
     h += '</td>';
     h += '</tr></table>';
-    fig4div.innerHTML = h;
+    section.innerHTML = h;
 
     // Parameterization
     features.sort(function (a, b) {
@@ -747,11 +766,19 @@ function showInfo(data) {
         }
     }
 
-    document.getElementById('patientInfo').innerHTML = 'Morphology features extracted from image analysis of histology whole slide images for '
-        + data.length + ' ' + tumor + ' Patients of The Cancer Genome Atlas.';
-
-    document.getElementById('repositoryInfo').innerHTML = 'Genomic data compiled with <a href="http://www.cbioportal.org/" target="_blank">MSKCC cBioPortal</a> tool, demographic and clinical data from '
+    // TODO:
+    document.getElementById('info2').innerHTML = 'Morphology features extracted from image analysis of histology whole slide images for '
+        + '<strong>' + data.length + ' ' + tumor + '</strong> Patients of The Cancer Genome Atlas.<br>'
+        + 'Genomic data compiled with <a href="http://www.cbioportal.org/" target="_blank">MSKCC cBioPortal</a> tool, demographic and clinical data from '
         + 'the <a href="https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/' + tumor1 + '/bcr/biotab/clin/" target="_blank">TCGA repository</a>.';
+
+    /*
+     document.getElementById('patientInfo').innerHTML = 'Morphology features extracted from image analysis of histology whole slide images for '
+     + data.length + ' ' + tumor + ' Patients of The Cancer Genome Atlas.';
+
+     document.getElementById('repositoryInfo').innerHTML = 'Genomic data compiled with <a href="http://www.cbioportal.org/" target="_blank">MSKCC cBioPortal</a> tool, demographic and clinical data from '
+     + 'the <a href="https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/' + tumor1 + '/bcr/biotab/clin/" target="_blank">TCGA repository</a>.';
+     */
 
 }
 

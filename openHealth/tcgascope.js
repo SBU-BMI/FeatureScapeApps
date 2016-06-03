@@ -1,6 +1,5 @@
 console.log('tcgascope.js loaded');
 
-
 openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
     selectObject = trace = {};
@@ -25,8 +24,6 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
 
     function get_biospecimen_slide(filename, cancer_type) {
-
-        console.log('*** get_biospecimen_slide ***');
 
         localforage.getItem(filename, function (x) {
             var clinical_patient = '',
@@ -64,9 +61,6 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
     //https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/luad/bcr/biotab/clin
     function getTcgaData(cancer_type) {
-
-        console.log('*** getTcgaData ***');
-        console.log(cancer_type);
 
         selectObject.cancer_type = cancer_type;
         var clinicalFile = 'clinical_patient_' + cancer_type;
@@ -194,7 +188,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         openHealth.getScript(["https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js", "https://www.google.com/jsapi", "https://square.github.io/crossfilter/crossfilter.v1.min.js", "https://dc-js.github.io/dc.js/js/dc.js", "https://dc-js.github.io/dc.js/css/dc.css"], function () { // after satisfying d3 dependency
             openHealthJobMsg.textContent = "Assembling charts ...";
 
-            openHealthJobDC.innerHTML = abcUtil.setupDimensionalChart(openHealth.tcga.dt[clinical_patient].karnofsky_score);
+            openHealthJobDC.innerHTML = abcUtil.setupDC1(openHealth.tcga.dt[clinical_patient].karnofsky_score) + abcUtil.setupDC2();
 
             var docs = openHealth.tcga.dt[xxxDocs];
 
@@ -401,7 +395,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                 .xAxisLabel('Survival (days)')
                 .yAxisLabel(function (d) {
                     setTimeout(function () {
-                        abcUtil.listSlides(R, S, P, openHealth.tcga.dt[xxxDx], patient, selectObject);
+                        abcUtil.listSlides(patient, selectObject, openHealth.tcga.dt[xxxDx], R, S, P);
                     }, 1000);
                     return 'Age (years)'
                 })
@@ -445,7 +439,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             }
 
             // clear bootstrap to make room
-            document.getElementById('openHealth').className = "";
+            //document.getElementById('openHealth').className = "";
             openHealthJobMsg.textContent = ""
 
         });
