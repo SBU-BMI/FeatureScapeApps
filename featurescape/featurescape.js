@@ -1,4 +1,5 @@
 console.log('featurescape.js loaded');
+//http://quip1.uhmc.sunysb.edu:4000/?limit=1000&find={"randval":{"$gte":0.301},"provenance.analysis.execution_id":"luad:bg:20160520","provenance.image.subject_id":"TCGA-05-4244"}&db=u24_luad
 
 fscape = function (x) {
     // being used to ini UI
@@ -16,21 +17,27 @@ fscape.UI = function () {
     fscape.div = document.getElementById("section");
 
     //  check for data URL
+    var url = '';
     if (location.search.length > 1) {
         fscape.log('msg', 'loading, please wait ...', 'red');
         var ss = location.search.slice(1).split(';');
-        fscape.loadURL(ss[0]);
+        url = ss[0];
 
     }
+    else {
+        // Default
+        url = config.findAPI + ':' + config.port
+        + '?limit=1000&find={"randval":{"$gte":' + abcUtil.randval() + '},'
+        + '"provenance.analysis.execution_id":"' + config.default_execution_id + '",'
+        + '"provenance.image.subject_id":"' + config.default_subject_id + '"}'
+        + '&db=' + config.default_db;
+        location.search = '?' + url;
+    }
+    fscape.loadURL(url);
 };
 
 fscape.loadURL = function (url) {
     console.log('url', url);
-    // get URL from input
-    if (!url) {
-        // TODO:
-        //url = inputURL.value
-    }
 
     localforage.getItem(url)
         .then(function (x) {
@@ -79,9 +86,7 @@ fscape.cleanUI = function () { // and create fscapeAnalysisDiv
 
 fscape.fun = function (data, url) {
 
-    // TODO:
-    var patient = url.match('TCGA-[^%]+')[0];
-    console.log('patient', patient);
+    var patient = whoisit(location.search.slice(1));
 
     if (data.length == 0) {
         document.getElementById('section').innerHTML = '<span style="color:red">Data not available for patient:</span><br>' + patient;
@@ -483,14 +488,19 @@ fscape.scatterPlot = function (div0, i, j) {
             h += '<p style="color:blue">' + fi + ': ' + xmin + ' , ' + xmax + '</p>';
             h += '<p style="color:blue">' + fj + ': ' + ymin + ' , ' + ymax + '</p>';
             resampleMsg.innerHTML = h;
-            
-            // TODO:
-            var patient = location.search.match('TCGA-[^%]+')[0];
-            console.log('patient', patient);
-            var parm = 'caseid';
-            if (patient.length == 12) {
-                parm = 'subjectid';
+
+            var f = abcUtil.getQueryVariable('find', location.search.slice(1));
+            var str = decodeURI(f);
+            str = JSON.parse(str);
+            var s = 'provenance.image.subject_id';
+            var patient = str[s];
+
+            if (!patient) {
+                s = 'provenance.image.case_id';
+                patient = str[s];
             }
+
+            var parm = (s.split('.'))[2];
             var urlMug = config.domain + "/nuclei-mugshots/#" + parm + "=" + patient + "&fx=" + fi + '&xmin=' + xmin + '&xmax=' + xmax + "&fy=" + fj + '&ymin=' + ymin + '&ymax=' + ymax + '&url=' + location.search.match(config.findAPI + '[^\;]+')[0];
             window.open(urlMug);
 
@@ -499,6 +509,22 @@ fscape.scatterPlot = function (div0, i, j) {
 
 };
 
-$(document).ready(function () {
-    fscape()
+function whoisit(q)
+{
+    var f = abcUtil.getQueryVariable('find', q);
+
+    var p = abcUtil.getFindParm('provenance.image.subject_id', f);
+
+    if (!p)
+    {
+        // Look for case_id
+        p = abcUtil.getFindParm('provenance.image.case_id', f);
+    }
+
+    console.log('patient', p);
+    return p;
+}
+
+$(function () {
+    fscape();
 });
