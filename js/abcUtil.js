@@ -5,8 +5,7 @@ console.log('abcUtil.js');
 
 abcUtil = {
 
-    randval: function ()
-    {
+    randval: function () {
         return (0.95 * Math.random());
     },
 
@@ -44,6 +43,21 @@ abcUtil = {
 
         return arr.join("");
 
+    },
+
+    getRandomSubarrayPartialShuffle: function (arr, size) {
+        var shuffled = arr.slice(0),
+            i = arr.length,
+            min = i - size,
+            temp,
+            index;
+        while (i-- > min) {
+            index = Math.floor((i + 1) * Math.random());
+            temp = shuffled[index];
+            shuffled[index] = shuffled[i];
+            shuffled[i] = temp;
+        }
+        return shuffled.slice(min);
     },
 
     selectBox: function (trace, globalObject) {
@@ -231,7 +245,7 @@ abcUtil = {
 
         resultsPatient = function (x) {
 
-            var v = 0.95 * Math.random();
+            var v = abcUtil.randval();
             var textContent = v.toString().slice(0, 5);
             var exec = '"provenance.analysis.execution_id":"' + selectObject.execution_id + '"';
             var find = '{"randval":{"$gte":' + textContent + '},' + exec + ',"provenance.image.subject_id":"' + (typeof patient[x.textContent] == 'undefined' ? x.textContent : patient[x.textContent]["bcr_patient_barcode"]) + '"}&db=' + selectObject.db;

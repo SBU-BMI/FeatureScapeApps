@@ -18,7 +18,7 @@ mugshots = function () {
     }
     else {
         // Default data url
-        var rand = Math.random();
+        var rand = abcUtil.randval();
         var _static = '"provenance.analysis.execution_id":"' + config.default_execution_id + '"';
         mugshots.db = config.default_db;
         url = mugshots.findApi + '?collection=objects&limit=12&find={' + _static + ',"randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
@@ -83,25 +83,10 @@ mugshots.loadData = function (url) {
     });
 };
 
-function getRandomSubarrayPartialShuffle(arr, size) {
-    var shuffled = arr.slice(0),
-        i = arr.length,
-        min = i - size,
-        temp,
-        index;
-    while (i-- > min) {
-        index = Math.floor((i + 1) * Math.random());
-        temp = shuffled[index];
-        shuffled[index] = shuffled[i];
-        shuffled[i] = temp;
-    }
-    return shuffled.slice(min);
-}
-
 mugshots.fun = function (data, size) {
     var newData = [];
 
-    var randomMembers = getRandomSubarrayPartialShuffle(data, size);
+    var randomMembers = abcUtil.getRandomSubarrayPartialShuffle(data, size);
     //console.log(randomMembers);
 
     var sameCaseId = true;
@@ -362,7 +347,7 @@ function drawLines(canvas, context, obj) {
 }
 
 // ini
-$(document).ready(function () {
+$(function () {
     mugshots.findApi = config.findAPI + ':' + config.port + '/';
     mugshots();
 });
