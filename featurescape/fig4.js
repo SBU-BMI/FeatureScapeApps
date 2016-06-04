@@ -90,11 +90,7 @@ function getPatientArrayFromUrl(url) {
     var patients = [];
     if (url.indexOf('bcr_patient_barcode') > -1) {
         var str = url.substring(url.indexOf('bcr_patient_barcode'));
-        if (str.indexOf('%22') > -1) {
-            str = str.replace(/%22/g, '');
-
-        }
-
+        str = decodeURI(str);
         if (str.indexOf('"') > -1) {
             str = str.replace(/"/g, '');
         }
@@ -156,7 +152,7 @@ function doPatients(data, url) {
 }
 
 goFeature = function (x) {
-    var v = 0.95 * Math.random();
+    var v = abcUtil.randval();
     var textContent = v.toString().slice(0, 5);
     //var exec = '"provenance.analysis.execution_id":"' + execution_id + '"';
     //var find = '{"randval":{"$gte":' + textContent + '},' + exec + ',"provenance.image.subject_id":"' + patient[x.textContent]["bcr_patient_barcode"] + '"}&db=' + openHealth.db;
@@ -169,8 +165,6 @@ goFeature = function (x) {
 };
 
 function doFigure4(data) {
-    console.log('loaded ' + data.length + ' records');
-
     /*
      var msg1 = function (txt, clr) {
      if (!clr) {

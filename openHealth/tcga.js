@@ -1,4 +1,4 @@
-console.log('open health tcga extension');
+console.log('tcga.js');
 
 openHealth.tcga = (function (oh) {
     var tcga = {dt: {}};
