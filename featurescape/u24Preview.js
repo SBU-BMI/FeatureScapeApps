@@ -1,8 +1,6 @@
-console.log('u24Preview.js loaded');
-
+console.log('u24Preview.js');
 
 u24p = function () {
-
 };
 
 u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Interface
@@ -30,7 +28,8 @@ u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Inter
 
         var sp = document.createElement('span');
         li.appendChild(sp);
-        var v = 0.95 * Math.random();
+
+        var v = abcUtil.randval();
         sp.textContent = v.toString().slice(0, 5);
         sp.style.fontWeight = 'bold';
         var spSize = document.createElement('span');
@@ -54,11 +53,13 @@ u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Inter
                 msg.textContent = ' sample size needs to be an integer between 100 and 10000'
             }
         };
+
         setInterval(function () {
-            var v = 0.95 * Math.random();
+            var v = abcUtil.randval();
             sp.textContent = v.toString().slice(0, 5);
-            sp.style.color = 'rgb(' + Math.round(255 * v) + ',' + Math.round(255 * (1 - v)) + ',0)'
+            sp.style.color = 'rgb(' + Math.round(255 * v) + ',' + Math.round(255 * (1 - v)) + ',0)';
         }, (1000 + Math.random() * 1000));
+
         btFeature.onclick = function () {
             var sz = $('input', spSize)[0].value;
             // Yes, we really do need absolute path for this url:
@@ -87,8 +88,7 @@ function getData()
 
 }
 
-
-$(document).ready(function () {
+$(function () {
 
     selectObject = trace = {};
     select = document.getElementById('select');
