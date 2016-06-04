@@ -8,8 +8,8 @@ mugshots = function () {
     if (location.hash.length > 1) {
         hash = location.hash.slice(1);
 
-        mugshots.n = getQueryVariable('n', hash);
-        mugshots.m = getQueryVariable('m', hash);
+        mugshots.n = abcUtil.getQueryVariable('n', hash);
+        mugshots.m = abcUtil.getQueryVariable('m', hash);
 
         thisisrandom = false;
 
@@ -35,26 +35,26 @@ mugshots = function () {
 
 function buildQueryString(q) {
 
-    var caseid = getQueryVariable('caseid', q);
-    var subjectid = getQueryVariable('subjectid', q);
-    var fx = getQueryVariable('fx', q);
-    var xmin = getQueryVariable('xmin', q);
-    var xmax = getQueryVariable('xmax', q);
-    var fy = getQueryVariable('fy', q);
-    var ymin = getQueryVariable('ymin', q);
-    var ymax = getQueryVariable('ymax', q);
-    var db = getQueryVariable('db', q);
+    var case_id = abcUtil.getQueryVariable('case_id', q);
+    var subject_id = abcUtil.getQueryVariable('subject_id', q);
+    var fx = abcUtil.getQueryVariable('fx', q);
+    var xmin = abcUtil.getQueryVariable('xmin', q);
+    var xmax = abcUtil.getQueryVariable('xmax', q);
+    var fy = abcUtil.getQueryVariable('fy', q);
+    var ymin = abcUtil.getQueryVariable('ymin', q);
+    var ymax = abcUtil.getQueryVariable('ymax', q);
+    var db = abcUtil.getQueryVariable('db', q);
 
     mugshots.db = db;
 
     // Remember it stops at '='
     // https://falcon.bmi.stonybrook.edu:4500/?limit
-    var base = getQueryVariable('url', q);
+    var base = abcUtil.getQueryVariable('url', q);
     // Resample 50 (performance reasons); we're only rendering 12.
     base = base + '=50';
 
     // "find1: {"randval":{"$gte":0.399},"provenance.analysis.execution_id":"luad:20160215","provenance.image.case_id":"TCGA-05-4244-01Z-00-DX1"}"
-    var find = getQueryVariable('find', q);
+    var find = abcUtil.getQueryVariable('find', q);
     // remove the last '}'
     find = find.substring(0, find.length - 1);
 
@@ -70,16 +70,6 @@ function buildQueryString(q) {
 
     return myUrl;
 
-}
-
-function getQueryVariable(variable, queryString) {
-    var vars = queryString.split('&');
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split('=');
-        if (decodeURIComponent(pair[0]) == variable) {
-            return decodeURIComponent(pair[1]);
-        }
-    }
 }
 
 mugshots.loadData = function (url) {
@@ -129,6 +119,7 @@ mugshots.fun = function (data, size) {
     var slideHeight = 0;
 
     if (sameCaseId) {
+        // Get info about the slide.
         var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + prevCaseId + '"}&db=' + mugshots.db;
 
         $.ajax({
@@ -151,6 +142,7 @@ mugshots.fun = function (data, size) {
         //console.log(' *** ' + url);
 
         if (!sameCaseId) {
+            // Get info about the slide.
             $.ajax({
                 url: url,
                 async: false,
@@ -167,7 +159,7 @@ mugshots.fun = function (data, size) {
         newData.push({
             markup: doc.bbox,
             normalized: doc.normalized,
-            caseid: doc.provenance.image.case_id,
+            case_id: doc.provenance.image.case_id,
             identifier: identifier,
             slideWidth: slideWidth,
             slideHeight: slideHeight
@@ -176,18 +168,31 @@ mugshots.fun = function (data, size) {
 
     var div = document.getElementById('info1');
     if (thisisrandom) {
-        div.textContent = 'Displaying ' + newData.length + ' nuclear images from random ' + ((mugshots.db).substring(4)).toUpperCase() + ' caseIDs:';
+        div.textContent = 'Displaying ' + newData.length + ' nuclear images from random ' + ((mugshots.db).substring(4)).toUpperCase() + ' case IDs:';
         document.getElementById('info2').innerHTML = h;
 
     }
     else {
-        var fx = getQueryVariable('fx', location.hash);
-        var xmin = getQueryVariable('xmin', location.hash);
-        var xmax = getQueryVariable('xmax', location.hash);
-        var fy = getQueryVariable('fy', location.hash);
-        var ymin = getQueryVariable('ymin', location.hash);
-        var ymax = getQueryVariable('ymax', location.hash);
-        div.textContent = 'Displaying ' + newData.length + ' nuclear images having morphologic ranges selected from caseID ' + prevCaseId + ':';
+        var l = location.hash.slice(1);
+        var fx = abcUtil.getQueryVariable('fx', l);
+        var xmin = abcUtil.getQueryVariable('xmin', l);
+        var xmax = abcUtil.getQueryVariable('xmax', l);
+        var fy = abcUtil.getQueryVariable('fy', l);
+        var ymin = abcUtil.getQueryVariable('ymin', l);
+        var ymax = abcUtil.getQueryVariable('ymax', l);
+
+        var id = abcUtil.getQueryVariable('case_id', l);
+        console.log('id', id);
+
+        var parm = 'case_id';
+        if (!id)
+        {
+            id = abcUtil.getQueryVariable('subject_id', l);
+            parm = 'subject_id';
+            console.log('id', id);
+        }
+        div.textContent = 'Displaying ' + newData.length + ' nuclear images having morphologic ranges selected from '
+            + (parm == 'case_id' ? 'case' : 'subject') + ' ID ' + id + ':';
         document.getElementById('info2').innerHTML =
             fx + ' between ' + xmin + ' and ' + xmax + '<br>' +
             fy + ' between ' + ymin + ' and ' + ymax;
@@ -298,7 +303,7 @@ mugshots.draw = function (targetDiv, data, layout) {
 
             var link = document.createElement('a');
             link.setAttribute("href",
-                abcUtil.caMicroLink(data[ind].caseid, (mugshots.db).substring(4), obj.x, obj.y));
+                abcUtil.caMicroLink(data[ind].case_id, (mugshots.db).substring(4), obj.x, obj.y));
             link.setAttribute("target", "_blank");
             var col = document.createElement('td');
 
@@ -322,7 +327,7 @@ mugshots.draw = function (targetDiv, data, layout) {
     div.appendChild(fragment);
 
     // Clear hash.
-    location.hash = '';
+    //location.hash = '';
 
     // And finally...
     msg.textContent = 'Click on any patch to go to the location in caMicroscope, to view it in the context of the whole slide image.';

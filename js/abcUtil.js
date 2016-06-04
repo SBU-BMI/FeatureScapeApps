@@ -5,6 +5,33 @@ console.log('abcUtil.js');
 
 abcUtil = {
 
+    randval: function ()
+    {
+        return (0.95 * Math.random());
+    },
+
+    getQueryVariable: function (variable, queryString) {
+        var vars = queryString.split('&');
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split('=');
+            if (decodeURIComponent(pair[0]) == variable) {
+                return decodeURIComponent(pair[1]);
+            }
+        }
+    },
+
+    getFindParm: function (variable, string) {
+        var str = decodeURI(string);
+        str = JSON.parse(str);
+
+        if (str[variable]) {
+            return str[variable];
+        }
+        else {
+            return '';
+        }
+    },
+
     caMicroLink: function (case_id, cancer_type, x, y) {
         var arr = [];
 
