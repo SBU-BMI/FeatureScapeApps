@@ -1,7 +1,6 @@
 console.log('fig4.js loaded');
 
-window.onload = function () {
-
+$(function () {
     selectObject = trace = {};
     select = document.getElementById('select');
     select.innerHTML = abcUtil.selectBox(trace, selectObject);
@@ -29,8 +28,7 @@ window.onload = function () {
     }
 
     getData(url);
-
-};
+});
 
 function getData(url) {
 
