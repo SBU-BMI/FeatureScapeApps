@@ -2,7 +2,6 @@
  * Nuclei Mugshots.
  */
 mugshots = function () {
-    console.log('location: ' + location);
     var url = '';
     var hash = '';
     if (location.hash.length > 1) {
@@ -18,18 +17,17 @@ mugshots = function () {
     }
     else {
         // Default data url
+        // Select random nuclei
         var rand = abcUtil.randval();
         var _static = '"provenance.analysis.execution_id":"' + config.default_execution_id + '"';
         mugshots.db = config.default_db;
         url = mugshots.findApi + '?collection=objects&limit=12&find={' + _static + ',"randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
-        console.log('*** Random nuclei were selected for you. ***');
         thisisrandom = true;
     }
 
     msg.textContent = 'loading, please wait ...';
     msg.style.color = 'red';
 
-    console.log('url: ' + url);
     mugshots.loadData(url);
 };
 
