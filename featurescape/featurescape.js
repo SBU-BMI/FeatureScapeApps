@@ -110,17 +110,18 @@ fscape.cleanUI = function () { // and create fscapeAnalysisDiv
 fscape.fun = function (data, url) {
     //msg.textContent = '--> processing ...';
 
-    //var patient = whoisit(location.search.slice(1));
-    var patient = data[0].provenance.image.case_id;
-
-    selectObject.cancer_type = data[0].provenance.analysis.study_id;
-
     if (data.length == 0) {
-        document.getElementById('section').innerHTML = '<span style="color:red">Data not available for patient:</span><br>' + patient;
+
+        document.getElementById('section').innerHTML = '<span style="color:red">Data not available for patient:</span><br>'
+            + getPatient(url);
         msg.textContent = '';
 
     }
     else {
+        //var patient = whoisit(location.search.slice(1));
+        //var patient = data[0].provenance.image.case_id;
+        selectObject.cancer_type = data[0].provenance.analysis.study_id;
+
         // "VERSION 3"
         data = data.map(function (xi) {
             return xi.properties.scalar_features;
@@ -141,7 +142,19 @@ fscape.fun = function (data, url) {
 
         var xx = nv;
         msg.textContent = '';
-        fscape.log('info1', xx.length + ' sets of features sampled from ' + (selectObject.cancer_type).toUpperCase() + ' slide ' + patient, 'black');
+        var p = getPatient(url);
+
+        if (p.length > 12)
+        {
+            p = 'slide ' + p;
+        }
+        else
+        {
+            if (p.length > 0)
+                p = 'subject ' + p;
+        }
+        fscape.log('info1', xx.length + ' sets of features sampled from '
+            + (selectObject.cancer_type).toUpperCase() + ' ' + p, 'black');
 
         fscape.cleanUI();
 
@@ -555,7 +568,7 @@ function createQuery(db, exec) {
      r = JSON.parse(r);
      case_id = r[0].provenance.image.case_id;
      */
-
+    //"provenance.image.subject_id":"TCGA-05-4244"}
     case_id = config.default_case_id;
     query = config.findAPI + ':' + config.port
         + '?limit=1000&find={"randval":{"$gte":' + abcUtil.randval() + '},'
@@ -578,18 +591,28 @@ function getSubject(db, exec) {
     return value;
 }
 
-function whoisit(q) {
-    var f = abcUtil.getQueryVariable('find', q);
+function getPatient(q) {
+    if (!q)
+    {
+        return '';
+    }
+    else {
+        var f = abcUtil.getQueryVariable('find', q);
 
-    var p = abcUtil.getFindParm('provenance.image.subject_id', f);
+        var p = abcUtil.getFindParm('provenance.image.subject_id', f);
 
-    if (!p) {
-        // Look for case_id
-        p = abcUtil.getFindParm('provenance.image.case_id', f);
+        if (!p) {
+            // Look for case_id
+            p = abcUtil.getFindParm('provenance.image.case_id', f);
+        }
+
+        if (typeof p == 'undefined')
+            p = '';
+
+        return p;
+
     }
 
-    console.log('patient', p);
-    return p;
 }
 
 $(function () {
