@@ -82,14 +82,12 @@ function buildQueryString(q) {
 }
 
 mugshots.loadData = function (url) {
-    $.ajax({
-        url: url,
-        async: true,
-        dataType: 'json',
-        success: function (json) {
-            mugshots.draw('section', json);
-        }
+    log(url);
+
+    $.getJSON(url, function (data) {
+        mugshots.draw('section', data);
     });
+
 };
 
 mugshots.fun = function (data, size) {

@@ -14,33 +14,34 @@ fscape = function (x) {
 
 fscape.UI = function () {
     fscape.div = document.getElementById("section");
+    selectObject = {};
+    /*
+     selectObject = trace = {};
+     select = document.getElementById('select');
+     select.innerHTML = abcUtil.selectBox(trace, selectObject);
 
-    selectObject = trace = {};
-    select = document.getElementById('select');
-    select.innerHTML = abcUtil.selectBox(trace, selectObject);
+     tumorChanged = function (evt) {
+     fscape.dt = null; // clear previous data
+     fscape.div.textContent = '';
 
-    tumorChanged = function (evt) {
-        fscape.dt = null; // clear previous data
-        fscape.div.textContent = '';
+     var opt = evt.selectedOptions[0].value;
+     var partsOfStr = opt.split(',');
 
-        var opt = evt.selectedOptions[0].value;
-        var partsOfStr = opt.split(',');
+     selectObject.cancer_type = partsOfStr[0];
+     selectObject.db = partsOfStr[1];
+     selectObject.execution_id = partsOfStr[2];
 
-        selectObject.cancer_type = partsOfStr[0];
-        selectObject.db = partsOfStr[1];
-        selectObject.execution_id = partsOfStr[2];
+     var q = createQuery(selectObject.db, selectObject.execution_id);
 
-        var q = createQuery(selectObject.db, selectObject.execution_id);
-
-        fscape.loadURL(q);
-    };
+     fscape.loadURL(q);
+     };
+     */
 
     //  check for data URL
     var q = '';
     if (location.search.length > 1) {
         var ss = location.search.slice(1).split(';');
         q = ss[0];
-
     }
     else {
         // Default
@@ -50,7 +51,7 @@ fscape.UI = function () {
 };
 
 fscape.loadURL = function (url) {
-    console.log('query', url);
+    log(url);
     msg.textContent = "loading, please wait ...";
 
     /*
@@ -111,6 +112,8 @@ fscape.fun = function (data, url) {
 
     //var patient = whoisit(location.search.slice(1));
     var patient = data[0].provenance.image.case_id;
+
+    selectObject.cancer_type = data[0].provenance.analysis.study_id;
 
     if (data.length == 0) {
         document.getElementById('section').innerHTML = '<span style="color:red">Data not available for patient:</span><br>' + patient;
@@ -245,7 +248,10 @@ fscape.plot = function (x) { // when ready to do it
     var cl = jmat.cluster(cc);  // remember this has three output arguments
     fscape.dt.cl = cl; // this may be better kept as a structure
     fscape.dt.parmNum = parmNum;
-    featurecrossTD.innerHTML = fscape.clust2html(cl);
+
+    featurecrossTD.innerHTML = "<label>Click to choose a different cancer type &amp; tissue slide image:&nbsp;"
+        + '<input type="button" onclick="window.location.href=\'u24Preview.html\'" name="btnSelect" id="btnSelect" value="Go!" />'
+        + "</label>" + fscape.clust2html(cl);
 
     setTimeout(function () {
         var tdfun = function () {
@@ -543,29 +549,20 @@ fscape.scatterPlot = function (div0, i, j) {
 
 };
 
-function whoisit(q) {
-    var f = abcUtil.getQueryVariable('find', q);
-
-    var p = abcUtil.getFindParm('provenance.image.subject_id', f);
-
-    if (!p) {
-        // Look for case_id
-        p = abcUtil.getFindParm('provenance.image.case_id', f);
-    }
-
-    console.log('patient', p);
-    return p;
-}
-
 function createQuery(db, exec) {
-    var r = getSubject(db, exec);
-    r = JSON.parse(r);
-    case_id = r[0].provenance.image.case_id;
+    /*
+     var r = getSubject(db, exec);
+     r = JSON.parse(r);
+     case_id = r[0].provenance.image.case_id;
+     */
+
+    case_id = config.default_case_id;
     query = config.findAPI + ':' + config.port
         + '?limit=1000&find={"randval":{"$gte":' + abcUtil.randval() + '},'
         + '"provenance.analysis.execution_id":"' + exec + '",'
         + '"provenance.image.case_id":"' + case_id + '"}'
         + '&db=' + db;
+
     return query;
 }
 
@@ -579,6 +576,20 @@ function getSubject(db, exec) {
         async: false
     }).responseText;
     return value;
+}
+
+function whoisit(q) {
+    var f = abcUtil.getQueryVariable('find', q);
+
+    var p = abcUtil.getFindParm('provenance.image.subject_id', f);
+
+    if (!p) {
+        // Look for case_id
+        p = abcUtil.getFindParm('provenance.image.case_id', f);
+    }
+
+    console.log('patient', p);
+    return p;
 }
 
 $(function () {
