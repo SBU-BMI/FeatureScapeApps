@@ -25,8 +25,19 @@ mugshots = function () {
         thisisrandom = true;
     }
 
-    msg.textContent = 'loading, please wait ...';
-    msg.style.color = 'red';
+    var name = 'msg';
+    if (!document.getElementById(name)) {
+        // Element does not exist. Let's create it.
+        msgDiv = document.createElement("div");
+        msgDiv.id = name;
+        document.body.appendChild(msgDiv);
+    } else {
+        // Element exists. Lets get it by ID.
+        msgDiv = document.getElementById(name);
+    }
+
+    msgDiv.textContent = 'loading, please wait ...';
+    msgDiv.style.color = 'red';
 
     mugshots.loadData(url);
 };
@@ -313,8 +324,8 @@ mugshots.draw = function (targetDiv, data, layout) {
     //location.hash = '';
 
     // And finally...
-    msg.textContent = 'Click on any patch to go to the location in caMicroscope, to view it in the context of the whole slide image.';
-    msg.style.color = 'blue';
+    msgDiv.textContent = 'Click on any patch to go to the location in caMicroscope, to view it in the context of the whole slide image.';
+    msgDiv.style.color = 'blue';
 
 };
 
