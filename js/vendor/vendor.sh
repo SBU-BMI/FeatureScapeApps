@@ -19,7 +19,8 @@ wget https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js
 
 # https://cdnjs.com/libraries/crossfilter
 wget https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js
+#https://square.github.io/crossfilter/crossfilter.v1.min.js
 
 # https://cdnjs.com/libraries/dc
-wget https://cdnjs.cloudflare.com/ajax/libs/dc/1.7.5/dc.min.js
-#wget https://dc-js.github.io/dc.js/js/dc.js
+#wget https://cdnjs.cloudflare.com/ajax/libs/dc/1.7.5/dc.min.js # no.
+wget https://dc-js.github.io/dc.js/js/dc.js # yes :)
