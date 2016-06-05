@@ -13,31 +13,53 @@ fscape = function (x) {
 };
 
 fscape.UI = function () {
-    console.log('assembling UI ...');
     fscape.div = document.getElementById("section");
 
+    selectObject = trace = {};
+    select = document.getElementById('select');
+    select.innerHTML = abcUtil.selectBox(trace, selectObject);
+
+    tumorChanged = function (evt) {
+        fscape.dt = null; // clear previous data
+        fscape.div.textContent = '';
+
+        var opt = evt.selectedOptions[0].value;
+        var partsOfStr = opt.split(',');
+
+        selectObject.cancer_type = partsOfStr[0];
+        selectObject.db = partsOfStr[1];
+        selectObject.execution_id = partsOfStr[2];
+
+        var q = createQuery(selectObject.db, selectObject.execution_id);
+
+        fscape.loadURL(q);
+    };
+
     //  check for data URL
-    var url = '';
+    var q = '';
     if (location.search.length > 1) {
-        fscape.log('msg', 'loading, please wait ...', 'red');
         var ss = location.search.slice(1).split(';');
-        url = ss[0];
+        q = ss[0];
 
     }
     else {
         // Default
-        url = config.findAPI + ':' + config.port
-        + '?limit=1000&find={"randval":{"$gte":' + abcUtil.randval() + '},'
-        + '"provenance.analysis.execution_id":"' + config.default_execution_id + '",'
-        + '"provenance.image.subject_id":"' + config.default_subject_id + '"}'
-        + '&db=' + config.default_db;
-        location.search = '?' + url;
+        q = createQuery(config.default_db, config.default_execution_id);
     }
-    fscape.loadURL(url);
+    fscape.loadURL(q);
 };
 
 fscape.loadURL = function (url) {
-    console.log('url', url);
+    console.log('query', url);
+    msg.textContent = "loading, please wait ...";
+
+    /*
+     var greetings = ["loading, please wait ...", "--> loading, please wait ..."];
+     msg.textContent = greetings[0];
+     setTimeout(function () {
+     msg.textContent = greetings[1];
+     }, 4000);
+     */
 
     localforage.getItem(url)
         .then(function (x) {
@@ -60,11 +82,11 @@ fscape.loadURL = function (url) {
                     localforage.setItem(url, x)
                 }
             })
-        })
+        });
+
 };
 
 fscape.log = function (divID, txt, color) {
-
     var d = document.getElementById(divID);
     d.textContent = txt;
     d.style.color = ((!color) ? 'navy' : color);
@@ -76,21 +98,23 @@ fscape.cleanUI = function () { // and create fscapeAnalysisDiv
 
     // let's have some function
     if (!document.getElementById('fscapeAnalysisDiv')) {
-        $('<div id="fscapeAnalysisDiv"><span style="color:red">processing, please wait ...</span></div>').appendTo(fscape.div);
+        $('<div id="fscapeAnalysisDiv"></div>').appendTo(fscape.div);
         fscapeAnalysisDiv.hidden = true;
         $(fscapeAnalysisDiv).show(1000)
     } else {
-        fscapeAnalysisDiv.innerHTML = '<span style="color:red">processing, please wait ...</span>'
+        fscapeAnalysisDiv.textContent = ''
     }
 };
 
 fscape.fun = function (data, url) {
+    //msg.textContent = '--> processing ...';
 
-    var patient = whoisit(location.search.slice(1));
+    //var patient = whoisit(location.search.slice(1));
+    var patient = data[0].provenance.image.case_id;
 
     if (data.length == 0) {
         document.getElementById('section').innerHTML = '<span style="color:red">Data not available for patient:</span><br>' + patient;
-        fscape.log('msg', '');
+        msg.textContent = '';
 
     }
     else {
@@ -113,9 +137,8 @@ fscape.fun = function (data, url) {
         });
 
         var xx = nv;
-        // xx.length + ' entries sampled from ' + url
-        fscape.log('msg', '');
-        fscape.log('info1', xx.length + ' sets of features sampled from ' + patient, 'black');
+        msg.textContent = '';
+        fscape.log('info1', xx.length + ' sets of features sampled from ' + (selectObject.cancer_type).toUpperCase() + ' slide ' + patient, 'black');
 
         fscape.cleanUI();
 
@@ -285,6 +308,8 @@ fscape.plot = function (x) { // when ready to do it
 
         //featureNet.innerHTML='featureNet :-)'
         //setTimeout(function () {...}
+
+        msg.textContent = '';
 
     }, 0);
 
@@ -462,33 +487,33 @@ fscape.scatterPlot = function (div0, i, j) {
         }
     };
 
-
     fscape.plt = Plotly.newPlot(div, [trace0], layout);
     window.scrollTo(window.innerWidth, window.scrollY);
 
     //console.log(fscape.plt._result._fullLayout.xaxis._tmin, fscape.plt._result._fullLayout.xaxis._tmax, fscape.plt._result._fullLayout.yaxis._tmin, fscape.plt._result._fullLayout.yaxis._tmax);
     console.log(div._fullLayout.xaxis._tmin, div._fullLayout.xaxis._tmax, div._fullLayout.yaxis._tmin, div._fullLayout.yaxis._tmax);
 
-    if (location.search.match(config.findAPI)) {
-        var divZ = document.createElement('div');
-        divZ.setAttribute('align', 'center');
-        divZ.innerHTML = '<p><button id="resampleBt" style="color:red">Nuclei mugshots from selected region</button></p>'
-            + '<p id="resampleMsg"></p>';
-        div.appendChild(divZ);
+    //if (location.search.match(config.findAPI)) {
+    var divZ = document.createElement('div');
+    divZ.setAttribute('align', 'center');
+    divZ.innerHTML = '<p><button id="resampleBt" style="color:red">Nuclei mugshots from selected region</button></p>'
+        + '<p id="resampleMsg"></p>';
+    div.appendChild(divZ);
 
-        resampleBt.onclick = function () {
+    resampleBt.onclick = function () {
 
-            // Plotly will attach the plot information to the div that you specify.
-            var xmin = div._fullLayout.xaxis._tmin;
-            var xmax = div._fullLayout.xaxis._tmax;
-            var ymin = div._fullLayout.yaxis._tmin;
-            var ymax = div._fullLayout.yaxis._tmax;
+        // Plotly will attach the plot information to the div that you specify.
+        var xmin = div._fullLayout.xaxis._tmin;
+        var xmax = div._fullLayout.xaxis._tmax;
+        var ymin = div._fullLayout.yaxis._tmin;
+        var ymax = div._fullLayout.yaxis._tmax;
 
-            var h = '<h4 style="color:maroon">resampling (x, y ranges)</h4>';
-            h += '<p style="color:blue">' + fi + ': ' + xmin + ' , ' + xmax + '</p>';
-            h += '<p style="color:blue">' + fj + ': ' + ymin + ' , ' + ymax + '</p>';
-            resampleMsg.innerHTML = h;
+        var h = '<h4 style="color:maroon">resampling (x, y ranges)</h4>';
+        h += '<p style="color:blue">' + fi + ': ' + xmin + ' , ' + xmax + '</p>';
+        h += '<p style="color:blue">' + fj + ': ' + ymin + ' , ' + ymax + '</p>';
+        resampleMsg.innerHTML = h;
 
+        if (location.search.length > 1) {
             var f = abcUtil.getQueryVariable('find', location.search.slice(1));
             var str = decodeURI(f);
             str = JSON.parse(str);
@@ -501,28 +526,59 @@ fscape.scatterPlot = function (div0, i, j) {
             }
 
             var parm = (s.split('.'))[2];
-            var urlMug = config.domain + "/nuclei-mugshots/#" + parm + "=" + patient + "&fx=" + fi + '&xmin=' + xmin + '&xmax=' + xmax + "&fy=" + fj + '&ymin=' + ymin + '&ymax=' + ymax + '&url=' + location.search.match(config.findAPI + '[^\;]+')[0];
+            var m = location.search.match(config.findAPI + '[^\;]+')[0];
+            var urlMug = config.domain + "/nuclei-mugshots/#" + parm + "=" + patient + "&fx=" + fi + '&xmin=' + xmin + '&xmax=' + xmax + "&fy=" + fj + '&ymin=' + ymin + '&ymax=' + ymax + '&url=' + m;
+            console.log('m', m);
             window.open(urlMug);
 
         }
-    }
+        else {
+            //var m = 'http://quip1.uhmc.sunysb.edu:4000/?limit=1000&find={"randval":{"$gte":0.425},"provenance.analysis.execution_id":"luad:bg:20160520","provenance.image.subject_id":"TCGA-05-4244"}&db=u24_luad';
+            var urlMug = config.domain + "/nuclei-mugshots/#case_id=" + case_id + "&fx=" + fi + '&xmin=' + xmin + '&xmax=' + xmax + "&fy=" + fj + '&ymin=' + ymin + '&ymax=' + ymax + '&url=' + query;
+            window.open(urlMug);
+        }
+
+    };
+    //}
 
 };
 
-function whoisit(q)
-{
+function whoisit(q) {
     var f = abcUtil.getQueryVariable('find', q);
 
     var p = abcUtil.getFindParm('provenance.image.subject_id', f);
 
-    if (!p)
-    {
+    if (!p) {
         // Look for case_id
         p = abcUtil.getFindParm('provenance.image.case_id', f);
     }
 
     console.log('patient', p);
     return p;
+}
+
+function createQuery(db, exec) {
+    var r = getSubject(db, exec);
+    r = JSON.parse(r);
+    case_id = r[0].provenance.image.case_id;
+    query = config.findAPI + ':' + config.port
+        + '?limit=1000&find={"randval":{"$gte":' + abcUtil.randval() + '},'
+        + '"provenance.analysis.execution_id":"' + exec + '",'
+        + '"provenance.image.case_id":"' + case_id + '"}'
+        + '&db=' + db;
+    return query;
+}
+
+function getSubject(db, exec) {
+    var q = config.findAPI + ':' + config.port
+        + '?limit=1&find={"randval":{"$gte":' + abcUtil.randval() + '},'
+        + '"provenance.analysis.execution_id":"' + exec + '"}'
+        + '&db=' + db;
+    var value = $.ajax({
+        url: q,
+        async: false
+    }).responseText;
+    return value;
 }
 
 $(function () {
