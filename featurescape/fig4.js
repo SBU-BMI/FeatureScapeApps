@@ -758,13 +758,24 @@ function showInfo(data) {
         }
     }
 
-    // TODO:
-    document.getElementById('info2').innerHTML = 'Morphology features extracted from image analysis of histology whole slide images for '
+    var infoDiv;
+    var name = 'info2';
+    if (!document.getElementById(name)) {
+        // Element does not exist. Let's create it.
+        infoDiv = document.createElement("div");
+        infoDiv.id = name;
+        document.body.appendChild(infoDiv);
+    } else {
+        // Element exists. Lets get it by ID.
+        infoDiv = document.getElementById(name);
+    }
+    infoDiv.innerHTML = 'Morphology features extracted from image analysis of histology whole slide images for '
         + '<strong>' + data.length + ' ' + tumor + '</strong> Patients of The Cancer Genome Atlas.<br>'
         + 'Genomic data compiled with <a href="http://www.cbioportal.org/" target="_blank">MSKCC cBioPortal</a> tool, demographic and clinical data from '
         + 'the <a href="https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/' + tumor1 + '/bcr/biotab/clin/" target="_blank">TCGA repository</a>.';
 
     /*
+     // TODO:
      document.getElementById('patientInfo').innerHTML = 'Morphology features extracted from image analysis of histology whole slide images for '
      + data.length + ' ' + tumor + ' Patients of The Cancer Genome Atlas.';
 
