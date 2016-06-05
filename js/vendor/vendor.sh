@@ -24,3 +24,4 @@ wget https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.j
 # https://cdnjs.com/libraries/dc
 #wget https://cdnjs.cloudflare.com/ajax/libs/dc/1.7.5/dc.min.js # no.
 wget https://dc-js.github.io/dc.js/js/dc.js # yes :)
+wget https://github.com/dc-js/dc.js/blob/develop/dc.js.map
