@@ -37,132 +37,15 @@ function getData(url) {
     $.getJSON(url).then(function (data) {
 
         if (data.length == 0) {
-            var h = '<span style="color:red;font-weight:bold;">Data not available';
-            var patients = getPatientArrayFromUrl(url);
-
-            if (patients.length == 0) {
-                h += '</span><br>';
-                clrMsg(h);
-            }
-            else {
-                h += ' for patients:</span><br>';
-                patients.forEach(function (bb) {
-                    h += bb + '<br>';
-                });
-                clrMsg(h);
-            }
+            abcUtil.noDataJoy(url);
         }
         else {
             doFigure4(data);
-            doPatients(data, url);
+            abcUtil.doPatients(data, 'bcr_patient_barcode', url);
         }
 
     })
 }
-
-function clrMsg(h) {
-    var a = document.getElementById('msg');
-    a.innerHTML = h;
-
-    /*
-     a = document.getElementById('patientInfo');
-     a.innerHTML = '';
-
-     a = document.getElementById('repositoryInfo');
-     a.innerHTML = '';
-
-     */
-
-    a = document.getElementById('info1');
-    a.innerHTML = '';
-
-    a = document.getElementById('info2');
-    a.innerHTML = '';
-
-    a = document.getElementById('section');
-    a.innerHTML = '';
-
-    a = document.getElementById('ptslides');
-    a.innerHTML = '';
-}
-
-function getPatientArrayFromUrl(url) {
-    var patients = [];
-    if (url.indexOf('bcr_patient_barcode') > -1) {
-        var str = url.substring(url.indexOf('bcr_patient_barcode'));
-        str = decodeURI(str);
-        if (str.indexOf('"') > -1) {
-            str = str.replace(/"/g, '');
-        }
-
-        if (str.indexOf('[') > -1) {
-            str = str.substring(str.indexOf('[') + 1, str.indexOf(']'));
-            //str = str.slice(0, -1);
-        }
-
-        if (str.indexOf(',') > -1) {
-            patients = str.split(',');
-        }
-        else {
-            patients[0] = str;
-        }
-
-    }
-
-    return patients;
-}
-
-function doPatients(data, url) {
-    var ptslides = document.getElementById('ptslides');
-
-    ptslides.innerHTML = abcUtil.setupDC2();
-
-    /*
-     // TODO:
-     setTimeout(function () {
-     abcUtil.listSlides(data, selectObject);
-     }, 1000);
-     */
-
-    var h = '';
-    if (url) {
-        var patients = getPatientArrayFromUrl(url);
-        if (patients.length > data.length) {
-            h = 'Found ' + data.length + ' out of the ' + patients.length + ' patients that were requested';
-        }
-        else {
-            h = 'Found ' + data.length + ' patients:';
-        }
-
-    }
-    else {
-        h = 'Found ' + data.length + ' patients:';
-    }
-
-    var t = '<table id="patientSlideTable"><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">' + h + '</td></tr><tr><td><em>Click button to view FeatureScape</em></td></tr>';
-
-    data.forEach(function (dd) {
-        t += '<tr><td><button onclick="goFeature(this)">' + dd.bcr_patient_barcode + '</button></td></tr>';
-    });
-    t += '</table>';
-
-    ptslides.innerHTML = t;
-
-
-}
-
-goFeature = function (x) {
-    var v = abcUtil.randval();
-    var textContent = v.toString().slice(0, 5);
-    //var exec = '"provenance.analysis.execution_id":"' + execution_id + '"';
-    //var find = '{"randval":{"$gte":' + textContent + '},' + exec + ',"provenance.image.subject_id":"' + patient[x.textContent]["bcr_patient_barcode"] + '"}&db=' + openHealth.db;
-
-    // FEATURESCAPE
-    var db = url.substring(url.indexOf('db=') + 3);
-    var find = '{"randval":{"$gte":' + textContent + '},"provenance.image.subject_id":"' + x.innerHTML + '"}&db=' + db;
-    var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
-    window.open(fscape);
-};
 
 function doFigure4(data) {
     /*
@@ -426,7 +309,7 @@ function doFigure4(data) {
         ind.forEach(function (i) {
             bcr.push(docs[i])
         });
-        doPatients(bcr);
+        abcUtil.doPatients(bcr, 'bcr_patient_barcode');
     };
 
     var cf = crossfilter(data);

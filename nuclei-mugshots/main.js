@@ -1,46 +1,52 @@
 /**
  * Nuclei Mugshots.
  */
-mugshots = function () {
-    var url = '';
-    var hash = '';
+$(function () {
+    mugshots = {};
+    mugshots.findApi = config.findAPI + ':' + config.port + '/';
+    selectObject = trace = {};
+    select = document.getElementById('select');
+    select.innerHTML = abcUtil.selectBox(trace, selectObject);
+
+    tumorChanged = function (evt) {
+        thisisrandom = true;
+        var opt = evt.selectedOptions[0].value;
+        var partsOfStr = opt.split(',');
+
+        selectObject.cancer_type = partsOfStr[0];
+        selectObject.db = partsOfStr[1];
+        selectObject.execution_id = partsOfStr[2];
+
+        url = buildQueryStr(selectObject.db, selectObject.execution_id);
+
+        getData(url);
+    };
+
+    url = '';
+    docs = [];
     if (location.hash.length > 1) {
         hash = location.hash.slice(1);
-
+        thisisrandom = false;
         mugshots.n = abcUtil.getQueryVariable('n', hash);
         mugshots.m = abcUtil.getQueryVariable('m', hash);
-
-        thisisrandom = false;
-
         url = buildQueryString(hash);
-
     }
     else {
-        // Default data url
-        // Select random nuclei
-        var rand = abcUtil.randval();
-        var _static = '"provenance.analysis.execution_id":"' + config.default_execution_id + '"';
-        mugshots.db = config.default_db;
-        url = mugshots.findApi + '?collection=objects&limit=12&find={' + _static + ',"randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
+        // Default
         thisisrandom = true;
+        url = buildQueryStr(config.default_db, config.default_execution_id);
     }
+    getData(url);
 
-    var name = 'msg';
-    if (!document.getElementById(name)) {
-        // Element does not exist. Let's create it.
-        msgDiv = document.createElement("div");
-        msgDiv.id = name;
-        document.body.appendChild(msgDiv);
-    } else {
-        // Element exists. Lets get it by ID.
-        msgDiv = document.getElementById(name);
-    }
+});
 
-    msgDiv.textContent = 'loading, please wait ...';
-    msgDiv.style.color = 'red';
+function buildQueryStr(db, exec) {
+    var rand = abcUtil.randval();
+    mugshots.db = db;
+    url = mugshots.findApi + '?collection=objects&limit=12&find={"provenance.analysis.execution_id":"' + exec + '","randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
 
-    mugshots.loadData(url);
-};
+    return url;
+}
 
 function buildQueryString(q) {
 
@@ -81,16 +87,41 @@ function buildQueryString(q) {
 
 }
 
-mugshots.loadData = function (url) {
-    log(url);
+function getData(url) {
 
-    $.getJSON(url, function (data) {
-        mugshots.draw('section', data);
-    });
+    doMessage('msg', document.body, 'loading, please wait ...', 'red');
+    abcUtil.clrMsg('');
 
-};
+    $.getJSON(url).then(function (data) {
 
-mugshots.fun = function (data, size) {
+        if (data.length == 0) {
+            abcUtil.noDataJoy(url);
+        }
+        else {
+            draw('section', data, url);
+        }
+
+    })
+}
+
+function doMessage(name, location, text, color)
+{
+    var div;
+    if (!document.getElementById(name)) {
+        // Element does not exist. Let's create it.
+        div = document.createElement("div");
+        div.id = name;
+        location.appendChild(div);
+    } else {
+        // Element exists. Lets get it by ID.
+        div = document.getElementById(name);
+    }
+
+    div.textContent = text;
+    div.style.color = color;
+}
+
+function parseData(data, size, query) {
     var newData = [];
 
     var randomMembers = abcUtil.getRandomSubarrayPartialShuffle(data, size);
@@ -130,7 +161,7 @@ mugshots.fun = function (data, size) {
     var h = '';
     randomMembers.forEach(function (doc) {
         var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + doc.provenance.image.case_id + '"}&db=' + mugshots.db;
-        h += doc.provenance.image.case_id + '<br>';
+        h += '<tr><td>' + doc.provenance.image.case_id + '</td></tr>';
         //console.log(' *** ' + url);
 
         if (!sameCaseId) {
@@ -160,9 +191,10 @@ mugshots.fun = function (data, size) {
 
     var div = document.getElementById('info1');
     if (thisisrandom) {
-        div.textContent = 'Displaying ' + newData.length + ' nuclear images from random ' + ((mugshots.db).substring(4)).toUpperCase() + ' case IDs:';
-        document.getElementById('info2').innerHTML = h;
-
+        div.innerHTML = 'Displaying ' + newData.length + ' nuclear images from random ' + ((mugshots.db).substring(4)).toUpperCase() + ' tissue <strong><a href="#anchor">slides</a></strong>';
+        //document.getElementById('ptslides').innerHTML = '<a name="anchor"></a><p><span style="color:maroon;font-weight:bold">Tissue slides:</span><table id="patientSlideTable" border="1">' + h + '</table></p>';
+        abcUtil.doPatients(newData, 'case_id', query);
+        
     }
     else {
         var l = location.hash.slice(1);
@@ -174,14 +206,11 @@ mugshots.fun = function (data, size) {
         var ymax = abcUtil.getQueryVariable('ymax', l);
 
         var id = abcUtil.getQueryVariable('case_id', l);
-        console.log('id', id);
 
         var parm = 'case_id';
-        if (!id)
-        {
+        if (!id) {
             id = abcUtil.getQueryVariable('subject_id', l);
             parm = 'subject_id';
-            console.log('id', id);
         }
         div.textContent = 'Displaying ' + newData.length + ' nuclear images having morphologic ranges selected from '
             + (parm == 'case_id' ? 'case' : 'subject') + ' ID ' + id + ':';
@@ -193,9 +222,9 @@ mugshots.fun = function (data, size) {
 
     return newData;
 
-};
+}
 
-mugshots.draw = function (targetDiv, data, layout) {
+function draw(targetDiv, data, query, layout) {
 
     if (!layout) {
         layout = {
@@ -214,22 +243,21 @@ mugshots.draw = function (targetDiv, data, layout) {
     }
     size = mugshots.m * mugshots.n;
 
-
     if (!document.getElementById(targetDiv)) {
         $('<hr><div id="' + targetDiv + '"></div>').appendTo(document.body);
     }
-
 
     if (!data) {
         document.getElementById(targetDiv).innerHTML = 'Alright now... you need to give me some data in order to get some nuclei!';
         return false;
     }
     else {
-        data = mugshots.fun(data, size);
+        data = parseData(data, size, query);
 
     }
 
     var div = document.getElementById(targetDiv);
+    doMessage('info', div, 'Click on any patch to go to the location in caMicroscope, to view it in the context of the whole slide image.', 'blue');
 
     var k = 0, tableRows = mugshots.m,
         tds = mugshots.n,
@@ -322,10 +350,8 @@ mugshots.draw = function (targetDiv, data, layout) {
     //location.hash = '';
 
     // And finally...
-    msgDiv.textContent = 'Click on any patch to go to the location in caMicroscope, to view it in the context of the whole slide image.';
-    msgDiv.style.color = 'blue';
-
-};
+    doMessage('msg', document.body, '', 'red');
+}
 
 function drawBackground(canvas, context, imgSrc, obj) {
 
@@ -353,8 +379,3 @@ function drawLines(canvas, context, obj) {
     context.stroke();
 }
 
-// ini
-$(function () {
-    mugshots.findApi = config.findAPI + ':' + config.port + '/';
-    mugshots();
-});

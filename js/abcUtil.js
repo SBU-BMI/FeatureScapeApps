@@ -346,7 +346,7 @@ abcUtil = {
         return html;
     },
 
-    setupDC2: function (karnofsky_score) {
+    setupDC2: function () {
 
         var html = '';
         html += '<a name="anchor"></a>';
@@ -369,6 +369,135 @@ abcUtil = {
         html += '</table>';
 
         return html;
+    },
+
+    getPatientArrayFromUrl: function (url) {
+        var patients = [];
+        if (url.indexOf('bcr_patient_barcode') > -1) {
+            var str = url.substring(url.indexOf('bcr_patient_barcode'));
+            str = decodeURI(str);
+            if (str.indexOf('"') > -1) {
+                str = str.replace(/"/g, '');
+            }
+
+            if (str.indexOf('[') > -1) {
+                str = str.substring(str.indexOf('[') + 1, str.indexOf(']'));
+                //str = str.slice(0, -1);
+            }
+
+            if (str.indexOf(',') > -1) {
+                patients = str.split(',');
+            }
+            else {
+                patients[0] = str;
+            }
+
+        }
+
+        return patients;
+    },
+
+    doPatients: function (data, idx, url) {
+
+        var ptslides = document.getElementById('ptslides');
+
+        //ptslides.innerHTML = abcUtil.setupDC2();
+
+        /*
+         // TODO:
+         setTimeout(function () {
+         abcUtil.listSlides(data, selectObject);
+         }, 1000);
+         */
+
+        var h = '';
+        if (url) {
+            var patients = abcUtil.getPatientArrayFromUrl(url);
+            if (patients.length > data.length) {
+                h = 'Found ' + data.length + ' out of the ' + patients.length + ' patients that were requested';
+            }
+            else {
+                h = 'Found ' + data.length + ' patients:';
+            }
+
+        }
+        else {
+            h = 'Found ' + data.length + ' patients:';
+        }
+
+        var t = '<a name="anchor"></a><table id="patientSlideTable"><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">' + h + '</td></tr><tr><td><em>Click button to view FeatureScape</em></td></tr>';
+
+        data.forEach(function (dd) {
+            var x = dd[idx];
+            t += '<tr><td><button onclick="abcUtil.goFeature(this)">' + x + '</button></td></tr>';
+        });
+        t += '</table>';
+
+        ptslides.innerHTML = t;
+
+
+    },
+
+    goFeature: function (x) {
+        var v = abcUtil.randval();
+        var textContent = v.toString().slice(0, 5);
+        //var exec = '"provenance.analysis.execution_id":"' + execution_id + '"';
+        //var find = '{"randval":{"$gte":' + textContent + '},' + exec + ',"provenance.image.subject_id":"' + patient[x.textContent]["bcr_patient_barcode"] + '"}&db=' + openHealth.db;
+
+        // FEATURESCAPE
+        var db = url.substring(url.indexOf('db=') + 3);
+        var xxx = x.innerHTML;
+        var parm = 'subject_id';
+        if (xxx.length > 12)
+            parm = 'case_id';
+        var find = '{"randval":{"$gte":' + textContent + '},"provenance.image.' + parm + '":"' + xxx + '"}&db=' + db;
+        var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
+        window.open(fscape);
+    },
+
+    clrMsg: function (h) {
+    var a = document.getElementById('msg');
+    a.innerHTML = h;
+
+    /*
+     a = document.getElementById('patientInfo');
+     a.innerHTML = '';
+
+     a = document.getElementById('repositoryInfo');
+     a.innerHTML = '';
+
+     */
+
+    a = document.getElementById('info1');
+    a.innerHTML = '';
+
+    a = document.getElementById('info2');
+    a.innerHTML = '';
+
+    a = document.getElementById('section');
+    a.innerHTML = '';
+
+    a = document.getElementById('ptslides');
+    a.innerHTML = '';
+    },
+
+    noDataJoy: function (url)
+    {
+        var h = '<span style="color:red;font-weight:bold;">Data not available';
+        var patients = abcUtil.getPatientArrayFromUrl(url);
+
+        if (patients.length == 0) {
+            h += '</span><br>';
+            abcUtil.clrMsg(h);
+        }
+        else {
+            h += ' for patients:</span><br>';
+            patients.forEach(function (bb) {
+                h += bb + '<br>';
+            });
+            abcUtil.clrMsg(h);
+        }
+
     }
 
 };
