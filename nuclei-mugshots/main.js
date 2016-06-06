@@ -249,7 +249,7 @@ function parseData(data, size, query) {
             div.innerHTML = 'Displaying ' + newData.length
                 + ' nuclear images from random '
                 + ((mugshots.db).substring(4)).toUpperCase()
-                + ' <strong><a href="#anchor">Diagnostic Images</a></strong>.'
+                + ' <strong><a href="#anchor">diagnostic images</a></strong>.'
                 + ' May represent either either a single or multiple cases.';
 
             //document.getElementById('ptslides').innerHTML = '<a name="anchor"></a><p><span style="color:maroon;font-weight:bold">Tissue slides:</span><table id="patientSlideTable" border="1">' + h + '</table></p>';

@@ -167,7 +167,7 @@ abcUtil = {
             });
 
 
-            diagnosticImagesHeader.textContent = ' diagnostic images (' + pp.length + '):';
+            diagnosticImagesHeader.textContent = ' Diagnostic Images (' + pp.length + '):';
 
             pp.map(function (p) {
                 if (!document.getElementById("link_" + p)) {

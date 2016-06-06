@@ -9,7 +9,7 @@ u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Inter
     //dataOriginDiv.innerHTML = '<strong>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + 'Diagnostic Images.</strong>';
 
     var dataDiv = document.getElementById(dataDivId);
-    dataDiv.innerHTML = '<strong>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + 'Diagnostic Images.</strong>';
+    dataDiv.innerHTML = '<strong>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + ' diagnostic images.</strong>';
 
     var ol = document.createElement('ol');
     dataDiv.appendChild(ol);
