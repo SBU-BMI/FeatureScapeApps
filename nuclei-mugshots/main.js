@@ -247,7 +247,7 @@ function parseData(data, size, query) {
         if (thisisrandom) {
 
             div.innerHTML = 'Displaying <strong>' + newData.length
-                + '</strong> nuclear images from random <strong>'
+                + '</strong> tiles containing nuclear segmentations from random <strong>'
                 + ((mugshots.db).substring(4)).toUpperCase()
                 + '<a href="#anchor">diagnostic images</a></strong>.'
                 + ' May represent either either a single or multiple cases.';
@@ -272,8 +272,8 @@ function parseData(data, size, query) {
                 id = abcUtil.getQueryVariable('subject_id', l);
                 parm = 'subject_id';
             }
-            div.textContent = 'Displaying ' + newData.length + ' nuclear images having morphologic ranges selected from '
-                + (parm == 'case_id' ? 'diagnostic image' : 'patient') + ' ' + id + ':';
+            div.innerHTML = 'Displaying <strong>' + newData.length + '</strong> tiles containing nuclear segmentations having morphologic ranges selected from '
+                + (parm == 'case_id' ? 'diagnostic image' : 'patient') + ' <strong>' + id + '</strong>:';
             document.getElementById('info2').innerHTML =
                 fx + ' between ' + xmin + ' and ' + xmax + '<br>' +
                 fy + ' between ' + ymin + ' and ' + ymax;
