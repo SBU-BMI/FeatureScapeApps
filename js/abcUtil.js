@@ -267,7 +267,7 @@ abcUtil = {
 
             var fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port + '?collection=patients&limit=' + pp.length + '&find={"bcr_patient_barcode":{"$in":[' + ppp + ']}}&db=' + selectObject.db;
 
-            moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="Feature Landscape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
+            moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
 
             fscapeButton.onclick = function () {
                 window.open(fscape)
