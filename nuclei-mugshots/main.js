@@ -176,9 +176,16 @@ function parseData(data, size, query) {
                 async: false,
                 dataType: 'json',
                 success: function (json) {
-                    identifier = json[0].filename;
-                    slideWidth = json[0].width;
-                    slideHeight = json[0].height;
+                    if (json.length > 0) {
+                        identifier = json[0].filename;
+                        slideWidth = json[0].width;
+                        slideHeight = json[0].height;
+
+                    }
+                    else {
+                        slides_not_found = true;
+                        return;
+                    }
                 }
             });
 
