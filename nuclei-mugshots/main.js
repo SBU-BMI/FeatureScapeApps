@@ -1,5 +1,5 @@
 /**
- * Nuclei Mugshots.
+ * Nuclear Mugshots.
  */
 $(function () {
 
@@ -291,7 +291,7 @@ function draw(targetDiv, data, query, layout) {
 
     if (!layout) {
         layout = {
-            title: 'Nuclei Mugshots',
+            title: 'Nuclear Mugshots',
             rows: 3,
             columns: 4
         };
