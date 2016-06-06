@@ -122,6 +122,20 @@ fscape.fun = function (data, url) {
         //var patient = data[0].provenance.image.case_id;
         selectObject.cancer_type = data[0].provenance.analysis.study_id;
 
+        if (selectObject.cancer_type == null)
+        {
+
+            if (location.search.length > 1) {
+                var f = abcUtil.getQueryVariable('db', location.search.slice(1));
+                selectObject.db = f;
+                selectObject.cancer_type = f.substring(4);
+            }
+            else
+            {
+                selectObject.cancer_type = 'unknown';
+            }
+        }
+
         // "VERSION 3"
         data = data.map(function (xi) {
             return xi.properties.scalar_features;
@@ -153,8 +167,11 @@ fscape.fun = function (data, url) {
             if (p.length > 0)
                 p = 'subject ' + p;
         }
+
+        console.log('selectObject', JSON.stringify(selectObject));
         fscape.log('info1', xx.length + ' sets of features sampled from '
-            + (selectObject.cancer_type).toUpperCase() + ' ' + p, 'black');
+            + (selectObject.cancer_type == 'unknown' ? '' : (selectObject.cancer_type).toUpperCase())
+            + ' ' + p, 'black');
 
         fscape.cleanUI();
 
