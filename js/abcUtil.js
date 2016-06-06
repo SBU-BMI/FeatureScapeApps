@@ -362,7 +362,7 @@ abcUtil = {
         html += '<table border="1" id="patientSlideTable">';
         html += '<thead>';
         html += '<tr>';
-        html += '<td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">TCGA patients:</td>';
+        html += '<td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">TCGA Patients:</td>';
         html += '<td id="diagnosticImagesHeader" style="color:maroon;font-weight:bold">Diagnostic Images:</td>';
         html += '</tr>';
         html += '</thead>';

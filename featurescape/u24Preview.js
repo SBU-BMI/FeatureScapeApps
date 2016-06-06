@@ -6,10 +6,10 @@ u24p = function () {
 u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Interface
 
     //var dataOriginDiv = document.getElementById(dataOriginDivId);
-    //dataOriginDiv.innerHTML = '<strong>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + 'Diagnostic Images.</strong>';
+    //dataOriginDiv.innerHTML = '<strong>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + 'Diagnostic Images:</strong>';
 
     var dataDiv = document.getElementById(dataDivId);
-    dataDiv.innerHTML = '<strong>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + ' diagnostic images.</strong>';
+    dataDiv.innerHTML = '<strong>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + ' diagnostic images:</strong>';
 
     var ol = document.createElement('ol');
     dataDiv.appendChild(ol);
@@ -20,9 +20,17 @@ u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Inter
         
         var li = document.createElement('li');
         ol.appendChild(li);
+
+        /*
         li.innerHTML = '<a href="' + abcUtil.caMicroLink(tissueId, selectObject.cancer_type) + '" target="_blank">' + tissueId + '</a>, '
             + '(<a href="http://www.cbioportal.org/case.do?cancer_study_id=' + c.provenance.study_id
             + '_tcga&case_id=' + c.image.subject_id + '" target="_blank" style="color:red">cbio</a>) random seed:';
+            */
+
+li.innerHTML = '<a href="' + abcUtil.caMicroLink(tissueId, selectObject.cancer_type) + '" target="_blank">' + tissueId + '</a>, '
+            + '(<a href="http://www.cbioportal.org/case.do?cancer_study_id=' + c.provenance.study_id
+            + '_tcga&case_id=' + c.image.subject_id + '" target="_blank" style="color:red">cbio</a>) ';
+
         // Note: TCGA's case_id parm actually refers to the patient ("subject"); not the case_id.
         // eg. http://www.cbioportal.org/case.do?cancer_study_id=luad_tcga&case_id=TCGA-05-4395
 
@@ -54,12 +62,13 @@ u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Inter
             }
         };
 
+/*
         setInterval(function () {
             var v = abcUtil.randval();
             sp.textContent = v.toString().slice(0, 5);
             sp.style.color = 'rgb(' + Math.round(255 * v) + ',' + Math.round(255 * (1 - v)) + ',0)';
         }, (1000 + Math.random() * 1000));
-
+*/
         btFeature.onclick = function () {
             var sz = $('input', spSize)[0].value;
             // Yes, we really do need absolute path for this url:
