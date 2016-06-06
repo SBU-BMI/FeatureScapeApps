@@ -51,7 +51,7 @@ fscape.UI = function () {
 };
 
 fscape.loadURL = function (url) {
-    abcUtil.log(url);
+    log(url);
     msg.textContent = "loading, please wait ...";
 
     /*
