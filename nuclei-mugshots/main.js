@@ -273,7 +273,7 @@ function parseData(data, size, query) {
                 parm = 'subject_id';
             }
             div.textContent = 'Displaying ' + newData.length + ' nuclear images having morphologic ranges selected from '
-                + (parm == 'case_id' ? 'case' : 'subject') + ' ID ' + id + ':';
+                + (parm == 'case_id' ? 'diagnostic image' : 'patient') + ' ' + id + ':';
             document.getElementById('info2').innerHTML =
                 fx + ' between ' + xmin + ' and ' + xmax + '<br>' +
                 fy + ' between ' + ymin + ' and ' + ymax;

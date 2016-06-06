@@ -168,7 +168,7 @@ fscape.fun = function (data, url) {
         }
 
         console.log('selectObject', JSON.stringify(selectObject));
-        fscape.log('info1', ' Displaying' + xx.length + ' sets of features sampled from '
+        fscape.log('info1', ' Displaying ' + xx.length + ' sets of features sampled from '
             + (selectObject.cancer_type == 'unknown' ? '' : (selectObject.cancer_type).toUpperCase())
             + ' ' + p, 'black');
 
@@ -531,7 +531,7 @@ fscape.scatterPlot = function (div0, i, j) {
     //if (location.search.match(config.findAPI)) {
     var divZ = document.createElement('div');
     divZ.setAttribute('align', 'center');
-    divZ.innerHTML = '<p><button id="resampleBt" style="color:red">Nuclei mugshots from selected region</button></p>'
+    divZ.innerHTML = '<p><button id="resampleBt" style="color:red">Nuclear mugshots from selected region</button></p>'
         + '<p id="resampleMsg"></p>';
     div.appendChild(divZ);
 
