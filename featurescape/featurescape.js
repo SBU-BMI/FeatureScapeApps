@@ -168,9 +168,9 @@ fscape.fun = function (data, url) {
         }
 
         console.log('selectObject', JSON.stringify(selectObject));
-        fscape.log('info1', ' Displaying ' + xx.length + ' sets of features sampled from '
+        fscape.log('info1', ' Displaying <strong>' + xx.length + '</strong> sets of features sampled from '
             + (selectObject.cancer_type == 'unknown' ? '' : (selectObject.cancer_type).toUpperCase())
-            + ' ' + p, 'black');
+            + ' ' + p + '</strong>', 'black');
 
         fscape.cleanUI();
 

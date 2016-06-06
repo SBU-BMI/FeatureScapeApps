@@ -246,10 +246,10 @@ function parseData(data, size, query) {
         var div = document.getElementById('info1');
         if (thisisrandom) {
 
-            div.innerHTML = 'Displaying ' + newData.length
-                + ' nuclear images from random '
+            div.innerHTML = 'Displaying <strong>' + newData.length
+                + '</strong> nuclear images from random <strong>'
                 + ((mugshots.db).substring(4)).toUpperCase()
-                + ' <strong><a href="#anchor">diagnostic images</a></strong>.'
+                + '<a href="#anchor">diagnostic images</a></strong>.'
                 + ' May represent either either a single or multiple cases.';
 
             //document.getElementById('ptslides').innerHTML = '<a name="anchor"></a><p><span style="color:maroon;font-weight:bold">Tissue slides:</span><table id="patientSlideTable" border="1">' + h + '</table></p>';
