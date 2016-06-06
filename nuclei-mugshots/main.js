@@ -245,7 +245,13 @@ function parseData(data, size, query) {
     else {
         var div = document.getElementById('info1');
         if (thisisrandom) {
-            div.innerHTML = 'Displaying ' + newData.length + ' nuclear images from random ' + ((mugshots.db).substring(4)).toUpperCase() + ' tissue <strong><a href="#anchor">slides</a></strong>';
+
+            div.innerHTML = 'Displaying ' + newData.length
+                + ' nuclear images from random '
+                + ((mugshots.db).substring(4)).toUpperCase()
+                + ' tissue <strong><a href="#anchor">slides</a></strong>.'
+                + ' May represent either either a single or multiple cases.';
+
             //document.getElementById('ptslides').innerHTML = '<a name="anchor"></a><p><span style="color:maroon;font-weight:bold">Tissue slides:</span><table id="patientSlideTable" border="1">' + h + '</table></p>';
             abcUtil.doPatients(newData, 'case_id', query);
 
@@ -321,7 +327,7 @@ function draw(targetDiv, data, query, layout) {
     }
     else {
         var div = document.getElementById(targetDiv);
-        doMessage('info', div, 'Click on any patch to go to the location in caMicroscope, to view it in the context of the whole slide image.', 'blue');
+        doMessage('info', div, 'Click on any tile to go to the location in caMicroscope, to view the mugshot of interest in the context of the whole slide image.', 'blue');
 
         var k = 0, tableRows = mugshots.m,
             tds = mugshots.n,
