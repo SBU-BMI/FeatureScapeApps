@@ -89,10 +89,9 @@ fscape.loadURL = function (url) {
 
 fscape.log = function (divID, txt, color) {
     var d = document.getElementById(divID);
-    d.textContent = txt;
+    d.innerHTML = txt;
     d.style.color = ((!color) ? 'navy' : color);
     d.style.fontWeight = 'bold';
-
 };
 
 fscape.cleanUI = function () { // and create fscapeAnalysisDiv
@@ -160,16 +159,16 @@ fscape.fun = function (data, url) {
 
         if (p.length > 12)
         {
-            p = 'slide ' + p;
+            p = 'diagnostic image ' + p;
         }
         else
         {
             if (p.length > 0)
-                p = 'subject ' + p;
+                p = 'patient ' + p;
         }
 
         console.log('selectObject', JSON.stringify(selectObject));
-        fscape.log('info1', xx.length + ' sets of features sampled from '
+        fscape.log('info1', ' Displaying' + xx.length + ' sets of features sampled from '
             + (selectObject.cancer_type == 'unknown' ? '' : (selectObject.cancer_type).toUpperCase())
             + ' ' + p, 'black');
 
