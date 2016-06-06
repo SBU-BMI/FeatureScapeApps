@@ -422,12 +422,12 @@ abcUtil = {
                 h = 'Found ' + data.length + ' out of the ' + patients.length + ' patients that were requested';
             }
             else {
-                h = 'Found ' + data.length + ' patients:';
+                h = data.length + ' Diagnostic Images:';
             }
 
         }
         else {
-            h = 'Found ' + data.length + ' patients:';
+            h = data.length + ' Diagnostic Images:';
         }
 
         var t = '<a name="anchor"></a><table id="patientSlideTable"><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">' + h + '</td></tr><tr><td><em>Click button to view FeatureScape</em></td></tr>';

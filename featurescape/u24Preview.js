@@ -5,11 +5,11 @@ u24p = function () {
 
 u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Interface
 
-    var dataOriginDiv = document.getElementById(dataOriginDivId);
-    dataOriginDiv.innerHTML = 'The following case IDs are from <strong>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + ' slides.</strong>';
+    //var dataOriginDiv = document.getElementById(dataOriginDivId);
+    //dataOriginDiv.innerHTML = '<strong>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + 'Diagnostic Images.</strong>';
 
     var dataDiv = document.getElementById(dataDivId);
-    dataDiv.innerHTML = '<h3>preview Case IDs</h3>';
+    dataDiv.innerHTML = '<strong>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + 'Diagnostic Images.</strong>';
 
     var ol = document.createElement('ol');
     dataDiv.appendChild(ol);
