@@ -240,11 +240,11 @@ abcUtil = {
             d.innerHTML = '<strong>Charts display clinical information from TCGA:</strong><br>'
                 + '<a href="' + tw + openHealth.clinicalFile + '" target="_blank">' + f1 + '</a><br>'
                 + '<a href="' + tw + openHealth.biosFile + '" target="_blank">' + f2 + '</a><br><br>'
-                + '<strong><a href="#anchor">Slides</a></strong> '
+                + '<strong><a href="#anchor">Diagnostic Images</a></strong> '
                 + 'for ' + pp.length + ' TCGA patients with ' + (selectObject.cancer_type).toUpperCase();
         }
         else {
-            d.innerHTML = '<strong><a href="#anchor">Slides</a></strong> '
+            d.innerHTML = '<strong><a href="#anchor">Diagnostic Images</a></strong> '
                 + 'for ' + pp.length + ' TCGA patients with ' + (selectObject.cancer_type).toUpperCase();
         }
 
