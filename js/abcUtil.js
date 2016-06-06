@@ -70,7 +70,7 @@ abcUtil = {
                 font_color: 'navy',
                 bg_color: 'silver',
                 font_size: 'large',
-                text: 'Select',
+                text: 'Select a dataset',
                 selected: 'luad'
             };
         }
@@ -232,9 +232,14 @@ abcUtil = {
         var d = document.getElementById('info2');
 
         if (typeof openHealth != 'undefined') {
+            var f1 = openHealth.clinicalFile;
+            var f2 = openHealth.biosFile;
+            f1 = f1.substring(f1.indexOf(".")+1);
+            f2 = f2.substring(f2.indexOf(".")+1);
+
             d.innerHTML = '<strong>Charts display clinical information from TCGA:</strong><br>'
-                + '<a href="' + tw + openHealth.clinicalFile + '" target="_blank">' + tw + openHealth.clinicalFile + '</a><br>'
-                + '<a href="' + tw + openHealth.biosFile + '" target="_blank">' + tw + openHealth.biosFile + '</a><br><br>'
+                + '<a href="' + tw + openHealth.clinicalFile + '" target="_blank">' + f1 + '</a><br>'
+                + '<a href="' + tw + openHealth.biosFile + '" target="_blank">' + f2 + '</a><br><br>'
                 + '<strong><a href="#anchor">Slides</a></strong> '
                 + 'for ' + pp.length + ' TCGA patients with ' + (selectObject.cancer_type).toUpperCase();
         }
@@ -397,7 +402,7 @@ abcUtil = {
         return patients;
     },
 
-    doPatients: function (data, idx, url) {
+    doPatients: function (data, idx, url, win) {
 
         var ptslides = document.getElementById('ptslides');
 
@@ -429,12 +434,16 @@ abcUtil = {
 
         data.forEach(function (dd) {
             var x = dd[idx];
+
+            if (typeof x == 'undefined')
+            {
+                x = dd.provenance.image.subject_id;
+            }
             t += '<tr><td><button onclick="abcUtil.goFeature(this)">' + x + '</button></td></tr>';
         });
         t += '</table>';
 
         ptslides.innerHTML = t;
-
 
     },
 
