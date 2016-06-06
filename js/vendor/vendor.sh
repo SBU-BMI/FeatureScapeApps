@@ -1,6 +1,5 @@
 #!/bin/bash
 
-wget http://www.w3schools.com/lib/w3data.js
 wget https://cdn.plot.ly/plotly-latest.min.js
 
 # https://code.jquery.com/

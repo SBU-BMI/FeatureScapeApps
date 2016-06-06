@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>FeatureExplorer</title>
-    <script src="../js/vendor/w3data.js"></script>
     <script src="../js/vendor/jquery-2.2.4.min.js"></script>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/bootstrap-theme.min.css">
@@ -14,11 +13,27 @@
     <script src="../js/vendor/plotly-latest.min.js"></script>
 </head>
 <body>
-<div w3-include-html="../header.html"></div>
-<script>
-    w3IncludeHTML();
-</script>
-<div id="header">
+    <style>
+        body {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+    </style>
+    <a href="https://github.com/SBU-BMI/FeatureScapeApps" target="_blank" style="color:maroon">
+        <img src="../img/BMI.png" height="50px" style="vertical-align:bottom">
+    </a>
+    <ol class="breadcrumb">
+        <li><a href="http://quip1.uhmc.sunysb.edu/">Quip Home</a></li>
+        <li><a href="http://quip1.uhmc.sunysb.edu/sbu_flex/">caMicroscope</a></li>
+        <li><a href="http://sbu-bmi.github.io/FeatureScapeApps/featurescape/fig4.html"><strong>FeatureExplorer</a></strong></li>
+        <li><a href="http://sbu-bmi.github.io/FeatureScapeApps/featurescape/">FeatureScape</a></li>
+        <li><a href="http://sbu-bmi.github.io/FeatureScapeApps/openHealth/?http://sbu-bmi.github.io/FeatureScapeApps/openHealth/tcgascope.js">TCGAScope</a></li>
+        <!--li><a href="http://sbu-bmi.github.io/FeatureScapeApps/featurescape/u24Preview.html">SlideSelect</a></li-->
+        <li><a href="http://sbu-bmi.github.io/FeatureScapeApps/nuclei-mugshots/">NuclearMugshots</a></li>
+    </ol>
+    <div id="header">
     <h3>
         <i style="font-family:Palatino;color:maroon">
             <a href="https://github.com/SBU-BMI/FeatureScapeApps" target="_blank">
