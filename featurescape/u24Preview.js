@@ -9,7 +9,7 @@ u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Inter
     //dataOriginDiv.innerHTML = '<strong>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + 'Diagnostic Images:</strong>';
 
     var dataDiv = document.getElementById(dataDivId);
-    dataDiv.innerHTML = '<strong>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + ' diagnostic images:</strong>';
+    dataDiv.innerHTML = '<h4>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + ' Diagnostic Images:</h4>';
 
     var ol = document.createElement('ol');
     dataDiv.appendChild(ol);
@@ -34,12 +34,12 @@ li.innerHTML = '<a href="' + abcUtil.caMicroLink(tissueId, selectObject.cancer_t
         // Note: TCGA's case_id parm actually refers to the patient ("subject"); not the case_id.
         // eg. http://www.cbioportal.org/case.do?cancer_study_id=luad_tcga&case_id=TCGA-05-4395
 
-        var sp = document.createElement('span');
-        li.appendChild(sp);
+        //var sp = document.createElement('span');
+        //li.appendChild(sp);
 
-        var v = abcUtil.randval();
-        sp.textContent = v.toString().slice(0, 5);
-        sp.style.fontWeight = 'bold';
+        //var v = abcUtil.randval();
+        //sp.textContent = v.toString().slice(0, 5);
+        //sp.style.fontWeight = 'bold';
         var spSize = document.createElement('span');
         spSize.innerHTML = ', feature sample size:<input value=1000 size=5> ';
         li.appendChild(spSize);
@@ -71,8 +71,9 @@ li.innerHTML = '<a href="' + abcUtil.caMicroLink(tissueId, selectObject.cancer_t
 */
         btFeature.onclick = function () {
             var sz = $('input', spSize)[0].value;
+            var v = abcUtil.randval();
             // Yes, we really do need absolute path for this url:
-            var url = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '?limit=' + sz + '&find={"randval":{"$gte":' + sp.textContent + '},"provenance.analysis.execution_id":"' + selectObject.execution_id + '","provenance.image.case_id":"' + tissueId + '"}&db=' + selectObject.db;
+            var url = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '?limit=' + sz + '&find={"randval":{"$gte":' + v + '},"provenance.analysis.execution_id":"' + selectObject.execution_id + '","provenance.image.case_id":"' + tissueId + '"}&db=' + selectObject.db;
             window.open(url);
 
         }
