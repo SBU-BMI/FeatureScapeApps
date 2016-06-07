@@ -326,7 +326,7 @@ abcUtil = {
         if (karnofsky_score != null) {
 
             ks = '<div style="color:blue">Karnofsky Score:</div>'
-                + '<div id="karnofsky_performance_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div>';
+                + '<div id="karnofsky_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div>';
 
             ks1 = 'color indicates Karnofsky performance score (see framed bar chart);';
         }
