@@ -97,7 +97,8 @@ function doFigure4(data) {
 
     h += '</td>';
     h += '<td id="fig4_2" style="vertical-align:top">';
-    h += '<h3 style="color:maroon">Morphology, Epi, etc</h3>';
+    //h += '<h3 style="color:maroon">Morphology, Epi, etc</h3>';
+    h += '<h3 style="color:maroon" data-toggle="tooltip" title="eg. nuclear morphology, features, patient demographics"><span class="lightup">Cohort character</span></h3>';
     h += '<p style="color:maroon">';
     h += 'Var 1: <select id="morphParm1"></select><br>';
     h += 'Var 2: <select id="morphParm2"></select><br>';
@@ -717,7 +718,7 @@ var features = ["PrincipalMoments0_median",
     "stdB_median",
     "SizeInPixels_median",
     "age_at_initial_pathologic_diagnosis",
-    "gender",
+    //"gender", // remove gender for now per M. Saltz 2016-06-06
     "days_to_last_followup"];
 
 var genomic = ["EGFR",

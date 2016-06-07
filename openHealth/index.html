@@ -14,6 +14,9 @@
             margin-left: 10px;
             margin-right: 10px;
         }
+        .lightup:hover,li:hover {
+            background: lightcyan;
+        }
     </style>
     <a href="https://github.com/SBU-BMI/FeatureScapeApps" target="_blank" style="color:maroon">
         <img src="../img/BMI.png" height="50px" style="vertical-align:bottom">
@@ -23,7 +26,9 @@
         <li><a href="http://quip1.uhmc.sunysb.edu/sbu_flex/">caMicroscope</a></li>
         <li><a href="http://sbu-bmi.github.io/FeatureScapeApps/featurescape/fig4.html">FeatureExplorer</a></li>
         <li><a href="http://sbu-bmi.github.io/FeatureScapeApps/featurescape/">FeatureScape</a></li>
-        <li><a href="http://sbu-bmi.github.io/FeatureScapeApps/openHealth/?http://sbu-bmi.github.io/FeatureScapeApps/openHealth/tcgascope.js"><strong>TCGAScope</strong></a></li>
+        <li>
+            <a href="http://sbu-bmi.github.io/FeatureScapeApps/openHealth/?http://sbu-bmi.github.io/FeatureScapeApps/openHealth/tcgascope.js"><strong>TCGAScope</strong></a>
+        </li>
         <!--li><a href="http://sbu-bmi.github.io/FeatureScapeApps/featurescape/u24Preview.html">SlideSelect</a></li-->
         <li><a href="http://sbu-bmi.github.io/FeatureScapeApps/nuclei-mugshots/">NuclearMugshots</a></li>
     </ol>
@@ -45,15 +50,20 @@
         </i>
     </h3>
     <p>
-        An interactive dashboard to explore interrelations between patient demographics, pathologist-generated diagnostic keywords, and outcomes based on publicly-available TCGA data. Through integration into FeatureExplorer and FeatureScape individual corresponding images and results can be explored further.
+        An interactive dashboard to explore interrelations between patient demographics, pathologist-generated
+        diagnostic keywords, and outcomes based on publicly-available TCGA data. Through integration into
+        FeatureExplorer and FeatureScape individual corresponding images and results can be explored further.
     </p>
+    <p><span class="bg-info">To explore this tool, click on each graphic to evaluate interactions. Refresh page to reset. Best viewed in Google Chrome.</span></p>
     <div id="info1" style="font-weight: bold;"></div>
     <div id="info2"></div>
     <hr>
 </div>
 <div id="msg"></div>
-<div id="select"></div>
-<div id="section"></div>
+<div id="select"></div><br>
+<div id="section"></div><br>
+<div id="ptslides"></div><br>
+
 <div id="footer"></div>
 
 <script src="../js/abcUtil.js"></script>

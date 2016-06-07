@@ -327,7 +327,7 @@ function draw(targetDiv, data, query, layout) {
     }
     else {
         var div = document.getElementById(targetDiv);
-        doMessage('info', div, '<br>Click on any tile to go to the location in caMicroscope, to view the mugshot of interest in the context of the whole slide image.<br><br>', 'blue');
+        //doMessage('info', div, '<br>Click on any tile to go to the location in caMicroscope, to view the mugshot of interest in the context of the whole slide image.<br><br>', 'blue');
 
         var k = 0, tableRows = mugshots.m,
             tds = mugshots.n,

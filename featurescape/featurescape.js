@@ -529,6 +529,8 @@ fscape.scatterPlot = function (div0, i, j) {
     console.log(div._fullLayout.xaxis._tmin, div._fullLayout.xaxis._tmax, div._fullLayout.yaxis._tmin, div._fullLayout.yaxis._tmax);
 
     //if (location.search.match(config.findAPI)) {
+    //document.getElementById('lalainfo').textContent = 'Select region from scatterplot. Then click <abbr title="below the scatterplot">nuclear mugshots</abbr> button to view the nuclei of interest.';
+    document.getElementById('lalainfo').textContent = 'Select region from scatterplot. Then click nuclear mugshots button to view the nuclei of interest.';
     var divZ = document.createElement('div');
     divZ.setAttribute('align', 'center');
     divZ.innerHTML = '<p><button id="resampleBt" style="color:red">Nuclear mugshots from selected region</button></p>'
