@@ -83,20 +83,20 @@ abcUtil = {
             + ' style="font-color:' + trace.font_color
             + ';background-color:' + trace.bg_color
             + ';font-size:' + trace.font_size + '" id="' + trace.id + '">';
-            //+ ' id="' + trace.id + '">';
+        //+ ' id="' + trace.id + '">';
 
         $.ajax({
             url: trace.url,
             async: false,
             dataType: 'json',
             success: function (arr) {
-                if (!globalObject.cancer_type) {
-                    trace.selected = 'luad';
-                    //selectTumorHTML += '<option selected disabled></option>';
+                if (!globalObject.selected && globalObject.cancer_type) {
+                    globalObject.selected = globalObject.cancer_type;
                 }
-                else
-                {
-                    trace.selected = globalObject.cancer_type;
+
+                if (!globalObject.selected || globalObject.selected == null) {
+                    globalObject.selected = 'luad';
+                    //selectTumorHTML += '<option selected disabled></option>';
                 }
 
                 arr.forEach(function (item) {
@@ -104,7 +104,7 @@ abcUtil = {
                     var value = tm + ',' + item.db + ',' + item.execution_id;
                     var attr = '';
 
-                    if (tm === trace.selected) {
+                    if (tm === globalObject.selected) {
                         globalObject.db = item.db;
                         globalObject.execution_id = item.execution_id;
                         globalObject.cancer_type = item.cancer_type;
@@ -263,8 +263,7 @@ abcUtil = {
 
         fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port + '?collection=patients&limit=' + pp.length + '&find={"bcr_patient_barcode":{"$in":[' + ppp + ']}}&db=' + selectObject.db;
 
-        if (btnFig4)
-        {
+        if (btnFig4) {
             //btnFig4.innerHTML = '<button id="btnFig4" onclick="resultsPatient(this)">' + p + '</button>&nbsp;';
             btnFig4.value = "FeatureExplorer for " + pp.length + " patients";
             btnFig4.color = "indigo";

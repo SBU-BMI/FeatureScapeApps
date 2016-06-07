@@ -4,24 +4,8 @@
 $(function () {
 
     mugshots = {};
+    selectObject = {};
     mugshots.findApi = config.findAPI + ':' + config.port + '/';
-    selectObject = trace = {};
-    select = document.getElementById('select');
-    select.innerHTML = abcUtil.selectBox(trace, selectObject);
-
-    tumorChanged = function (evt) {
-        thisisrandom = true;
-        var opt = evt.selectedOptions[0].value;
-        var partsOfStr = opt.split(',');
-
-        selectObject.cancer_type = partsOfStr[0];
-        selectObject.db = partsOfStr[1];
-        selectObject.execution_id = partsOfStr[2];
-
-        url = buildQueryStr(selectObject.db, selectObject.execution_id);
-
-        getData(url);
-    };
 
     url = '';
     docs = [];
@@ -37,6 +21,25 @@ $(function () {
         thisisrandom = true;
         url = buildQueryStr(config.default_db, config.default_execution_id);
     }
+
+    select = document.getElementById('select');
+    select.innerHTML = abcUtil.selectBox({}, selectObject);
+
+    tumorChanged = function (evt) {
+        thisisrandom = true;
+        var opt = evt.selectedOptions[0].value;
+        var partsOfStr = opt.split(',');
+
+        selectObject.cancer_type = partsOfStr[0];
+        selectObject.db = partsOfStr[1];
+        selectObject.execution_id = partsOfStr[2];
+
+        url = buildQueryStr(selectObject.db, selectObject.execution_id);
+
+        getData(url);
+    };
+
+
     getData(url);
 
 });
@@ -44,6 +47,9 @@ $(function () {
 function buildQueryStr(db, exec) {
     var rand = abcUtil.randval();
     mugshots.db = db;
+    selectObject.db = db;
+    selectObject.cancer_type = db.substring(4);
+    selectObject.selected = selectObject.cancer_type;
     url = mugshots.findApi + '?collection=objects&limit=12&find={"provenance.analysis.execution_id":"' + exec + '","randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
 
     return url;
@@ -62,6 +68,9 @@ function buildQueryString(q) {
     var db = abcUtil.getQueryVariable('db', q);
 
     mugshots.db = db;
+    selectObject.db = db;
+    selectObject.cancer_type = db.substring(4);
+    selectObject.selected = selectObject.cancer_type;
 
     // Remember it stops at '='
     // https://falcon.bmi.stonybrook.edu:4500/?limit
@@ -450,4 +459,3 @@ function drawLines(canvas, context, obj) {
     context.rect(new_x, new_y, obj.w, obj.h);
     context.stroke();
 }
-

@@ -1,9 +1,27 @@
 console.log('fig4.js loaded');
 
 $(function () {
-    selectObject = trace = {};
+    selectObject = {};
+
+    url = '';
+    docs = [];
+    if (location.hash.length > 1) {
+        url = location.hash.slice(1);
+        var f = abcUtil.getQueryVariable('db', url);
+        selectObject.db = f;
+        selectObject.cancer_type = f.substring(4);
+        selectObject.selected = selectObject.cancer_type;
+    }
+    else {
+        // Default
+        selectObject.db = config.default_db;
+        url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
+        selectObject.cancer_type = (selectObject.db).substring(4);
+        selectObject.selected = selectObject.cancer_type;
+    }
+
     select = document.getElementById('select');
-    select.innerHTML = abcUtil.selectBox(trace, selectObject);
+    select.innerHTML = abcUtil.selectBox({}, selectObject);
 
     tumorChanged = function (evt) {
         var opt = evt.selectedOptions[0].value;
@@ -16,16 +34,6 @@ $(function () {
 
         getData(url);
     };
-
-    url = '';
-    docs = [];
-    if (location.hash.length > 1) {
-        url = location.hash.slice(1);
-    }
-    else {
-        // Default
-        url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + config.default_db;
-    }
 
     getData(url);
 });

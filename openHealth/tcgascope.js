@@ -5,8 +5,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
     selectObject = trace = {};
     openHealthJob.innerHTML = '<div id="openHealthJobMsg" style="color:red">processing ...</div><div id="openHealthJobDC"></div>';
 
-    function doSelectBox()
-    {
+    function doSelectBox() {
         var diva = document.getElementById('select');
         diva.innerHTML = abcUtil.selectBox(trace, selectObject)
             + '&nbsp;&nbsp;'
@@ -26,6 +25,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         };
 
     }
+
     doSelectBox();
 
 
@@ -131,6 +131,8 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             return xi == "Dead"
         });
 
+        // Extract KARNOFSKY
+
         //"karnofsky_score":["karnofsky_performance_score","CDE_ID: ...
         if (openHealth.tcga.dt[clinical_patient].karnofsky_score != null) {
             openHealth.tcga.dt[clinical_patient].score = openHealth.tcga.dt[clinical_patient].karnofsky_score.map(function (xi, i) {
@@ -139,12 +141,8 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                 }
                 else {
                     return parseInt(xi)
-                }
+                }	// karnofsky_score
             });
-
-        }
-        else {
-            //return "[Not Applicable]";
         }
 
         // Create Docs
@@ -333,7 +331,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             addRowChart('race', openHealth.unique(openHealth.tcga.dt[xxxTab].race));
 
 
-            if (openHealth.tcga.dt[xxxTab].karnofsky_score != null) {
+            if (openHealth.tcga.dt[clinical_patient].karnofsky_score != null) {
                 addRowChart(
                     'karnofsky_score',
                     openHealth.unique(openHealth.tcga.dt[xxxTab].karnofsky_score),
@@ -441,7 +439,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             AddXAxis(C.gender, '# images found');
             AddXAxis(C.race, '# images found');
 
-            if (C.karnofsky_score != null) {
+            if (selectObject.cancer_type !== 'paad') {
                 AddXAxis(C.karnofsky_score, '# images found');
             }
 

@@ -121,16 +121,14 @@ fscape.fun = function (data, url) {
         //var patient = data[0].provenance.image.case_id;
         selectObject.cancer_type = data[0].provenance.analysis.study_id;
 
-        if (selectObject.cancer_type == null)
-        {
+        if (selectObject.cancer_type == null) {
 
             if (location.search.length > 1) {
                 var f = abcUtil.getQueryVariable('db', location.search.slice(1));
                 selectObject.db = f;
                 selectObject.cancer_type = f.substring(4);
             }
-            else
-            {
+            else {
                 selectObject.cancer_type = 'unknown';
             }
         }
@@ -157,12 +155,10 @@ fscape.fun = function (data, url) {
         msg.textContent = '';
         var p = getPatient(url);
 
-        if (p.length > 12)
-        {
+        if (p.length > 12) {
             p = 'diagnostic image ' + p;
         }
-        else
-        {
+        else {
             if (p.length > 0)
                 p = 'patient ' + p;
         }
@@ -528,8 +524,8 @@ fscape.scatterPlot = function (div0, i, j) {
     //console.log(fscape.plt._result._fullLayout.xaxis._tmin, fscape.plt._result._fullLayout.xaxis._tmax, fscape.plt._result._fullLayout.yaxis._tmin, fscape.plt._result._fullLayout.yaxis._tmax);
     console.log(div._fullLayout.xaxis._tmin, div._fullLayout.xaxis._tmax, div._fullLayout.yaxis._tmin, div._fullLayout.yaxis._tmax);
 
-    //if (location.search.match(config.findAPI)) {
-    //document.getElementById('lalainfo').textContent = 'Select region from scatterplot. Then click <abbr title="below the scatterplot">nuclear mugshots</abbr> button to view the nuclei of interest.';
+    //Click nuclear mugshots button to view the nuclei of interest.
+    //Select region from scatterplot. Then click <abbr title="below the scatterplot">nuclear mugshots</abbr> button to view the nuclei of interest.
     document.getElementById('lalainfo').textContent = 'Select region from scatterplot. Then click nuclear mugshots button to view the nuclei of interest.';
     var divZ = document.createElement('div');
     divZ.setAttribute('align', 'center');
@@ -576,7 +572,6 @@ fscape.scatterPlot = function (div0, i, j) {
         }
 
     };
-    //}
 
 };
 
@@ -610,8 +605,7 @@ function getSubject(db, exec) {
 }
 
 function getPatient(q) {
-    if (!q)
-    {
+    if (!q) {
         return '';
     }
     else {
