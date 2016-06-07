@@ -249,7 +249,7 @@ function parseData(data, size, query) {
             div.innerHTML = 'Displaying <strong>' + newData.length
                 + '</strong> tiles containing nuclear segmentations from random <strong>'
                 + ((mugshots.db).substring(4)).toUpperCase()
-                + '<a href="#anchor">diagnostic images</a></strong>.'
+                + ' <a href="#anchor">diagnostic images</a></strong>.'
                 + ' May represent either either a single or multiple cases.';
 
             //document.getElementById('ptslides').innerHTML = '<a name="anchor"></a><p><span style="color:maroon;font-weight:bold">Tissue slides:</span><table id="patientSlideTable" border="1">' + h + '</table></p>';
@@ -450,4 +450,3 @@ function drawLines(canvas, context, obj) {
     context.rect(new_x, new_y, obj.w, obj.h);
     context.stroke();
 }
-
