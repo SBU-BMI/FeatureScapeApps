@@ -3,24 +3,30 @@ console.log('tcgascope.js loaded');
 openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
     selectObject = trace = {};
+    openHealthJob.innerHTML = '<div id="openHealthJobMsg" style="color:red">processing ...</div><div id="openHealthJobDC"></div>';
 
-    openHealthJob.innerHTML = abcUtil.selectBox(trace, selectObject)
-        + '<div id="openHealthJobMsg" style="color:red">processing ...</div><div id="openHealthJobDC"></div>';
+    function doSelectBox()
+    {
+        var diva = document.getElementById('select');
+        diva.innerHTML = abcUtil.selectBox(trace, selectObject)
+            + '&nbsp;&nbsp;'
+            + '<input id="btnFig4" name="btnFig4" class="btn btn-primary" type="button" value="FeatureExplorer" />';
 
-    tumorChanged = function (evt) {
-        var opt = evt.selectedOptions[0].value;
+        tumorChanged = function (evt) {
+            var opt = evt.selectedOptions[0].value;
 
-        console.log('*** tumorChanged ***');
-        console.log(opt);
-        window.location.hash = '';
+            window.location.hash = '';
 
-        var partsOfStr = opt.split(',');
-        selectObject.cancer_type = partsOfStr[0];
-        selectObject.db = partsOfStr[1];
-        selectObject.execution_id = partsOfStr[2];
+            var partsOfStr = opt.split(',');
+            selectObject.cancer_type = partsOfStr[0];
+            selectObject.db = partsOfStr[1];
+            selectObject.execution_id = partsOfStr[2];
 
-        getTcgaData(selectObject.cancer_type);
-    };
+            getTcgaData(selectObject.cancer_type);
+        };
+
+    }
+    doSelectBox();
 
 
     function get_biospecimen_slide(filename, cancer_type) {
@@ -153,6 +159,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
         // add patient info to slide docs
         docs = docs.map(function (xi, i) {
+            // TODO: not all are this pattern
             var bcr = xi.bcr_sample_barcode.match(/[^-]+-[^-]+-[^-]+/)[0];
             var p = patient[bcr];
             if (p) {

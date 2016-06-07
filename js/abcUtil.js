@@ -70,43 +70,46 @@ abcUtil = {
                 font_color: 'navy',
                 bg_color: 'silver',
                 font_size: 'large',
-                text: 'Select a dataset',
-                selected: 'luad'
+                text: 'Select a dataset'
+                //selected: 'luad'
             };
         }
 
         // Dropdown menu
-        var selectTumorHTML = '<h3 style="color:' + trace.font_color + '">';
+        var selectTumorHTML = '<span style="color:' + trace.font_color + '"><strong><font size="+1">';
         selectTumorHTML += trace.text
-            + ': <select onchange="' + trace.onchange
-            + '" style="font-color:' + trace.font_color
+            + ':</font></strong>&nbsp;<select onchange="' + trace.onchange + '" '
+            //+ ' class="selectpicker"'
+            + ' style="font-color:' + trace.font_color
             + ';background-color:' + trace.bg_color
             + ';font-size:' + trace.font_size + '" id="' + trace.id + '">';
+            //+ ' id="' + trace.id + '">';
 
         $.ajax({
             url: trace.url,
             async: false,
             dataType: 'json',
             success: function (arr) {
+                if (!globalObject.cancer_type) {
+                    trace.selected = 'luad';
+                    //selectTumorHTML += '<option selected disabled></option>';
+                }
+                else
+                {
+                    trace.selected = globalObject.cancer_type;
+                }
+
                 arr.forEach(function (item) {
                     var tm = item.cancer_type;
                     var value = tm + ',' + item.db + ',' + item.execution_id;
                     var attr = '';
 
-                    if (!globalObject.cancer_type) {
-                        if (tm === trace.selected) {
-                            globalObject.db = item.db;
-                            globalObject.execution_id = item.execution_id;
-                            globalObject.cancer_type = item.cancer_type;
-                            attr = 'selected';
-                        }
+                    if (tm === trace.selected) {
+                        globalObject.db = item.db;
+                        globalObject.execution_id = item.execution_id;
+                        globalObject.cancer_type = item.cancer_type;
+                        attr = 'selected';
                     }
-
-                    /*
-                     selectTumorHTML += '<option disabled>execution_id ' + item.execution_id + '</option>';
-                     selectTumorHTML += '<option value="' + value + '" ' + attr + '>&nbsp;&nbsp;'
-                     + tm.toUpperCase() + ' - ' + item.name + '</option>';
-                     */
 
                     selectTumorHTML += '<option value="' + value + '" ' + attr + '>'
                         + tm.toUpperCase() + ' - ' + item.name + ' - ' + item.execution_id + '</option>';
@@ -116,7 +119,7 @@ abcUtil = {
         });
 
         selectTumorHTML += "</select>";
-        selectTumorHTML += "</h3>";
+        selectTumorHTML += "</span>";
         return selectTumorHTML;
     },
 
@@ -234,8 +237,8 @@ abcUtil = {
         if (typeof openHealth != 'undefined') {
             var f1 = openHealth.clinicalFile;
             var f2 = openHealth.biosFile;
-            f1 = f1.substring(f1.indexOf(".")+1);
-            f2 = f2.substring(f2.indexOf(".")+1);
+            f1 = f1.substring(f1.indexOf(".") + 1);
+            f2 = f2.substring(f2.indexOf(".") + 1);
 
             d.innerHTML = '<strong>Charts display clinical information from TCGA:</strong><br>'
                 + '<a href="' + tw + openHealth.clinicalFile + '" target="_blank">' + f1 + '</a><br>'
@@ -248,6 +251,29 @@ abcUtil = {
                 + 'for ' + pp.length + ' TCGA patients with ' + (selectObject.cancer_type).toUpperCase();
         }
 
+        // FIGURE4
+        var btnFig4 = document.getElementById('btnFig4');
+        var ppp = '';
+        var fig4 = '';
+        pp.forEach(function (p) {
+            ppp += '"' + p + '",';
+
+        });
+        ppp = ppp.slice(0, -1);
+
+        fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port + '?collection=patients&limit=' + pp.length + '&find={"bcr_patient_barcode":{"$in":[' + ppp + ']}}&db=' + selectObject.db;
+
+        if (btnFig4)
+        {
+            //btnFig4.innerHTML = '<button id="btnFig4" onclick="resultsPatient(this)">' + p + '</button>&nbsp;';
+            btnFig4.value = "FeatureExplorer for " + pp.length + " patients";
+            btnFig4.color = "indigo";
+
+            btnFig4.onclick = function () {
+                window.open(fig4)
+            };
+        }
+
         resultsPatient = function (x) {
 
             var v = abcUtil.randval();
@@ -257,17 +283,8 @@ abcUtil = {
             // FEATURESCAPE
             var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
 
-            // FIGURE4
-            var ppp = '';
-            pp.forEach(function (p) {
-                ppp += '"' + p + '",';
-
-            });
-            ppp = ppp.slice(0, -1);
-
-            var fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port + '?collection=patients&limit=' + pp.length + '&find={"bcr_patient_barcode":{"$in":[' + ppp + ']}}&db=' + selectObject.db;
-
-            moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
+            moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
+                + '&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
 
             fscapeButton.onclick = function () {
                 window.open(fscape)
@@ -435,8 +452,7 @@ abcUtil = {
         data.forEach(function (dd) {
             var x = dd[idx];
 
-            if (typeof x == 'undefined')
-            {
+            if (typeof x == 'undefined') {
                 x = dd.provenance.image.subject_id;
             }
             t += '<tr><td><button onclick="abcUtil.goFeature(this)">' + x + '</button></td></tr>';
@@ -465,33 +481,32 @@ abcUtil = {
     },
 
     clrMsg: function (h) {
-    var a = document.getElementById('msg');
-    a.innerHTML = h;
+        var a = document.getElementById('msg');
+        a.innerHTML = h;
 
-    /*
-     a = document.getElementById('patientInfo');
-     a.innerHTML = '';
+        /*
+         a = document.getElementById('patientInfo');
+         a.innerHTML = '';
 
-     a = document.getElementById('repositoryInfo');
-     a.innerHTML = '';
+         a = document.getElementById('repositoryInfo');
+         a.innerHTML = '';
 
-     */
+         */
 
-    a = document.getElementById('info1');
-    a.innerHTML = '';
+        a = document.getElementById('info1');
+        a.innerHTML = '';
 
-    a = document.getElementById('info2');
-    a.innerHTML = '';
+        a = document.getElementById('info2');
+        a.innerHTML = '';
 
-    a = document.getElementById('section');
-    a.innerHTML = '';
+        a = document.getElementById('section');
+        a.innerHTML = '';
 
-    a = document.getElementById('ptslides');
-    a.innerHTML = '';
+        a = document.getElementById('ptslides');
+        a.innerHTML = '';
     },
 
-    noDataJoy: function (url)
-    {
+    noDataJoy: function (url) {
         var h = '<span style="color:red;font-weight:bold;">Data not available';
         var patients = abcUtil.getPatientArrayFromUrl(url);
 

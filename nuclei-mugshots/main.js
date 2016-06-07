@@ -142,7 +142,7 @@ function doMessage(name, location, text, color) {
         div = document.getElementById(name);
     }
 
-    div.textContent = text;
+    div.innerHTML = text;
     div.style.color = color;
 }
 
@@ -327,7 +327,7 @@ function draw(targetDiv, data, query, layout) {
     }
     else {
         var div = document.getElementById(targetDiv);
-        doMessage('info', div, 'Click on any tile to go to the location in caMicroscope, to view the mugshot of interest in the context of the whole slide image.', 'blue');
+        doMessage('info', div, '<br>Click on any tile to go to the location in caMicroscope, to view the mugshot of interest in the context of the whole slide image.<br><br>', 'blue');
 
         var k = 0, tableRows = mugshots.m,
             tds = mugshots.n,
@@ -450,3 +450,4 @@ function drawLines(canvas, context, obj) {
     context.rect(new_x, new_y, obj.w, obj.h);
     context.stroke();
 }
+
