@@ -233,6 +233,7 @@ abcUtil = {
         // DATA REFERENCE
         var tw = 'https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/';
         var d = document.getElementById('info2');
+        var t = (selectObject.cancer_type).toUpperCase();
 
         if (typeof openHealth != 'undefined') {
             var f1 = openHealth.clinicalFile;
@@ -244,11 +245,11 @@ abcUtil = {
                 + '<a href="' + tw + openHealth.clinicalFile + '" target="_blank">' + f1 + '</a><br>'
                 + '<a href="' + tw + openHealth.biosFile + '" target="_blank">' + f2 + '</a><br><br>'
                 + '<strong><a href="#anchor">Diagnostic Images</a></strong> '
-                + 'for ' + pp.length + ' TCGA patients with ' + (selectObject.cancer_type).toUpperCase();
+                + 'for <strong>' + pp.length + ' ' + t + ' patients</strong>';
         }
         else {
             d.innerHTML = '<strong><a href="#anchor">Diagnostic Images</a></strong> '
-                + 'for ' + pp.length + ' TCGA patients with ' + (selectObject.cancer_type).toUpperCase();
+                + 'for <strong>' + pp.length + ' ' + t + ' patients</strong>';
         }
 
         // FIGURE4

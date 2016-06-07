@@ -91,7 +91,6 @@ fscape.log = function (divID, txt, color) {
     var d = document.getElementById(divID);
     d.innerHTML = txt;
     d.style.color = ((!color) ? 'navy' : color);
-    d.style.fontWeight = 'bold';
 };
 
 fscape.cleanUI = function () { // and create fscapeAnalysisDiv
@@ -164,7 +163,7 @@ fscape.fun = function (data, url) {
         }
 
         console.log('selectObject', JSON.stringify(selectObject));
-        fscape.log('info1', ' Displaying <strong>' + xx.length + '</strong> sets of features sampled from '
+        fscape.log('info1', ' Displaying <strong>' + xx.length + '</strong> sets of features sampled from <strong>'
             + (selectObject.cancer_type == 'unknown' ? '' : (selectObject.cancer_type).toUpperCase())
             + ' ' + p + '</strong>', 'black');
 
