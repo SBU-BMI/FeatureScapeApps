@@ -333,7 +333,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             addRowChart('race', openHealth.unique(openHealth.tcga.dt[xxxTab].race));
 
 
-            if (openHealth.tcga.dt[clinical_patient].karnofsky_score != null) {
+            if (openHealth.tcga.dt[xxxTab].karnofsky_score != null) {
                 addRowChart(
                     'karnofsky_score',
                     openHealth.unique(openHealth.tcga.dt[xxxTab].karnofsky_score),
@@ -441,7 +441,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             AddXAxis(C.gender, '# images found');
             AddXAxis(C.race, '# images found');
 
-            if (selectObject.cancer_type !== 'paad') {
+            if (C.karnofsky_score != null) {
                 AddXAxis(C.karnofsky_score, '# images found');
             }
 
