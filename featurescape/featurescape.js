@@ -154,18 +154,14 @@ fscape.fun = function (data, url) {
         msg.textContent = '';
         var p = getPatient(url);
 
-        if (p.length > 12) {
-            p = 'diagnostic image ' + p;
-        }
-        else {
-            if (p.length > 0)
-                p = 'patient ' + p;
-        }
+        var text = ' Displaying <strong>' + xx.length + '</strong> sets of features sampled from <strong>'
+            + (selectObject.cancer_type == 'unknown' ? '' : (selectObject.cancer_type).toUpperCase())
+            + '</strong> '
+            + (p.length > 12 ? 'diagnostic image ' : 'patient ')
+            + '<strong>' + p + '</strong>';
 
         console.log('selectObject', JSON.stringify(selectObject));
-        fscape.log('info1', ' Displaying <strong>' + xx.length + '</strong> sets of features sampled from <strong>'
-            + (selectObject.cancer_type == 'unknown' ? '' : (selectObject.cancer_type).toUpperCase())
-            + ' ' + p + '</strong>', 'black');
+        fscape.log('info1', text, 'black');
 
         fscape.cleanUI();
 
