@@ -20,9 +20,6 @@ $(function () {
         selectObject.selected = selectObject.cancer_type;
     }
 
-    select = document.getElementById('select');
-    select.innerHTML = abcUtil.selectBox({}, selectObject);
-
     tumorChanged = function (evt) {
         var opt = evt.selectedOptions[0].value;
         var partsOfStr = opt.split(',');
@@ -33,8 +30,11 @@ $(function () {
         url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
 
         getData(url);
+        select = document.getElementById('select');
+        select.innerHTML = abcUtil.selectBox({}, selectObject);
     };
-
+    select = document.getElementById('select');
+    select.innerHTML = abcUtil.selectBox({}, selectObject);
     getData(url);
 });
 
