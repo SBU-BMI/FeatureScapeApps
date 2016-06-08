@@ -270,7 +270,7 @@ fscape.plot = function (x) { // when ready to do it
     fscape.dt.parmNum = parmNum;
 
     featurecrossTD.innerHTML = "<label>Click to choose a different cancer type &amp; tissue slide image:&nbsp;"
-        + '<input type="button" onclick="window.location.href=\'u24Preview.html\'" name="btnSelect" id="btnSelect" value="Go!" />'
+        + '<input type="button" class="btn btn-secondary" onclick="window.location.href=\'u24Preview.html\'" name="btnSelect" id="btnSelect" value="Go!" />'
         + "</label>" + fscape.clust2html(cl);
 
     setTimeout(function () {
@@ -524,7 +524,7 @@ fscape.scatterPlot = function (div0, i, j) {
     document.getElementById('lalainfo').textContent = 'Select region from scatterplot. Then click nuclear mugshots button to view the nuclei of interest.';
     var divZ = document.createElement('div');
     divZ.setAttribute('align', 'center');
-    divZ.innerHTML = '<p><button id="resampleBt" style="color:red">Nuclear mugshots from selected region</button></p>'
+    divZ.innerHTML = '<p><button id="resampleBt" class="btn btn-secondary" style="color:red">Nuclear mugshots from selected region</button></p>'
         + '<p id="resampleMsg"></p>';
     div.appendChild(divZ);
 

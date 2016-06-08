@@ -32,6 +32,7 @@ li.innerHTML = '<a href="' + abcUtil.caMicroLink(tissueId, selectObject.cancer_t
         li.appendChild(btFeature);
         btFeature.textContent = "FeatureScape of sampled features";
         btFeature.style.color = "blue";
+        // TODO: class="btn btn-secondary"
 
         btFeature.onclick = function () {
             var sz = 1000;

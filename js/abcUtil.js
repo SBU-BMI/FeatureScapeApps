@@ -282,9 +282,13 @@ abcUtil = {
             var find = '{"randval":{"$gte":' + textContent + '},' + exec + ',"provenance.image.subject_id":"' + (typeof patient[x.textContent] == 'undefined' ? x.textContent : patient[x.textContent]["bcr_patient_barcode"]) + '"}&db=' + selectObject.db;
             // FEATURESCAPE
             var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
-
+/*
             moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
                 + '&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
+*/
+
+            moreInfo.innerHTML = ' <button type="button" id="fscapeButton" class="btn btn-secondary" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
+                + '&nbsp;&nbsp; <button type="button" id="fig4Button" class="btn btn-secondary" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
 
             fscapeButton.onclick = function () {
                 window.open(fscape)
@@ -308,7 +312,7 @@ abcUtil = {
             var num = i + 1;
 
             tr.innerHTML = '<td id="tdPatient_' + p + '" style="vertical-align:top">' + (num <= 9 ? '0' : '') + num + ') '
-                + '<button onclick="resultsPatient(this)">' + p + '</button>&nbsp;'
+                + '<button class="btn btn-secondary" onclick="resultsPatient(this)">' + p + '</button>&nbsp;'
                 + '(<a href="http://www.cbioportal.org/case.do?case_id=' + p + '&cancer_study_id=' + selectObject.cancer_type + '_tcga" target=_blank>cBio</a>)'
                 + '</td>'
                 + '<td id="dxSlide_' + p + '" style="vertical-align:top;font-size:12"></td>';
@@ -455,7 +459,7 @@ abcUtil = {
             if (typeof x == 'undefined') {
                 x = dd.provenance.image.subject_id;
             }
-            t += '<tr><td><button onclick="abcUtil.goFeature(this)">' + x + '</button></td></tr>';
+            t += '<tr><td><button class="btn btn-secondary" onclick="abcUtil.goFeature(this)">' + x + '</button></td></tr>';
         });
         t += '</table>';
 
