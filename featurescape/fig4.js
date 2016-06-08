@@ -29,10 +29,12 @@ $(function () {
         selectObject.execution_id = partsOfStr[2];
         url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
 
+        console.log('tumor changed');
         getData(url);
         select = document.getElementById('select');
         select.innerHTML = abcUtil.selectBox({}, selectObject);
     };
+    console.log('u r here');
     select = document.getElementById('select');
     select.innerHTML = abcUtil.selectBox({}, selectObject);
     getData(url);
