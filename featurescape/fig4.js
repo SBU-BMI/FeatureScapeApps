@@ -20,6 +20,9 @@ $(function () {
         selectObject.selected = selectObject.cancer_type;
     }
 
+    select = document.getElementById('select');
+    select.innerHTML = abcUtil.selectBox({}, selectObject);
+
     tumorChanged = function (evt) {
         var opt = evt.selectedOptions[0].value;
         var partsOfStr = opt.split(',');
@@ -29,14 +32,9 @@ $(function () {
         selectObject.execution_id = partsOfStr[2];
         url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
 
-        console.log('tumor changed');
         getData(url);
-        select = document.getElementById('select');
-        select.innerHTML = abcUtil.selectBox({}, selectObject);
     };
-    console.log('u r here');
-    select = document.getElementById('select');
-    select.innerHTML = abcUtil.selectBox({}, selectObject);
+
     getData(url);
 });
 
@@ -622,7 +620,10 @@ function wrangle(oldArr) {
 
 function showInfo(data) {
 
+    //if (!this.selectObject.cancer_type)
+
     var tt = '', tumor = '', tumor1 = '';
+    /*
     if (data[0].Study) {
         tt = data[0].Study;
     }
@@ -630,7 +631,9 @@ function showInfo(data) {
         if (data[0].tumor) {
             tt = data[0].tumor;
         }
-    }
+    }*/
+
+    tt = selectObject.cancer_type;
 
     if (tt === '') {
         console.log('Unknown tumor');
