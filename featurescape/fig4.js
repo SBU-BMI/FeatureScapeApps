@@ -6,23 +6,40 @@ $(function () {
     url = '';
     docs = [];
     if (location.hash.length > 1) {
+
         url = location.hash.slice(1);
+
         var f = abcUtil.getQueryVariable('db', url);
         selectObject.db = f;
         selectObject.cancer_type = f.substring(4);
         // TODO: PTF.
         if (selectObject.db == 'u24_radpath') {
             selectObject.cancer_type = "gbm"
-        }        
+        }
         selectObject.selected = selectObject.cancer_type;
+
     }
     else {
-        // Default
-        selectObject.db = config.default_db;
-        url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
-        // This is OK. Def db matches c type.
-        selectObject.cancer_type = (selectObject.db).substring(4);
-        selectObject.selected = selectObject.cancer_type;
+        console.log('location.search.length', location.search.length);
+
+        if (location.search.length > 1) {
+            var q = location.search.slice(1);
+            selectObject.db = abcUtil.getQueryVariable("db", q);
+
+            url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
+
+            selectObject.cancer_type = abcUtil.getQueryVariable("c", q);
+            selectObject.selected = selectObject.cancer_type;
+
+        }
+        else {
+            // Default
+            selectObject.db = config.default_db;
+            url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
+            // This is OK. Def db matches c type.
+            selectObject.cancer_type = (selectObject.db).substring(4);
+            selectObject.selected = selectObject.cancer_type;
+        }
     }
 
     select = document.getElementById('select');
@@ -37,10 +54,9 @@ $(function () {
         url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
         selectObject.selected = opt;
 
-        console.log('tumor changed');
+        console.log('tumor changed', selectObject.selected);
         getData(url);
     };
-    console.log('u r here');
     getData(url);
 });
 
@@ -146,11 +162,20 @@ function doFigure4(data) {
     });
 
     searchParms = {};
+
     location.search.slice(1).split('&').forEach(function (pp) {
         pp = pp.split('=');
         searchParms[pp[0]] = pp[1]
     });
 
+    /*
+     if (url.indexOf("morph1") > -1) {
+
+     searchParms["morph1"] = abcUtil.getQueryVariable("morph1", url);
+     searchParms["morph2"] = abcUtil.getQueryVariable("morph2", url);
+
+     }
+     */
     // add search parms to list if they are not there
     if (searchParms.morph1) {
         if (features.indexOf(searchParms.morph1) == -1) {
@@ -184,8 +209,28 @@ function doFigure4(data) {
     } else {
         morphParm2.value = "stdR_median"
     }
+
+    /**
+     * morphParm.onchange
+     */
     morphParm1.onchange = morphParm2.onchange = function () {
-        location.search = '?morph1=' + morphParm1.value + '&morph2=' + morphParm2.value
+
+        location.search = '?morph1=' + morphParm1.value + '&morph2=' + morphParm2.value + '&db=' + selectObject.db + '&c=' + selectObject.cancer_type;
+        //location.search = '?morph1=' + morphParm1.value + '&morph2=' + morphParm2.value
+
+        /*
+         if (location.hash.length > 1) {
+         url = location.hash.slice(1);
+         url = url.substring(0, url.indexOf("&morph1"));
+         location.hash = url + '&morph1=' + morphParm1.value + '&morph2=' + morphParm2.value;
+
+         }
+         else {
+         fig4 = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
+         location.hash = fig4 + '&morph1=' + morphParm1.value + '&morph2=' + morphParm2.value;
+         }*/
+
+
     };
 
     // Add survival information
@@ -389,7 +434,7 @@ function doFigure4(data) {
             // Somehow it's ignoring and looking for something
             // that doesn't exist anyway.
             // So check for gene[gn].R and in colorAccessor fn.
-            if ( typeof gene[gn] != 'undefined') {
+            if (typeof gene[gn] != 'undefined') {
                 gene[gn].C
                     .width(500)
                     .height(100)
@@ -399,7 +444,7 @@ function doFigure4(data) {
                     .elasticX(true)
                     .colors(d3.scale.linear().domain([0, 0.5, 1]).range(["blue", "yellow", "red"]))
                     .colorAccessor(function (d, i) {
-                        if ( typeof gene[gn] != 'undefined') {
+                        if (typeof gene[gn] != 'undefined') {
                             var na = gene[gn].R.NA;
                             var high = gene[gn].R.high;
                             var low = gene[gn].R.low;
@@ -431,7 +476,8 @@ function doFigure4(data) {
 
     morphPlot = function (divId, p) {
         var div = document.getElementById(divId);
-        div.innerHTML += p + '<br>';
+        //div.innerHTML += p + '<br>';
+        div.innerHTML = p + '<br>';
         div.style.color = 'navy';
         div.style.fontWeight = 'bold';
         morph[p] = {};
@@ -503,7 +549,9 @@ function doFigure4(data) {
 
     };
 
+    console.log(morphParm1.value);
     morphPlot("fig4_2_1", morphParm1.value);
+    console.log(morphParm2.value);
     morphPlot("fig4_2_2", morphParm2.value);
     //morphPlot("fig4_2_3", morphParm2.value);
 
@@ -760,9 +808,9 @@ var features = ["PrincipalMoments0_median",
     "stdB_median",
     "SizeInPixels_median",
     "age_at_initial_pathologic_diagnosis",
-    //"edemaRatio_4_T2",
-    //"Max_Intensity_4_T1c",
-    //"LLH_Min_Intensity_4_T1c",    
+    "edemaRatio_4_T2",
+    "Max_Intensity_4_T1c",
+    "LLH_Min_Intensity_4_T1c",
     //"gender", // remove gender for now per M. Saltz 2016-06-06
     "days_to_last_followup"];
 
