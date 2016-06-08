@@ -282,10 +282,10 @@ abcUtil = {
             var find = '{"randval":{"$gte":' + textContent + '},' + exec + ',"provenance.image.subject_id":"' + (typeof patient[x.textContent] == 'undefined' ? x.textContent : patient[x.textContent]["bcr_patient_barcode"]) + '"}&db=' + selectObject.db;
             // FEATURESCAPE
             var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
-/*
-            moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
-                + '&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
-*/
+            /*
+             moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
+             + '&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
+             */
 
             moreInfo.innerHTML = ' <button type="button" id="fscapeButton" class="btn btn-secondary" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
                 + '&nbsp;&nbsp; <button type="button" id="fig4Button" class="btn btn-secondary" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
@@ -333,6 +333,11 @@ abcUtil = {
                 + '<div id="karnofsky_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div>';
 
             ks1 = 'color indicates Karnofsky performance score (see framed bar chart);';
+        }
+        else {
+            ks = '<div style="color:blue">Karnofsky Score:</div>'
+                + '<div id="karnofsky_score" class="well" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888">Scores not available</div>';
+
         }
 
         var html = '';

@@ -439,7 +439,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             AddXAxis(C.gender, '# images found');
             AddXAxis(C.race, '# images found');
 
-            if (selectObject.cancer_type !== 'paad') {
+            if (C.karnofsky_score !== null) {
                 AddXAxis(C.karnofsky_score, '# images found');
             }
 
