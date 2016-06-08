@@ -10,6 +10,10 @@ $(function () {
         var f = abcUtil.getQueryVariable('db', url);
         selectObject.db = f;
         selectObject.cancer_type = f.substring(4);
+        // TODO: PTF.
+        if (selectObject.db == 'u24_radpath') {
+            selectObject.cancer_type = "gbm"
+        }        
         selectObject.selected = selectObject.cancer_type;
     }
     else {
@@ -31,6 +35,7 @@ $(function () {
         selectObject.db = partsOfStr[1];
         selectObject.execution_id = partsOfStr[2];
         url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
+        selectObject.selected = opt;
 
         console.log('tumor changed');
         getData(url);
@@ -755,6 +760,9 @@ var features = ["PrincipalMoments0_median",
     "stdB_median",
     "SizeInPixels_median",
     "age_at_initial_pathologic_diagnosis",
+    //"edemaRatio_4_T2",
+    //"Max_Intensity_4_T1c",
+    //"LLH_Min_Intensity_4_T1c",    
     //"gender", // remove gender for now per M. Saltz 2016-06-06
     "days_to_last_followup"];
 
