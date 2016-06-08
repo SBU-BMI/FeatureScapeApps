@@ -16,13 +16,13 @@ $(function () {
         // Default
         selectObject.db = config.default_db;
         url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
+        // This is OK. Def db matches c type.
         selectObject.cancer_type = (selectObject.db).substring(4);
         selectObject.selected = selectObject.cancer_type;
     }
 
     select = document.getElementById('select');
     select.innerHTML = abcUtil.selectBox({}, selectObject);
-
     tumorChanged = function (evt) {
         var opt = evt.selectedOptions[0].value;
         var partsOfStr = opt.split(',');
@@ -32,9 +32,10 @@ $(function () {
         selectObject.execution_id = partsOfStr[2];
         url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
 
+        console.log('tumor changed');
         getData(url);
     };
-
+    console.log('u r here');
     getData(url);
 });
 
@@ -91,7 +92,8 @@ function doFigure4(data) {
 
     docs = data;
 
-    checkData(parms);
+    var genomic = checkGenomic(parms);
+    var features = checkFeatures(parms);
 
     // build table
     var h = '<table>';
@@ -377,22 +379,43 @@ function doFigure4(data) {
             }
         );
 
-        gene[gn].C
-            .width(500)
-            .height(100)
-            .margins({top: 10, right: 50, bottom: 30, left: 40})
-            .dimension(gene[gn].D)
-            .group(gene[gn].G)
-            .elasticX(true)
-            .colors(d3.scale.linear().domain([0, 0.5, 1]).range(["blue", "yellow", "red"]))
-            .colorAccessor(function (d, i) {
-                return d.value / (gene[gn].R.NA + gene[gn].R.high + gene[gn].R.low)
-            })
-            .on('filtered', function () {
-                onFiltered(gn)
-            });
+        try {
+            // We're passing in a specific array of genes.
+            // Somehow it's ignoring and looking for something
+            // that doesn't exist anyway.
+            // So check for gene[gn].R and in colorAccessor fn.
+            if ( typeof gene[gn] != 'undefined') {
+                gene[gn].C
+                    .width(500)
+                    .height(100)
+                    .margins({top: 10, right: 50, bottom: 30, left: 40})
+                    .dimension(gene[gn].D)
+                    .group(gene[gn].G)
+                    .elasticX(true)
+                    .colors(d3.scale.linear().domain([0, 0.5, 1]).range(["blue", "yellow", "red"]))
+                    .colorAccessor(function (d, i) {
+                        if ( typeof gene[gn] != 'undefined') {
+                            var na = gene[gn].R.NA;
+                            var high = gene[gn].R.high;
+                            var low = gene[gn].R.low;
+                            return d.value / (na + high + low)
+                        }
+                    })
+                    .on('filtered', function () {
+                        onFiltered(gn)
+                    });
+
+            }
+
+        }
+        catch (err) {
+            console.log('gn', gn);
+            console.log(err.message);
+        }
+
         return gene
     };
+
 
     genomic.forEach(function (gen) {
         genePlot(gen);
@@ -537,20 +560,20 @@ function flatten(data) {
         var newObject = {};
 
         //clinical_features
-        var features = item.clinical_features;
-        features.forEach(function (f) {
+        var feat = item.clinical_features;
+        feat.forEach(function (f) {
             newObject[f.name] = f.value;
         });
 
         //genomic_features
-        features = item.genomic_features;
-        features.forEach(function (f) {
+        feat = item.genomic_features;
+        feat.forEach(function (f) {
             newObject[f.name] = f.value;
         });
 
         //imaging_features
-        features = item.imaging_features;
-        features.forEach(function (f) {
+        feat = item.imaging_features;
+        feat.forEach(function (f) {
             newObject[f.name] = f.value;
         });
 
@@ -620,10 +643,7 @@ function wrangle(oldArr) {
 
 function showInfo(data) {
 
-    //if (!this.selectObject.cancer_type)
-
     var tt = '', tumor = '', tumor1 = '';
-    /*
     if (data[0].Study) {
         tt = data[0].Study;
     }
@@ -631,9 +651,7 @@ function showInfo(data) {
         if (data[0].tumor) {
             tt = data[0].tumor;
         }
-    }*/
-
-    tt = selectObject.cancer_type;
+    }
 
     if (tt === '') {
         console.log('Unknown tumor');
@@ -682,10 +700,9 @@ function showInfo(data) {
 
 }
 
-function checkData(propertyNames) {
+function checkFeatures(propertyNames) {
     // We would like to show these parameters
     var newFeatures = [];
-    var newGenomic = [];
 
     // Check to see if they exist in our data
     features.forEach(function (mpp) {
@@ -698,6 +715,14 @@ function checkData(propertyNames) {
 
     });
 
+    return newFeatures;
+
+}
+
+function checkGenomic(propertyNames) {
+    // We would like to show these parameters
+    var newGenomic = [];
+
     genomic.forEach(function (mpp) {
         if (propertyNames.indexOf(mpp) > -1) {
             newGenomic.push(mpp);
@@ -708,8 +733,7 @@ function checkData(propertyNames) {
 
     });
 
-    features = newFeatures;
-    genomic = newGenomic;
+    return newGenomic;
 
 }
 
