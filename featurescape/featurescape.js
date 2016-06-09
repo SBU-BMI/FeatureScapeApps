@@ -13,7 +13,7 @@ fscape = function (x) {
 
 fscape.UI = function () {
     fscape.div = document.getElementById("section");
-    selected = {};
+    selection = {};
 
     //  check for data URL
     var q = '';
@@ -94,21 +94,21 @@ fscape.fun = function (data, url) {
     }
     else {
 
-        selected.cancer_type = data[0].provenance.analysis.study_id;
+        selection.cancer_type = data[0].provenance.analysis.study_id;
 
-        if (selected.cancer_type == null) {
+        if (selection.cancer_type == null) {
 
             if (location.search.length > 1) {
                 var f = abcUtil.getQueryVariable('db', location.search.slice(1));
-                selected.db = f;
-                selected.cancer_type = f.substring(4);
+                selection.db = f;
+                selection.cancer_type = f.substring(4);
                 // PTF.
-                if (selected.db == 'u24_radpath') {
-                    selected.cancer_type = "gbm"
+                if (selection.db == 'u24_radpath') {
+                    selection.cancer_type = "gbm"
                 }
             }
             else {
-                selected.cancer_type = 'unknown';
+                selection.cancer_type = 'unknown';
             }
         }
 
@@ -135,12 +135,12 @@ fscape.fun = function (data, url) {
         var p = getPatient(url);
 
         var text = ' Displaying <strong>' + xx.length + '</strong> sets of features sampled from <strong>'
-            + (selected.cancer_type == 'unknown' ? '' : (selected.cancer_type).toUpperCase())
+            + (selection.cancer_type == 'unknown' ? '' : (selection.cancer_type).toUpperCase())
             + '</strong> '
             + (p.length > 12 ? 'diagnostic image ' : 'patient ')
             + '<strong>' + p + '</strong>';
 
-        console.log('selected', JSON.stringify(selected));
+        console.log('selection', JSON.stringify(selection));
         fscape.log('info1', text, 'black');
 
         fscape.cleanUI();
@@ -266,7 +266,7 @@ fscape.plot = function (x) { // when ready to do it
                         + '<li style="color:blue">' + fj + '</li>'
                         + '<span style="color:red">processing ...</red>'
                 }
-                // place an X on selected td, after clearing it all to "O"
+                // place an X on selection td, after clearing it all to "O"
                 for (var tri = 0; tri < this.parentElement.parentElement.children.length; tri++) {
                     for (var tdj = 0; tdj < this.parentElement.parentElement.children[tri].children.length; tdj++) {
                         var txtC = this.parentElement.parentElement.children[tri].children[tdj];
@@ -504,7 +504,7 @@ fscape.scatterPlot = function (div0, i, j) {
     document.getElementById('lalainfo').textContent = 'Select region from scatterplot. Then click nuclear mugshots button to view the nuclei of interest.';
     var divZ = document.createElement('div');
     divZ.setAttribute('align', 'center');
-    divZ.innerHTML = '<p><button id="resampleBt" class="btn btn-secondary" style="color:red">Nuclear mugshots from selected region</button></p>'
+    divZ.innerHTML = '<p><button id="resampleBt" class="btn btn-secondary" style="color:red">Nuclear mugshots from selection region</button></p>'
         + '<p id="resampleMsg"></p>';
     div.appendChild(divZ);
 

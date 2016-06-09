@@ -22,39 +22,14 @@ $(function () {
         url = buildQueryStr(config.default_db, config.default_execution_id);
     }
 
-    /*
-    select = document.getElementById('select');
-    select.innerHTML = abcUtil.selectBox({}, selected);
-
-    tumorChanged = function (evt) {
-        thisisrandom = true;
-        var opt = evt.selectedOptions[0].value;
-        var partsOfStr = opt.split(',');
-
-        selected.cancer_type = partsOfStr[0];
-        selected.db = partsOfStr[1];
-        selected.execution_id = partsOfStr[2];
-
-        url = buildQueryStr(selected.db, selected.execution_id);
-
-        getData(url);
-    };
-    */
-
     getData(url);
 
 });
 
 function buildQueryStr(db, exec) {
+    abcUtil.selectBox({}, selected);
     var rand = abcUtil.randval();
     mugshots.db = db;
-    selected.db = db;
-    selected.cancer_type = db.substring(4);
-    // PTF.
-    if (selected.db == 'u24_radpath') {
-        selected.cancer_type = "gbm"
-    }
-    selected.selected = selected.cancer_type;
     url = mugshots.findApi + '?collection=objects&limit=12&find={"provenance.analysis.execution_id":"' + exec + '","randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
 
     return url;
@@ -62,6 +37,7 @@ function buildQueryStr(db, exec) {
 
 function buildQueryString(q) {
 
+    abcUtil.selectBox({}, selected);
     var case_id = abcUtil.getQueryVariable('case_id', q);
     var subject_id = abcUtil.getQueryVariable('subject_id', q);
     var fx = abcUtil.getQueryVariable('fx', q);
