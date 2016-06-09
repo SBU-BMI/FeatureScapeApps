@@ -1,7 +1,8 @@
 console.log('fig4.js loaded');
 
+var selectObject = {};
+
 $(function () {
-    selectObject = {};
 
     url = '';
     docs = [];
@@ -127,9 +128,8 @@ function doFigure4(data) {
     });
 
     docs = data;
-
-    var genomic = checkNames(parms, this.genomic);
-    var features = checkNames(parms, this.features);
+    var genomic = abcUtil.genomic;
+    var features = abcUtil.features;
 
     // build table
     var h = '<table>';
@@ -183,14 +183,6 @@ function doFigure4(data) {
         searchParms[pp[0]] = pp[1]
     });
 
-    /*
-     if (url.indexOf("morph1") > -1) {
-
-     searchParms["morph1"] = abcUtil.getQueryVariable("morph1", url);
-     searchParms["morph2"] = abcUtil.getQueryVariable("morph2", url);
-
-     }
-     */
     // add search parms to list if they are not there
     if (searchParms.morph1) {
         if (features.indexOf(searchParms.morph1) == -1) {
@@ -732,80 +724,5 @@ function showInfo(data) {
         + 'Genomic data compiled with <a href="http://www.cbioportal.org/" target="_blank">MSKCC cBioPortal</a> tool, demographic and clinical data from '
         + 'the <a href="https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/' + tumor1 + '/bcr/biotab/clin/" target="_blank">TCGA repository</a>.';
 
-    /*
-     // TODO:
-     document.getElementById('patientInfo').innerHTML = 'Morphology features extracted from image analysis of histology whole slide images for '
-     + data.length + ' ' + tumor + ' Patients of The Cancer Genome Atlas.';
-
-     document.getElementById('repositoryInfo').innerHTML = 'Genomic data compiled with <a href="http://www.cbioportal.org/" target="_blank">MSKCC cBioPortal</a> tool, demographic and clinical data from '
-     + 'the <a href="https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/' + tumor1 + '/bcr/biotab/clin/" target="_blank">TCGA repository</a>.';
-     */
 
 }
-
-function checkNames(propertyNames, thingToCheckAgainst) {
-    // We would like to show these parameters
-    var newArr = [];
-
-    // Check to see if they exist in our data
-    thingToCheckAgainst.forEach(function (mpp) {
-        if (propertyNames.indexOf(mpp) > -1) {
-            newArr.push(mpp);
-        }
-
-    });
-
-    return newArr;
-
-}
-
-var features = ["PrincipalMoments0_median",
-    "PrincipalMoments1_median",
-    "Elongation_median",
-    "Perimeter_median",
-    "Roundness_median",
-    "EquivalentSphericalRadius_median",
-    "EquivalentSphericalPerimeter_median",
-    "EquivalentEllipsoidDiameter0_median",
-    "EquivalentEllipsoidDiameter1_median",
-    "Flatness_median",
-    "meanR_median",
-    "meanG_median",
-    "meanB_median",
-    "stdR_median",
-    "stdG_median",
-    "stdB_median",
-    "SizeInPixels_median",
-    "age_at_initial_pathologic_diagnosis",
-
-    "LLH_Min_Intensity_0_T1c",
-    "LHL_Kurtosis_0_T1c",
-    "LLH_Range_0_T1c",
-    "Skewness_1_T1",
-    "Kurtosis_1_T1",
-    "LLL_Kurtosis_1_T1",
-    "LLL_Skewness_1_T1",
-    "Skewness_1_T1c",
-    "Kurtosis_1_T1c",
-    "LLL_Kurtosis_1_T1c",
-    "LLL_Skewness_1_T1c",
-    "LHL_Kurtosis_1_T1c",
-    "LHL_Min_Intensity_3_T1",
-    "LHL_Variance_3_T1",
-    "LHL_Range_3_T1",
-    "LLH_Min_Intensity_4_T1c",
-    "Variance_4_T1c",
-    "LLL_Variance_4_T1c",
-    "LLL_Std_Deviation_4_T1c",
-    "edemaRatio_4_T2",
-
-    //"gender", // remove gender for now per M. Saltz 2016-06-06
-    "days_to_last_followup"];
-
-var genomic = ["EGFR",
-    "KRAS",
-    "STK11",
-    "TP53",
-    "NF1",
-    "BRAF",
-    "SETD2"];

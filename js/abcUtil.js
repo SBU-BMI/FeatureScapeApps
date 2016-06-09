@@ -5,6 +5,9 @@ console.log('abcUtil.js');
 
 abcUtil = {
 
+    genomic : [],
+    features : [],
+
     randval: function () {
         return (0.95 * Math.random());
     },
@@ -105,6 +108,10 @@ abcUtil = {
                     var attr = '';
 
                     if (tm === globalObject.selected) {
+
+                        abcUtil.features = item.imaging;
+                        abcUtil.genomic = item.genomic;
+
                         globalObject.db = item.db;
                         globalObject.execution_id = item.execution_id;
                         globalObject.cancer_type = item.cancer_type;
