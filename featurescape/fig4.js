@@ -73,6 +73,7 @@ function getData(url) {
             doFigure4(data);
             abcUtil.doPatients(data, 'bcr_patient_barcode', url);
         }
+        survivalPlot();
 
     })
 }
