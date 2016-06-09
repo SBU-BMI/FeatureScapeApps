@@ -20,7 +20,6 @@ $(function () {
 
     }
     else {
-        console.log('location.search.length', location.search.length);
 
         if (location.search.length > 1) {
             var q = location.search.slice(1);
@@ -44,6 +43,10 @@ $(function () {
 
     select = document.getElementById('select');
     select.innerHTML = abcUtil.selectBox({}, selectObject);
+    /**
+     * SELECT ONCLICK.
+     * @param evt
+     */
     tumorChanged = function (evt) {
         var opt = evt.selectedOptions[0].value;
         var partsOfStr = opt.split(',');
@@ -53,6 +56,17 @@ $(function () {
         selectObject.execution_id = partsOfStr[2];
         url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
         selectObject.selected = opt;
+
+        if (location.search.length > 1) {
+            var currentState = history.state;
+            console.log('currentState', currentState);
+            var stateObj = {foo: "bar"}; // just clear it without reloading
+            history.pushState(stateObj, "FeatureExplorer", "fig4.html");
+        }
+
+        if (location.hash.length > 1) {
+            location.hash = '';
+        }
 
         console.log('tumor changed', selectObject.selected);
         getData(url);
@@ -114,8 +128,8 @@ function doFigure4(data) {
 
     docs = data;
 
-    var genomic = checkGenomic(parms);
-    var features = checkFeatures(parms);
+    var genomic = checkNames(parms, this.genomic);
+    var features = checkNames(parms, this.features);
 
     // build table
     var h = '<table>';
@@ -217,20 +231,6 @@ function doFigure4(data) {
     morphParm1.onchange = morphParm2.onchange = function () {
 
         location.search = '?morph1=' + morphParm1.value + '&morph2=' + morphParm2.value + '&db=' + selectObject.db + '&c=' + selectObject.cancer_type;
-        //location.search = '?morph1=' + morphParm1.value + '&morph2=' + morphParm2.value
-
-        /*
-         if (location.hash.length > 1) {
-         url = location.hash.slice(1);
-         url = url.substring(0, url.indexOf("&morph1"));
-         location.hash = url + '&morph1=' + morphParm1.value + '&morph2=' + morphParm2.value;
-
-         }
-         else {
-         fig4 = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
-         location.hash = fig4 + '&morph1=' + morphParm1.value + '&morph2=' + morphParm2.value;
-         }*/
-
 
     };
 
@@ -290,7 +290,6 @@ function doFigure4(data) {
         // now only for the selected patients
         if (typeof(dcSurv) != "undefined") {
             trace1 = (function () {
-                //console.log(9)
                 var xy = dcStatus.G.all().filter(function (xyi) {
                     return xyi.value
                 });
@@ -359,7 +358,6 @@ function doFigure4(data) {
 
     // time for cross filter
     var onFiltered = function (parm) {
-        //console.log(parm,new Date,gene)
         survivalPlot(parm);
         var ind = [];
         var bcr = [];
@@ -431,32 +429,25 @@ function doFigure4(data) {
         );
 
         try {
-            // We're passing in a specific array of genes.
-            // Somehow it's ignoring and looking for something
-            // that doesn't exist anyway.
-            // So check for gene[gn].R and in colorAccessor fn.
-            if (typeof gene[gn] != 'undefined') {
-                gene[gn].C
-                    .width(500)
-                    .height(100)
-                    .margins({top: 10, right: 50, bottom: 30, left: 40})
-                    .dimension(gene[gn].D)
-                    .group(gene[gn].G)
-                    .elasticX(true)
-                    .colors(d3.scale.linear().domain([0, 0.5, 1]).range(["blue", "yellow", "red"]))
-                    .colorAccessor(function (d, i) {
-                        if (typeof gene[gn] != 'undefined') {
-                            var na = gene[gn].R.NA;
-                            var high = gene[gn].R.high;
-                            var low = gene[gn].R.low;
-                            return d.value / (na + high + low)
-                        }
-                    })
-                    .on('filtered', function () {
-                        onFiltered(gn)
-                    });
-
-            }
+            gene[gn].C
+                .width(500)
+                .height(100)
+                .margins({top: 10, right: 50, bottom: 30, left: 40})
+                .dimension(gene[gn].D)
+                .group(gene[gn].G)
+                .elasticX(true)
+                .colors(d3.scale.linear().domain([0, 0.5, 1]).range(["blue", "yellow", "red"]))
+                .colorAccessor(function (d, i) {
+                    if (typeof gene[gn] != 'undefined') {
+                        var na = gene[gn].R.NA;
+                        var high = gene[gn].R.high;
+                        var low = gene[gn].R.low;
+                        return d.value / (na + high + low)
+                    }
+                })
+                .on('filtered', function () {
+                    onFiltered(gn)
+                });
 
         }
         catch (err) {
@@ -550,9 +541,7 @@ function doFigure4(data) {
 
     };
 
-    console.log(morphParm1.value);
     morphPlot("fig4_2_1", morphParm1.value);
-    console.log(morphParm2.value);
     morphPlot("fig4_2_2", morphParm2.value);
     //morphPlot("fig4_2_3", morphParm2.value);
 
@@ -754,40 +743,19 @@ function showInfo(data) {
 
 }
 
-function checkFeatures(propertyNames) {
+function checkNames(propertyNames, thingToCheckAgainst) {
     // We would like to show these parameters
-    var newFeatures = [];
+    var newArr = [];
 
     // Check to see if they exist in our data
-    features.forEach(function (mpp) {
+    thingToCheckAgainst.forEach(function (mpp) {
         if (propertyNames.indexOf(mpp) > -1) {
-            newFeatures.push(mpp);
-        }
-        else {
-            console.log('missing', mpp)
+            newArr.push(mpp);
         }
 
     });
 
-    return newFeatures;
-
-}
-
-function checkGenomic(propertyNames) {
-    // We would like to show these parameters
-    var newGenomic = [];
-
-    genomic.forEach(function (mpp) {
-        if (propertyNames.indexOf(mpp) > -1) {
-            newGenomic.push(mpp);
-        }
-        else {
-            console.log('missing', mpp)
-        }
-
-    });
-
-    return newGenomic;
+    return newArr;
 
 }
 
@@ -810,26 +778,26 @@ var features = ["PrincipalMoments0_median",
     "SizeInPixels_median",
     "age_at_initial_pathologic_diagnosis",
 
-"LLH_Min_Intensity_0_T1c",
-"LHL_Kurtosis_0_T1c",
-"LLH_Range_0_T1c",
-"Skewness_1_T1",
-"Kurtosis_1_T1",
-"LLL_Kurtosis_1_T1",
-"LLL_Skewness_1_T1",
-"Skewness_1_T1c",
-"Kurtosis_1_T1c",
-"LLL_Kurtosis_1_T1c",
-"LLL_Skewness_1_T1c",
-"LHL_Kurtosis_1_T1c",
-"LHL_Min_Intensity_3_T1",
-"LHL_Variance_3_T1",
-"LHL_Range_3_T1",
-"LLH_Min_Intensity_4_T1c",
-"Variance_4_T1c",
-"LLL_Variance_4_T1c",
-"LLL_Std_Deviation_4_T1c",
-"edemaRatio_4_T2",
+    "LLH_Min_Intensity_0_T1c",
+    "LHL_Kurtosis_0_T1c",
+    "LLH_Range_0_T1c",
+    "Skewness_1_T1",
+    "Kurtosis_1_T1",
+    "LLL_Kurtosis_1_T1",
+    "LLL_Skewness_1_T1",
+    "Skewness_1_T1c",
+    "Kurtosis_1_T1c",
+    "LLL_Kurtosis_1_T1c",
+    "LLL_Skewness_1_T1c",
+    "LHL_Kurtosis_1_T1c",
+    "LHL_Min_Intensity_3_T1",
+    "LHL_Variance_3_T1",
+    "LHL_Range_3_T1",
+    "LLH_Min_Intensity_4_T1c",
+    "Variance_4_T1c",
+    "LLL_Variance_4_T1c",
+    "LLL_Std_Deviation_4_T1c",
+    "edemaRatio_4_T2",
 
     //"gender", // remove gender for now per M. Saltz 2016-06-06
     "days_to_last_followup"];
