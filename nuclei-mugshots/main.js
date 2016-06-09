@@ -22,6 +22,7 @@ $(function () {
         url = buildQueryStr(config.default_db, config.default_execution_id);
     }
 
+    /*
     select = document.getElementById('select');
     select.innerHTML = abcUtil.selectBox({}, selectObject);
 
@@ -38,7 +39,7 @@ $(function () {
 
         getData(url);
     };
-
+    */
 
     getData(url);
 
