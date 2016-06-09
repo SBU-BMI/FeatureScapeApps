@@ -13,7 +13,7 @@ fscape = function (x) {
 
 fscape.UI = function () {
     fscape.div = document.getElementById("section");
-    selectObject = {};
+    selected = {};
 
     //  check for data URL
     var q = '';
@@ -94,21 +94,21 @@ fscape.fun = function (data, url) {
     }
     else {
 
-        selectObject.cancer_type = data[0].provenance.analysis.study_id;
+        selected.cancer_type = data[0].provenance.analysis.study_id;
 
-        if (selectObject.cancer_type == null) {
+        if (selected.cancer_type == null) {
 
             if (location.search.length > 1) {
                 var f = abcUtil.getQueryVariable('db', location.search.slice(1));
-                selectObject.db = f;
-                selectObject.cancer_type = f.substring(4);
+                selected.db = f;
+                selected.cancer_type = f.substring(4);
                 // PTF.
-                if (selectObject.db == 'u24_radpath') {
-                    selectObject.cancer_type = "gbm"
+                if (selected.db == 'u24_radpath') {
+                    selected.cancer_type = "gbm"
                 }
             }
             else {
-                selectObject.cancer_type = 'unknown';
+                selected.cancer_type = 'unknown';
             }
         }
 
@@ -135,12 +135,12 @@ fscape.fun = function (data, url) {
         var p = getPatient(url);
 
         var text = ' Displaying <strong>' + xx.length + '</strong> sets of features sampled from <strong>'
-            + (selectObject.cancer_type == 'unknown' ? '' : (selectObject.cancer_type).toUpperCase())
+            + (selected.cancer_type == 'unknown' ? '' : (selected.cancer_type).toUpperCase())
             + '</strong> '
             + (p.length > 12 ? 'diagnostic image ' : 'patient ')
             + '<strong>' + p + '</strong>';
 
-        console.log('selectObject', JSON.stringify(selectObject));
+        console.log('selected', JSON.stringify(selected));
         fscape.log('info1', text, 'black');
 
         fscape.cleanUI();

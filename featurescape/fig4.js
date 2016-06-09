@@ -6,14 +6,18 @@ var docs = [];
 
 $(function () {
 
+    var db = '',
+        c = '',
+        exec = '';
+
     if (location.hash.length > 1) {
 
         url = location.hash.slice(1);
 
         //http://quip1.bmi.stonybrook.edu:4000?collection=patients&limit=13&find={"analysis_id":"rad:path:ver1","bcr_patient_barcode":{"$in":["TCGA-14-0817","TCGA-06-1804","TCGA-12-1091","TCGA-14-1402","TCGA-02-0113","TCGA-12-1599","TCGA-27-1833","TCGA-28-1746","TCGA-27-1836","TCGA-32-1982","TCGA-06-A5U0","TCGA-06-0413","TCGA-32-2495"]}}&db=u24_radpath&c=gbm
-        var db = abcUtil.getQueryVariable('db', url);
-        var c = abcUtil.getQueryVariable('c', url);
-        var exec = abcUtil.getFindParm('analysis_id', abcUtil.getQueryVariable('find', url));
+        db = abcUtil.getQueryVariable('db', url);
+        c = abcUtil.getQueryVariable('c', url);
+        exec = abcUtil.getFindParm('analysis_id', abcUtil.getQueryVariable('find', url));
         gob(db, exec, c);
 
     }
@@ -21,14 +25,14 @@ $(function () {
 
         if (location.search.length > 1) {
             var q = location.search.slice(1);
-            var db = abcUtil.getQueryVariable('db', q);
-            var c = abcUtil.getQueryVariable("c", q);
-            var exec = abcUtil.getQueryVariable("exec", q);
+            db = abcUtil.getQueryVariable('db', q);
+            c = abcUtil.getQueryVariable("c", q);
+            exec = abcUtil.getQueryVariable("exec", q);
             gob(db, exec, c);
         }
         else {
             // Default
-            var db = config.default_db;
+            db = config.default_db;
             gob(db, config.default_execution_id, db.substring(4));
         }
 
@@ -65,8 +69,7 @@ $(function () {
     getData(url);
 });
 
-function gob(db, exec, c)
-{
+function gob(db, exec, c) {
     selection.db = db;
     selection.execution_id = exec;
     selection.cancer_type = c;

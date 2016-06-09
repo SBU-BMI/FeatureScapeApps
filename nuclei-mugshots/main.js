@@ -4,7 +4,7 @@
 $(function () {
 
     mugshots = {};
-    selectObject = {};
+    selected = {};
     mugshots.findApi = config.findAPI + ':' + config.port + '/';
 
     url = '';
@@ -24,18 +24,18 @@ $(function () {
 
     /*
     select = document.getElementById('select');
-    select.innerHTML = abcUtil.selectBox({}, selectObject);
+    select.innerHTML = abcUtil.selectBox({}, selected);
 
     tumorChanged = function (evt) {
         thisisrandom = true;
         var opt = evt.selectedOptions[0].value;
         var partsOfStr = opt.split(',');
 
-        selectObject.cancer_type = partsOfStr[0];
-        selectObject.db = partsOfStr[1];
-        selectObject.execution_id = partsOfStr[2];
+        selected.cancer_type = partsOfStr[0];
+        selected.db = partsOfStr[1];
+        selected.execution_id = partsOfStr[2];
 
-        url = buildQueryStr(selectObject.db, selectObject.execution_id);
+        url = buildQueryStr(selected.db, selected.execution_id);
 
         getData(url);
     };
@@ -48,13 +48,13 @@ $(function () {
 function buildQueryStr(db, exec) {
     var rand = abcUtil.randval();
     mugshots.db = db;
-    selectObject.db = db;
-    selectObject.cancer_type = db.substring(4);
+    selected.db = db;
+    selected.cancer_type = db.substring(4);
     // PTF.
-    if (selectObject.db == 'u24_radpath') {
-        selectObject.cancer_type = "gbm"
+    if (selected.db == 'u24_radpath') {
+        selected.cancer_type = "gbm"
     }
-    selectObject.selected = selectObject.cancer_type;
+    selected.selected = selected.cancer_type;
     url = mugshots.findApi + '?collection=objects&limit=12&find={"provenance.analysis.execution_id":"' + exec + '","randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
 
     return url;
@@ -73,13 +73,13 @@ function buildQueryString(q) {
     var db = abcUtil.getQueryVariable('db', q);
 
     mugshots.db = db;
-    selectObject.db = db;
-    selectObject.cancer_type = db.substring(4);
+    selected.db = db;
+    selected.cancer_type = db.substring(4);
     // PTF.
-    if (selectObject.db == 'u24_radpath') {
-        selectObject.cancer_type = "gbm"
+    if (selected.db == 'u24_radpath') {
+        selected.cancer_type = "gbm"
     }
-    selectObject.selected = selectObject.cancer_type;
+    selected.selected = selected.cancer_type;
 
     // Remember it stops at '='
     // https://falcon.bmi.stonybrook.edu:4500/?limit
@@ -266,7 +266,7 @@ function parseData(data, size, query) {
         if (thisisrandom) {
 
             div.innerHTML = text + ' from random <strong>'
-                + selectObject.cancer_type.toUpperCase()
+                + selected.cancer_type.toUpperCase()
                 + ' <a href="#anchor">diagnostic images</a></strong>.'
                 + ' May represent either a single or multiple patients.';
 
@@ -291,7 +291,7 @@ function parseData(data, size, query) {
                 parm = 'subject_id';
             }
             div.innerHTML = text + ' having morphologic ranges selected from <strong>'
-                + selectObject.cancer_type.toUpperCase()
+                + selected.cancer_type.toUpperCase()
                 + '</strong> '
                 + (parm == 'case_id' ? 'diagnostic image' : 'patient') + ' <strong>' + id + '</strong>:';
             document.getElementById('info2').innerHTML =
@@ -342,8 +342,8 @@ function draw(targetDiv, data, query, layout) {
 
     if (slides_not_found) {
         abcUtil.clrMsg('');
-        doMessage('msg', document.body, 'We have no slides for ' + selectObject.cancer_type + ' now. Please check back later. Thank you! :)', 'red');
-        //document.write('not found for ', JSON.stringify(selectObject));
+        doMessage('msg', document.body, 'We have no slides for ' + selected.cancer_type + ' now. Please check back later. Thank you! :)', 'red');
+        //document.write('not found for ', JSON.stringify(selected));
     }
     else {
         var div = document.getElementById(targetDiv);
@@ -413,7 +413,7 @@ function draw(targetDiv, data, query, layout) {
 
                 var link = document.createElement('a');
                 link.setAttribute("href",
-                    abcUtil.caMicroLink(data[ind].case_id, selectObject.cancer_type, obj.x, obj.y));
+                    abcUtil.caMicroLink(data[ind].case_id, selected.cancer_type, obj.x, obj.y));
                 link.setAttribute("target", "_blank");
                 var col = document.createElement('td');
 

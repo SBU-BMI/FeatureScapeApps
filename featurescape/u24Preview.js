@@ -6,10 +6,10 @@ u24p = function () {
 u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Interface
 
     //var dataOriginDiv = document.getElementById(dataOriginDivId);
-    //dataOriginDiv.innerHTML = '<strong>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + 'Diagnostic Images:</strong>';
+    //dataOriginDiv.innerHTML = '<strong>' + data.length + ' ' + (selected.cancer_type).toUpperCase() + 'Diagnostic Images:</strong>';
 
     var dataDiv = document.getElementById(dataDivId);
-    dataDiv.innerHTML = '<h4>' + data.length + ' ' + (selectObject.cancer_type).toUpperCase() + ' Diagnostic Images:</h4>';
+    dataDiv.innerHTML = '<h4>' + data.length + ' ' + (selected.cancer_type).toUpperCase() + ' Diagnostic Images:</h4>';
 
     var ol = document.createElement('ol');
     dataDiv.appendChild(ol);
@@ -21,7 +21,7 @@ u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Inter
         var li = document.createElement('li');
         ol.appendChild(li);
 
-        li.innerHTML = '<a href="' + abcUtil.caMicroLink(tissueId, selectObject.cancer_type) + '" target="_blank">' + tissueId + '</a>, '
+        li.innerHTML = '<a href="' + abcUtil.caMicroLink(tissueId, selected.cancer_type) + '" target="_blank">' + tissueId + '</a>, '
             + '(<a href="http://www.cbioportal.org/case.do?cancer_study_id=' + c.provenance.study_id
             + '_tcga&case_id=' + c.image.subject_id + '" target="_blank" style="color:red">cbio</a>), ';
 
@@ -38,7 +38,7 @@ u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Inter
             var sz = 1000;
             var v = abcUtil.randval();
             // Yes, we really do need absolute path for this url:
-            var url = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '?limit=' + sz + '&find={"randval":{"$gte":' + v + '},"provenance.analysis.execution_id":"' + selectObject.execution_id + '","provenance.image.case_id":"' + tissueId + '"}&db=' + selectObject.db;
+            var url = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '?limit=' + sz + '&find={"randval":{"$gte":' + v + '},"provenance.analysis.execution_id":"' + selected.execution_id + '","provenance.image.case_id":"' + tissueId + '"}&db=' + selected.db;
             window.open(url);
 
         }
@@ -47,8 +47,8 @@ u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Inter
 };
 
 function getData() {
-    var url = config.findAPI + ':' + config.port + '/?limit=50&collection=metadata&find={"provenance.analysis_execution_id":"' + selectObject.execution_id + '"}&db=' + selectObject.db;
-    console.log('selectObject', selectObject);
+    var url = config.findAPI + ':' + config.port + '/?limit=50&collection=metadata&find={"provenance.analysis_execution_id":"' + selected.execution_id + '"}&db=' + selected.db;
+    console.log('selected', selected);
     console.log('url', url);
 
     $.ajax({
@@ -64,18 +64,18 @@ function getData() {
 
 $(function () {
 
-    selectObject = trace = {};
+    selected = trace = {};
     select = document.getElementById('select');
-    select.innerHTML = abcUtil.selectBox(trace, selectObject);
+    select.innerHTML = abcUtil.selectBox(trace, selected);
     getData();
 
     tumorChanged = function (evt) {
         var opt = evt.selectedOptions[0].value;
         var partsOfStr = opt.split(',');
 
-        selectObject.cancer_type = partsOfStr[0];
-        selectObject.db = partsOfStr[1];
-        selectObject.execution_id = partsOfStr[2];
+        selected.cancer_type = partsOfStr[0];
+        selected.db = partsOfStr[1];
+        selected.execution_id = partsOfStr[2];
 
         getData();
     };
