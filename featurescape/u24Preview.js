@@ -17,11 +17,11 @@ u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Inter
     data.forEach(function (c) {
 
         tissueId = c.image.case_id;
-        
+
         var li = document.createElement('li');
         ol.appendChild(li);
 
-li.innerHTML = '<a href="' + abcUtil.caMicroLink(tissueId, selectObject.cancer_type) + '" target="_blank">' + tissueId + '</a>, '
+        li.innerHTML = '<a href="' + abcUtil.caMicroLink(tissueId, selectObject.cancer_type) + '" target="_blank">' + tissueId + '</a>, '
             + '(<a href="http://www.cbioportal.org/case.do?cancer_study_id=' + c.provenance.study_id
             + '_tcga&case_id=' + c.image.subject_id + '" target="_blank" style="color:red">cbio</a>), ';
 
@@ -46,8 +46,7 @@ li.innerHTML = '<a href="' + abcUtil.caMicroLink(tissueId, selectObject.cancer_t
 
 };
 
-function getData()
-{
+function getData() {
     var url = config.findAPI + ':' + config.port + '/?limit=50&collection=metadata&find={"provenance.analysis_execution_id":"' + selectObject.execution_id + '"}&db=' + selectObject.db;
     console.log('selectObject', selectObject);
     console.log('url', url);

@@ -22,8 +22,8 @@ abcUtil = {
         }
     },
 
-    getFindParm: function (variable, string) {
-        var str = decodeURI(string);
+    getFindParm: function (variable, findUri) {
+        var str = decodeURI(findUri);
         str = JSON.parse(str);
 
         if (str[variable]) {
@@ -269,7 +269,7 @@ abcUtil = {
         });
         ppp = ppp.slice(0, -1);
 
-        fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port + '?collection=patients&limit=' + pp.length + '&find={"bcr_patient_barcode":{"$in":[' + ppp + ']}}&db=' + selectObject.db;
+        fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port + '?collection=patients&limit=' + pp.length + '&find={"analysis_id":"' + selectObject.execution_id + '","bcr_patient_barcode":{"$in":[' + ppp + ']}}&db=' + selectObject.db + '&c=' + selectObject.cancer_type;
 
         if (btnFig4) {
             //btnFig4.innerHTML = '<button id="btnFig4" onclick="resultsPatient(this)">' + p + '</button>&nbsp;';

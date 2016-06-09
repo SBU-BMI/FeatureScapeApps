@@ -1,45 +1,38 @@
 console.log('fig4.js loaded');
 
 var selectObject = {};
+var url = '';
+var docs = [];
 
 $(function () {
 
-    url = '';
-    docs = [];
     if (location.hash.length > 1) {
 
         url = location.hash.slice(1);
 
-        var f = abcUtil.getQueryVariable('db', url);
-        selectObject.db = f;
-        selectObject.cancer_type = f.substring(4);
-        // PTF.
-        if (selectObject.db == 'u24_radpath') {
-            selectObject.cancer_type = "gbm"
-        }
-        selectObject.selected = selectObject.cancer_type;
+        //http://quip1.bmi.stonybrook.edu:4000?collection=patients&limit=13&find={"analysis_id":"rad:path:ver1","bcr_patient_barcode":{"$in":["TCGA-14-0817","TCGA-06-1804","TCGA-12-1091","TCGA-14-1402","TCGA-02-0113","TCGA-12-1599","TCGA-27-1833","TCGA-28-1746","TCGA-27-1836","TCGA-32-1982","TCGA-06-A5U0","TCGA-06-0413","TCGA-32-2495"]}}&db=u24_radpath&c=gbm
+        var db = abcUtil.getQueryVariable('db', url);
+        var c = abcUtil.getQueryVariable('c', url);
+        var exec = abcUtil.getFindParm('analysis_id', abcUtil.getQueryVariable('find', url));
+        gob(db, exec, c);
 
     }
     else {
 
         if (location.search.length > 1) {
             var q = location.search.slice(1);
-            selectObject.db = abcUtil.getQueryVariable("db", q);
-
-            url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
-
-            selectObject.cancer_type = abcUtil.getQueryVariable("c", q);
-            selectObject.selected = selectObject.cancer_type;
-
+            var db = abcUtil.getQueryVariable('db', q);
+            var c = abcUtil.getQueryVariable("c", q);
+            var exec = abcUtil.getQueryVariable("exec", q);
+            gob(db, exec, c);
         }
         else {
             // Default
-            selectObject.db = config.default_db;
-            url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
-            // This is OK. Def db matches c type.
-            selectObject.cancer_type = (selectObject.db).substring(4);
-            selectObject.selected = selectObject.cancer_type;
+            var db = config.default_db;
+            gob(db, config.default_execution_id, db.substring(4));
         }
+
+        url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={"analysis_id":"' + selectObject.execution_id + '"}&db=' + selectObject.db;
     }
 
     select = document.getElementById('select');
@@ -52,15 +45,12 @@ $(function () {
         var opt = evt.selectedOptions[0].value;
         var partsOfStr = opt.split(',');
 
-        selectObject.cancer_type = partsOfStr[0];
-        selectObject.db = partsOfStr[1];
-        selectObject.execution_id = partsOfStr[2];
-        url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={}&db=' + selectObject.db;
-        selectObject.selected = opt;
+        gob(partsOfStr[1], partsOfStr[2], partsOfStr[0]);
+
+        url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={"analysis_id":"' + selectObject.execution_id + '"}&db=' + selectObject.db;
 
         if (location.search.length > 1) {
             var currentState = history.state;
-            console.log('currentState', currentState);
             var stateObj = {foo: "bar"}; // just clear it without reloading
             history.pushState(stateObj, "FeatureExplorer", "fig4.html");
         }
@@ -75,8 +65,17 @@ $(function () {
     getData(url);
 });
 
+function gob(db, exec, c)
+{
+    selectObject.db = db;
+    selectObject.execution_id = exec;
+    selectObject.cancer_type = c;
+    selectObject.selected = c;
+}
+
 function getData(url) {
 
+    console.log(url);
     document.getElementById('msg').textContent = '';
 
     $.getJSON(url).then(function (data) {
@@ -222,7 +221,10 @@ function doFigure4(data) {
      */
     morphParm1.onchange = morphParm2.onchange = function () {
 
-        location.search = '?morph1=' + morphParm1.value + '&morph2=' + morphParm2.value + '&db=' + selectObject.db + '&c=' + selectObject.cancer_type;
+        location.search = '?morph1=' + morphParm1.value + '&morph2=' + morphParm2.value
+            + '&db=' + selectObject.db
+            + '&c=' + selectObject.cancer_type
+            + '&exec=' + selectObject.execution_id;
 
     };
 

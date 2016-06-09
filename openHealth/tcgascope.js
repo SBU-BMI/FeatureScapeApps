@@ -1,13 +1,13 @@
 console.log('tcgascope.js loaded');
+var selectObject = {};
 
 openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
-    selectObject = trace = {};
     openHealthJob.innerHTML = '<div id="openHealthJobMsg" style="color:red">processing ...</div><div id="openHealthJobDC"></div>';
 
     function doSelectBox() {
         var diva = document.getElementById('select');
-        diva.innerHTML = abcUtil.selectBox(trace, selectObject)
+        diva.innerHTML = abcUtil.selectBox({}, selectObject)
             + '&nbsp;&nbsp;'
             + '<input id="btnFig4" name="btnFig4" class="btn btn-primary" type="button" value="FeatureExplorer" />';
 
@@ -25,7 +25,6 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         };
 
     }
-
     doSelectBox();
 
 
@@ -68,7 +67,6 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
     //https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/luad/bcr/biotab/clin
     function getTcgaData(cancer_type) {
 
-        selectObject.cancer_type = cancer_type;
         var clinicalFile = 'clinical_patient_' + cancer_type;
         var biosFile = 'biospecimen_slide_' + cancer_type;
 
@@ -95,7 +93,6 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         })
 
     }
-
     getTcgaData(selectObject.cancer_type);
 
 
