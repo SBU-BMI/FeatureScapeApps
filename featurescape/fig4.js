@@ -12,7 +12,7 @@ $(function () {
         var f = abcUtil.getQueryVariable('db', url);
         selectObject.db = f;
         selectObject.cancer_type = f.substring(4);
-        // TODO: PTF.
+        // PTF.
         if (selectObject.db == 'u24_radpath') {
             selectObject.cancer_type = "gbm"
         }

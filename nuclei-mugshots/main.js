@@ -49,6 +49,10 @@ function buildQueryStr(db, exec) {
     mugshots.db = db;
     selectObject.db = db;
     selectObject.cancer_type = db.substring(4);
+    // PTF.
+    if (selectObject.db == 'u24_radpath') {
+        selectObject.cancer_type = "gbm"
+    }
     selectObject.selected = selectObject.cancer_type;
     url = mugshots.findApi + '?collection=objects&limit=12&find={"provenance.analysis.execution_id":"' + exec + '","randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
 
@@ -70,6 +74,10 @@ function buildQueryString(q) {
     mugshots.db = db;
     selectObject.db = db;
     selectObject.cancer_type = db.substring(4);
+    // PTF.
+    if (selectObject.db == 'u24_radpath') {
+        selectObject.cancer_type = "gbm"
+    }
     selectObject.selected = selectObject.cancer_type;
 
     // Remember it stops at '='
@@ -259,7 +267,7 @@ function parseData(data, size, query) {
             div.innerHTML = text + ' from random <strong>'
                 + selectObject.cancer_type.toUpperCase()
                 + ' <a href="#anchor">diagnostic images</a></strong>.'
-                + ' May represent either either a single or multiple cases.';
+                + ' May represent either a single or multiple patients.';
 
             //document.getElementById('ptslides').innerHTML = '<a name="anchor"></a><p><span style="color:maroon;font-weight:bold">Tissue slides:</span><table id="patientSlideTable" border="1">' + h + '</table></p>';
             abcUtil.doPatients(newData, 'case_id', query);
@@ -404,7 +412,7 @@ function draw(targetDiv, data, query, layout) {
 
                 var link = document.createElement('a');
                 link.setAttribute("href",
-                    abcUtil.caMicroLink(data[ind].case_id, (mugshots.db).substring(4), obj.x, obj.y));
+                    abcUtil.caMicroLink(data[ind].case_id, selectObject.cancer_type, obj.x, obj.y));
                 link.setAttribute("target", "_blank");
                 var col = document.createElement('td');
 

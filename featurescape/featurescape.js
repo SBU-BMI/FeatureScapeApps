@@ -1,5 +1,4 @@
 console.log('featurescape.js loaded');
-//http://quip1.uhmc.sunysb.edu:4000/?limit=1000&find={"randval":{"$gte":0.301},"provenance.analysis.execution_id":"luad:bg:20160520","provenance.image.subject_id":"TCGA-05-4244"}&db=u24_luad
 
 fscape = function (x) {
     // being used to ini UI
@@ -15,27 +14,6 @@ fscape = function (x) {
 fscape.UI = function () {
     fscape.div = document.getElementById("section");
     selectObject = {};
-    /*
-     selectObject = trace = {};
-     select = document.getElementById('select');
-     select.innerHTML = abcUtil.selectBox(trace, selectObject);
-
-     tumorChanged = function (evt) {
-     fscape.dt = null; // clear previous data
-     fscape.div.textContent = '';
-
-     var opt = evt.selectedOptions[0].value;
-     var partsOfStr = opt.split(',');
-
-     selectObject.cancer_type = partsOfStr[0];
-     selectObject.db = partsOfStr[1];
-     selectObject.execution_id = partsOfStr[2];
-
-     var q = createQuery(selectObject.db, selectObject.execution_id);
-
-     fscape.loadURL(q);
-     };
-     */
 
     //  check for data URL
     var q = '';
@@ -51,7 +29,7 @@ fscape.UI = function () {
 };
 
 fscape.loadURL = function (url) {
-    //log(url);
+    log(url);
     msg.textContent = "loading, please wait ...";
 
     /*
@@ -95,7 +73,6 @@ fscape.log = function (divID, txt, color) {
 
 fscape.cleanUI = function () { // and create fscapeAnalysisDiv
 
-    // let's have some function
     if (!document.getElementById('fscapeAnalysisDiv')) {
         $('<div id="fscapeAnalysisDiv"></div>').appendTo(fscape.div);
         fscapeAnalysisDiv.hidden = true;
@@ -116,8 +93,7 @@ fscape.fun = function (data, url) {
 
     }
     else {
-        //var patient = whoisit(location.search.slice(1));
-        //var patient = data[0].provenance.image.case_id;
+
         selectObject.cancer_type = data[0].provenance.analysis.study_id;
 
         if (selectObject.cancer_type == null) {
@@ -126,6 +102,10 @@ fscape.fun = function (data, url) {
                 var f = abcUtil.getQueryVariable('db', location.search.slice(1));
                 selectObject.db = f;
                 selectObject.cancer_type = f.substring(4);
+                // PTF.
+                if (selectObject.db == 'u24_radpath') {
+                    selectObject.cancer_type = "gbm"
+                }
             }
             else {
                 selectObject.cancer_type = 'unknown';
