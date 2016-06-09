@@ -5,8 +5,8 @@ console.log('abcUtil.js');
 
 abcUtil = {
 
-    genomic : [],
-    features : [],
+    genomic: [],
+    features: [],
 
     randval: function () {
         return (0.95 * Math.random());
@@ -63,7 +63,28 @@ abcUtil = {
         return shuffled.slice(min);
     },
 
-    selectBox: function (trace, globalObject) {
+    featureArrays: function (selection) {
+
+        var q = config.findAPI + ':' + config.port + '/?limit=100&collection=metadata&find={"cancer_type":"'
+            + selection.cancer_type + '","execution_id":"' + selection.execution_id + '"}&db=u24_meta';
+
+        $.ajax({
+            url: q,
+            async: false,
+            dataType: 'json',
+            success: function (arr) {
+
+                arr.forEach(function (item) {
+                    abcUtil.genomic = item.genomic;
+                    abcUtil.features = item.imaging;
+
+                });
+            }
+        });
+
+    },
+
+    selectBox: function (trace, selection) {
 
         if (jQuery.isEmptyObject(trace)) {
             trace = {
@@ -93,33 +114,33 @@ abcUtil = {
             async: false,
             dataType: 'json',
             success: function (arr) {
-                if (!globalObject.selected && globalObject.cancer_type) {
-                    globalObject.selected = globalObject.cancer_type;
-                }
-
-                if (!globalObject.selected || globalObject.selected == null) {
-                    globalObject.selected = 'luad';
-                    //selectTumorHTML += '<option selected disabled></option>';
+                if (!selection.cancer_type) {
+                    selection.cancer_type = 'luad';
                 }
 
                 arr.forEach(function (item) {
                     var tm = item.cancer_type;
                     var value = tm + ',' + item.db + ',' + item.execution_id;
                     var attr = '';
+                    var exec = item.execution_id;
 
-                    if (tm === globalObject.selected) {
+                    if (tm == selection.cancer_type) {
 
-                        abcUtil.features = item.imaging;
-                        abcUtil.genomic = item.genomic;
+                        if (selection.execution_id == '') {
+                            selection.execution_id = item.execution_id;
+                        }
 
-                        globalObject.db = item.db;
-                        globalObject.execution_id = item.execution_id;
-                        globalObject.cancer_type = item.cancer_type;
-                        attr = 'selected';
+                        if (selection.execution_id == item.execution_id)
+                        {
+                            selection.db = item.db;
+                            selection.execution_id = item.execution_id;
+                            selection.cancer_type = item.cancer_type;
+                            attr = 'selected';
+                        }
                     }
 
                     selectTumorHTML += '<option value="' + value + '" ' + attr + '>'
-                        + tm.toUpperCase() + ' - ' + item.name + ' - ' + item.execution_id + '</option>';
+                        + tm.toUpperCase() + ' - ' + item.name + ' - ' + exec + '</option>';
 
                 });
             }
@@ -289,13 +310,13 @@ abcUtil = {
             var find = '{"randval":{"$gte":' + textContent + '},' + exec + ',"provenance.image.subject_id":"' + (typeof patient[x.textContent] == 'undefined' ? x.textContent : patient[x.textContent]["bcr_patient_barcode"]) + '"}&db=' + selectObject.db;
             // FEATURESCAPE
             var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
-             moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
-             + '&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
+            moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
+                + '&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
 
             /*
-            moreInfo.innerHTML = ' <button type="button" id="fscapeButton" class="btn btn-secondary" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
-                + '&nbsp;&nbsp; <button type="button" id="fig4Button" class="btn btn-secondary" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
-            */
+             moreInfo.innerHTML = ' <button type="button" id="fscapeButton" class="btn btn-secondary" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
+             + '&nbsp;&nbsp; <button type="button" id="fig4Button" class="btn btn-secondary" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
+             */
 
             fscapeButton.onclick = function () {
                 window.open(fscape)

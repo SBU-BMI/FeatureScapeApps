@@ -1,6 +1,6 @@
 console.log('fig4.js loaded');
 
-var selectObject = {};
+var selection = {};
 var url = '';
 var docs = [];
 
@@ -32,11 +32,11 @@ $(function () {
             gob(db, config.default_execution_id, db.substring(4));
         }
 
-        url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={"analysis_id":"' + selectObject.execution_id + '"}&db=' + selectObject.db;
+        url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={"analysis_id":"' + selection.execution_id + '"}&db=' + selection.db;
     }
 
     select = document.getElementById('select');
-    select.innerHTML = abcUtil.selectBox({}, selectObject);
+    select.innerHTML = abcUtil.selectBox({}, selection);
     /**
      * SELECT ONCLICK.
      * @param evt
@@ -47,7 +47,7 @@ $(function () {
 
         gob(partsOfStr[1], partsOfStr[2], partsOfStr[0]);
 
-        url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={"analysis_id":"' + selectObject.execution_id + '"}&db=' + selectObject.db;
+        url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={"analysis_id":"' + selection.execution_id + '"}&db=' + selection.db;
 
         if (location.search.length > 1) {
             var currentState = history.state;
@@ -59,7 +59,7 @@ $(function () {
             location.hash = '';
         }
 
-        console.log('tumor changed', selectObject.selected);
+        console.log('tumor changed', selection);
         getData(url);
     };
     getData(url);
@@ -67,10 +67,9 @@ $(function () {
 
 function gob(db, exec, c)
 {
-    selectObject.db = db;
-    selectObject.execution_id = exec;
-    selectObject.cancer_type = c;
-    selectObject.selected = c;
+    selection.db = db;
+    selection.execution_id = exec;
+    selection.cancer_type = c;
 }
 
 function getData(url) {
@@ -86,8 +85,8 @@ function getData(url) {
         else {
             doFigure4(data);
             abcUtil.doPatients(data, 'bcr_patient_barcode', url);
+            survivalPlot();
         }
-        survivalPlot();
 
     })
 }
@@ -127,8 +126,11 @@ function doFigure4(data) {
     });
 
     docs = data;
+    abcUtil.featureArrays(selection);
     var genomic = abcUtil.genomic;
+    //console.log(genomic);
     var features = abcUtil.features;
+    //console.log(features);
 
     // build table
     var h = '<table>';
@@ -222,9 +224,9 @@ function doFigure4(data) {
     morphParm1.onchange = morphParm2.onchange = function () {
 
         location.search = '?morph1=' + morphParm1.value + '&morph2=' + morphParm2.value
-            + '&db=' + selectObject.db
-            + '&c=' + selectObject.cancer_type
-            + '&exec=' + selectObject.execution_id;
+            + '&db=' + selection.db
+            + '&c=' + selection.cancer_type
+            + '&exec=' + selection.execution_id;
 
     };
 
