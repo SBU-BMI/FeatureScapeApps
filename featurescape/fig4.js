@@ -136,7 +136,7 @@ function doFigure4(data) {
     var h = '<table>';
     h += '<tr><td id="fig4_1" style="vertical-align:top">';
     h += '<h3 style="color:maroon">Cohorts</h3>';
-    h += '<p style="color:maroon">Click on bars to select cohorts,<br>Xaxis: # patients; Yaxis: status<br>[<b style="color:blue">blue</b><b style="color:YellowGreen">-</b><b style="color:red">red</b>] color range indicates fraction of total.</p>';
+    h += '<p style="color:maroon">Click on bars to select cohorts,<br>x-axis: # patients; y-axis: status<br>[<b style="color:blue">blue</b><b style="color:YellowGreen">-</b><b style="color:red">red</b>] color range indicates fraction of total.</p>';
 
     genomic.forEach(function (gen) {
         h += '<h4 style="color:navy" id="fig4_1_' + gen + '">' + gen + '</h4>';
@@ -149,7 +149,7 @@ function doFigure4(data) {
     h += '<p style="color:maroon">';
     h += 'Var 1: <select id="morphParm1"></select><br>';
     h += 'Var 2: <select id="morphParm2"></select><br>';
-    h += 'Click and drag to select ranges<br>Xaxis: parameter value, Yaxis: # patients';
+    h += 'Click and drag to select ranges<br>x-axis: parameter value, y-axis: # patients';
     h += '</p>';
     h += '<div id="fig4_2_1"><span style="color:blue">Var 1: </span></div>';
     h += '<div id="fig4_2_2"><span style="color:blue">Var 2: </span></div>';
