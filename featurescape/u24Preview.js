@@ -1,3 +1,11 @@
+/**
+ * Display a tabular list of tissue slides for a given cancer type ("project").
+ * Table will include:
+ * 1) Link to caMicroscope where user can view whole slide image
+ * 2) Link to cBioPortal
+ * 3) Button to view features of that slide in FeatureScape
+ * User may select different projects from dropdown selection.
+ */
 $(function () {
 
     selected = {};
@@ -43,24 +51,44 @@ function buildUI(dataDivId, data) { // build User Interface
     dataDiv.innerHTML = '<h4>' + data.length + ' ' + (selected.cancer_type).toUpperCase() + ' Diagnostic Images:</h4>';
 
     var tbl = document.createElement('table');
-    tbl.cellPadding = "10";
+    tbl.className = "table table-striped";
+    tbl.style = "width: auto;";
     dataDiv.appendChild(tbl);
+    var tbody = document.createElement('tbody');
+    tbl.appendChild(tbody);
+    var row = document.createElement('tr');
+    tbody.appendChild(row);
+    var col = document.createElement('td');
+    col.innerHTML = 'caMicroscope';
+    col.style.fontWeight = "bold";
+    row.appendChild(col);
+
+    col = document.createElement('td');
+    col.innerHTML = 'cBioPortal';
+    col.style.fontWeight = "bold";
+    row.appendChild(col);
+
+    col = document.createElement('td');
+    col.innerHTML = 'FeatureScape of sampled features';
+    col.style.fontWeight = "bold";
+    row.appendChild(col);
+
 
     data.forEach(function (c) {
 
         tissueId = c.image.case_id;
 
-        var row = document.createElement('tr');
-        tbl.appendChild(row);
+        row = document.createElement('tr');
+        tbody.appendChild(row);
 
         // caMicro
         var link = document.createElement('a');
         link.setAttribute("href",
             abcUtil.caMicroLink(tissueId, selected.cancer_type));
         link.setAttribute("target", "_blank");
-        link.innerHTML = tissueId + "&nbsp;&nbsp;";
+        link.innerHTML = tissueId + "";
 
-        var col = document.createElement('td');
+        col = document.createElement('td');
         col.appendChild(link);
         row.appendChild(col);
 
@@ -73,7 +101,7 @@ function buildUI(dataDivId, data) { // build User Interface
             + '_tcga&case_id=' + c.image.subject_id);
         link.setAttribute("target", "_blank");
         link.style.color = 'red';
-        link.innerHTML = 'cbio&nbsp;&nbsp;';
+        link.innerHTML = 'cbio';
 
         col = document.createElement('td');
         col.appendChild(link);
@@ -83,7 +111,7 @@ function buildUI(dataDivId, data) { // build User Interface
         var btFeature = document.createElement('button');
         col = document.createElement('td');
         col.appendChild(btFeature);
-        btFeature.textContent = "FeatureScape of sampled features";
+        btFeature.textContent = "FeatureScape";
         btFeature.style.color = "blue";
 
         btFeature.onclick = function () {
