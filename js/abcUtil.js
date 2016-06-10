@@ -93,7 +93,7 @@ abcUtil = {
                 bg_color: 'silver',
                 font_size: 'large',
                 text: 'Select a dataset'
-                //selected: 'luad'
+                //selection: 'luad'
             };
         }
 
@@ -133,7 +133,7 @@ abcUtil = {
                             selection.db = item.db;
                             selection.execution_id = item.execution_id;
                             selection.cancer_type = item.cancer_type;
-                            attr = 'selected';
+                            attr = 'selection';
                         }
                     }
 
@@ -153,7 +153,7 @@ abcUtil = {
         // check DxImages available
         if (!data) {
 
-            var url = config.findAPI + ':' + config.port + '/?limit=1000&collection=metadata&find={"provenance.analysis_execution_id":"' + selected.execution_id + '"}&project={"_id":0,"image.subject_id":1,"image.case_id":1}&db=' + selected.db;
+            var url = config.findAPI + ':' + config.port + '/?limit=1000&collection=metadata&find={"provenance.analysis_execution_id":"' + selection.execution_id + '"}&project={"_id":0,"image.subject_id":1,"image.case_id":1}&db=' + selection.db;
 
             $.ajax({
                 url: url,
@@ -211,7 +211,7 @@ abcUtil = {
                     var tp = document.getElementById('dxSlide_' + pt); // target patient element
                     var dx = document.createElement('p');
                     dx.id = "link_" + p;
-                    dx.innerHTML = '<a href="' + abcUtil.caMicroLink(p, selected.cancer_type) + '" target=_blank>' + p + '</a>';
+                    dx.innerHTML = '<a href="' + abcUtil.caMicroLink(p, selection.cancer_type) + '" target=_blank>' + p + '</a>';
                     tp.appendChild(dx)
                 }
 
@@ -221,7 +221,7 @@ abcUtil = {
 
     },
 
-    listSlides: function (patient, selected, data, R, S, P) {
+    listSlides: function (patient, selection, data, R, S, P) {
         //slideImages.parentNode.hidden = "true";
         var parm = '';
         var ss = []; // list of slides
@@ -259,7 +259,7 @@ abcUtil = {
         // DATA REFERENCE
         var tw = 'https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/';
         var d = document.getElementById('info2');
-        var t = (selected.cancer_type).toUpperCase();
+        var t = (selection.cancer_type).toUpperCase();
 
         if (typeof openHealth != 'undefined') {
             var f1 = openHealth.clinicalFile;
@@ -288,7 +288,10 @@ abcUtil = {
         });
         ppp = ppp.slice(0, -1);
 
-        fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port + '?collection=patients&limit=' + pp.length + '&find={"analysis_id":"' + selected.execution_id + '","bcr_patient_barcode":{"$in":[' + ppp + ']}}&db=' + selected.db + '&c=' + selected.cancer_type;
+        fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port
+            + '?collection=patients&limit=' + pp.length + '&find={"analysis_id":"'
+            + selection.execution_id + '","bcr_patient_barcode":{"$in":[' + ppp + ']}}&db='
+            + selection.db + '&c=' + selection.cancer_type;
 
         if (btnFig4) {
             //btnFig4.innerHTML = '<button id="btnFig4" onclick="resultsPatient(this)">' + p + '</button>&nbsp;';
@@ -304,11 +307,11 @@ abcUtil = {
 
             var v = abcUtil.randval();
             var textContent = v.toString().slice(0, 5);
-            var exec = '"provenance.analysis.execution_id":"' + selected.execution_id + '"';
+            var exec = '"provenance.analysis.execution_id":"' + selection.execution_id + '"';
             var find = '{"randval":{"$gte":' + textContent + '},' + exec 
             + ',"provenance.image.subject_id":"' 
             + (typeof patient[x.textContent] == 'undefined' ? x.textContent : patient[x.textContent]["bcr_patient_barcode"]) 
-            + '"}&db=' + selected.db + '&c=' + selected.cancer_type;
+            + '"}&db=' + selection.db + '&c=' + selection.cancer_type;
 
             // FEATURESCAPE
             var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
@@ -344,7 +347,7 @@ abcUtil = {
             tr.innerHTML = '<td id="tdPatient_' + p + '" style="vertical-align:top">' + (num <= 9 ? '0' : '') + num + ') '
                 //+ '<button class="btn btn-secondary" onclick="resultsPatient(this)">' + p + '</button>&nbsp;'
                 + '<button onclick="resultsPatient(this)">' + p + '</button>&nbsp;'
-                + '(<a href="http://www.cbioportal.org/case.do?case_id=' + p + '&cancer_study_id=' + selected.cancer_type + '_tcga" target=_blank>cBio</a>)'
+                + '(<a href="http://www.cbioportal.org/case.do?case_id=' + p + '&cancer_study_id=' + selection.cancer_type + '_tcga" target=_blank>cBio</a>)'
                 + '</td>'
                 + '<td id="dxSlide_' + p + '" style="vertical-align:top;font-size:12"></td>';
             patientSlideTableBody.appendChild(tr);
@@ -399,7 +402,7 @@ abcUtil = {
         html += '<div id="percent_neutrophil_infiltration"></div></td>';
         html += '</tr>';
         html += '</table></td>';
-        html += '<td style="vertical-align:top"><h3>' + (selected.cancer_type).toUpperCase() + ' Tumor progression</h3>';
+        html += '<td style="vertical-align:top"><h3>' + (selection.cancer_type).toUpperCase() + ' Tumor progression</h3>';
         html += '<div id="tumorProgression"></div>';
         html += '<b>Legend</b>: ' + ks1 + ' diameter indicates number of images</td>';
         html += '</tr>';
@@ -468,7 +471,7 @@ abcUtil = {
         /*
          // TODO:
          setTimeout(function () {
-         abcUtil.listSlides(data, selected);
+         abcUtil.listSlides(data, selection);
          }, 1000);
          */
 
@@ -511,12 +514,12 @@ abcUtil = {
         //var find = '{"randval":{"$gte":' + textContent + '},' + exec + ',"provenance.image.subject_id":"' + patient[x.textContent]["bcr_patient_barcode"] + '"}&db=' + openHealth.db;
 
         // FEATURESCAPE
-        var db = url.substring(url.indexOf('db=') + 3);
+        var db = selection.db;//url.substring(url.indexOf('db=') + 3);
         var xxx = x.innerHTML;
         var parm = 'subject_id';
         if (xxx.length > 12)
             parm = 'case_id';
-        var find = '{"randval":{"$gte":' + textContent + '},"provenance.image.' + parm + '":"' + xxx + '"}&db=' + db;
+        var find = '{"randval":{"$gte":' + textContent + '},"provenance.image.' + parm + '":"' + xxx + '"}&db=' + db + '&c=' + selection.cancer_type;
         var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
         window.open(fscape);
     },

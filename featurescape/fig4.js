@@ -149,7 +149,7 @@ function doFigure4(data) {
     h += '<p style="color:maroon">';
     h += 'Var 1: <select id="morphParm1"></select><br>';
     h += 'Var 2: <select id="morphParm2"></select><br>';
-    h += 'Slide mouse click to select ranges<br>Xaxis: parameter value<br>Yaxis: #patients';
+    h += 'Click and drag to select ranges<br>Xaxis: parameter value, Yaxis: # patients';
     h += '</p>';
     h += '<div id="fig4_2_1"><span style="color:blue">Var 1: </span></div>';
     h += '<div id="fig4_2_2"><span style="color:blue">Var 2: </span></div>';
