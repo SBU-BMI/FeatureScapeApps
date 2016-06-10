@@ -1,5 +1,3 @@
-console.log('fig4.js loaded');
-
 var selection = {};
 var url = '';
 var docs = [];

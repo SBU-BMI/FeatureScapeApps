@@ -1,5 +1,3 @@
-console.log('tcga.js');
-
 openHealth.tcga = (function (oh) {
     var tcga = {dt: {}};
     tcga.scope = function () {

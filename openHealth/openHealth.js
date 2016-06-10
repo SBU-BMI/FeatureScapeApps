@@ -1,5 +1,3 @@
-console.log("openHealth.js");
-
 openHealth = function () {
 };
 
@@ -56,27 +54,7 @@ openHealth.ini = function () {
     this.endJobMsgURL = function () {
         var divMsg = document.getElementById("msg");
         if (divMsg) {
-
             divMsg.textContent = '';
-
-            /*
-            divMsg.style.color = "blue";
-            var sUrl = window.location.search.slice(1);
-            if (sUrl.slice(-1) == "/") {
-                sUrl = sUrl.slice(0, -1)
-            }
-            divMsg.innerHTML = 'Processing ... done : <a href="' + sUrl + '" target=_blank>' + sUrl + '</a>';
-
-            setTimeout(function () {
-                var sUrl = window.location.search.slice(1);
-                if (sUrl.slice(-1) == "/") {
-                    sUrl = sUrl.slice(0, -1)
-                }
-                divMsg.innerHTML = 'Script (<a href="' + sUrl + '" target=_blank>' + sUrl + '</a>) processed <i>' + new Date(Date.now()) + '</i>:';
-                divMsg.style.color = "green";
-            }, 1000);
-            */
-
         }
     };
 
@@ -95,7 +73,7 @@ openHealth.ini = function () {
         return divLog;
     };
 
-    this.require = function (libs, fun) {// load dependencies / extension libraries
+    this.require = function (libs, fun) { // load dependencies / extension libraries
         if (typeof(libs) == "string") {
             libs = [libs]
         }

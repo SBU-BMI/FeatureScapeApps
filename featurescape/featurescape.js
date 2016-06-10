@@ -1,5 +1,3 @@
-console.log('featurescape.js loaded');
-
 fscape = function (x) {
     // being used to ini UI
     if ((!x) && (document.getElementById("section"))) {

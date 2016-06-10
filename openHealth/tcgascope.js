@@ -1,4 +1,3 @@
-console.log('tcgascope.js loaded');
 var selected = {};
 
 openHealth.require(config.domain + '/openHealth/tcga.js', function () {

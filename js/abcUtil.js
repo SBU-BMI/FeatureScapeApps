@@ -1,8 +1,6 @@
 /**
  * abcUtil.js: A container for utility stuff.
  */
-console.log('abcUtil.js');
-
 abcUtil = {
 
     genomic: [],
