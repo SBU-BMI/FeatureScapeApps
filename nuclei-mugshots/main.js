@@ -178,7 +178,7 @@ function parseData(data, size, query) {
                     }
                     else {
                         slides_not_found = true;
-                        return;
+
                     }
                 }
             });
@@ -212,7 +212,7 @@ function parseData(data, size, query) {
                         }
                         else {
                             slides_not_found = true;
-                            return;
+
                         }
                     }
                 });

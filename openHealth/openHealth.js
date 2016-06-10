@@ -169,7 +169,6 @@ openHealth.ini = function () {
     };
 
     this.xhr = function (url, meth, fun) { // XMLHttpRequest
-        console.log('*** xhr ***');
         if (typeof(meth) == "function") {
             fun = meth;
             meth = "GET"

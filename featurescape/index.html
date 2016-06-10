@@ -21,20 +21,32 @@
         background: lightcyan;
     }
 </style>
+<!-- Banner -->
 <a href="https://github.com/SBU-BMI/FeatureScapeApps" target="_blank" style="color:maroon">
     <img src="../img/BMI.png" height="50px" style="vertical-align:bottom">
 </a>
-<ol class="breadcrumb">
-    <li><a href="http://quip1.uhmc.sunysb.edu/">Quip Home</a></li>
-    <li><a href="http://quip1.uhmc.sunysb.edu/sbu_flex/">caMicroscope</a></li>
-    <li><a href="../featurescape/fig4.html">FeatureExplorer</a></li>
-    <li><strong><a href="../featurescape/">FeatureScape</a></strong></li>
-    <li>
+<!-- Navigation -->
+<ul class="nav nav-pills">
+    <li class="dropdown">
+        <a class="navbar-brand" data-toggle="tooltip" title="Quantitative Imaging in Pathology"
+           href="http://quip1.uhmc.sunysb.edu">QuIP
+        </a>
+    </li>
+    <li class="dropdown">
+        <a href="http://quip1.uhmc.sunysb.edu/sbu_flex">caMicroscope</a>
+    </li>
+    <li class="dropdown">
+        <a href="#" data-toggle="dropdown" class="dropdown-toggle">FeatureScape <b class="caret"></b></a>
+        <ul class="dropdown-menu" id="menu1">
+            <li><a href="../featurescape/fig4.html">Patient-level features</a></li>
+            <li><a href="../featurescape/">Object-level features</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
         <a href="../openHealth/?http://sbu-bmi.github.io/FeatureScapeApps/openHealth/tcgascope.js">TCGAScope</a>
     </li>
-    <!--li><a href="../featurescape/u24Preview.html">SlideSelect</a></li-->
-    <li><a href="../nuclei-mugshots/">NuclearMugshots</a></li>
-</ol>
+</ul>
+<!-- Begin Content -->
 <div id="header">
     <h3>
         <i style="font-family:Palatino;color:maroon">
