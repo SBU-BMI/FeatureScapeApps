@@ -1,4 +1,4 @@
-var selected = {};
+var selection = {};
 
 openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
@@ -6,7 +6,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
     function doSelectBox() {
         var diva = document.getElementById('select');
-        diva.innerHTML = abcUtil.selectBox({}, selected)
+        diva.innerHTML = abcUtil.selectBox({}, selection)
             + '&nbsp;&nbsp;'
             + '<input id="btnFig4" name="btnFig4" class="btn btn-primary" type="button" value="FeatureExplorer" />';
 
@@ -16,11 +16,11 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             window.location.hash = '';
 
             var partsOfStr = opt.split(',');
-            selected.cancer_type = partsOfStr[0];
-            selected.db = partsOfStr[1];
-            selected.execution_id = partsOfStr[2];
+            selection.cancer_type = partsOfStr[0];
+            selection.db = partsOfStr[1];
+            selection.execution_id = partsOfStr[2];
 
-            getTcgaData(selected.cancer_type);
+            getTcgaData(selection.cancer_type);
         };
 
     }
@@ -92,7 +92,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         })
 
     }
-    getTcgaData(selected.cancer_type);
+    getTcgaData(selection.cancer_type);
 
 
     // clinical_patient_xxx, biospecimen_slide_xxx, xxxDocs, xxxTab, xxxDx
@@ -396,7 +396,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                 .xAxisLabel('Survival (days)')
                 .yAxisLabel(function (d) {
                     setTimeout(function () {
-                        abcUtil.listSlides(patient, selected, openHealth.tcga.dt[xxxDx], R, S, P);
+                        abcUtil.listSlides(patient, selection, openHealth.tcga.dt[xxxDx], R, S, P);
                     }, 1000);
                     return 'Age (years)'
                 })

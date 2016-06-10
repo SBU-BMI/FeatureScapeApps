@@ -8,18 +8,18 @@
  */
 $(function () {
 
-    selected = {};
+    selection = {};
     select = document.getElementById('select');
-    select.innerHTML = abcUtil.selectBox({}, selected);
+    select.innerHTML = abcUtil.selectBox({}, selection);
     getData();
 
     tumorChanged = function (evt) {
         var opt = evt.selectedOptions[0].value;
         var partsOfStr = opt.split(',');
 
-        selected.cancer_type = partsOfStr[0];
-        selected.db = partsOfStr[1];
-        selected.execution_id = partsOfStr[2];
+        selection.cancer_type = partsOfStr[0];
+        selection.db = partsOfStr[1];
+        selection.execution_id = partsOfStr[2];
 
         getData();
     };
@@ -29,9 +29,9 @@ $(function () {
 function getData() {
     var url = config.findAPI + ':' + config.port
         + '/?limit=50&collection=metadata&find={"provenance.analysis_execution_id":"'
-        + selected.execution_id + '"}&db='
-        + selected.db;
-    console.log('selected', selected);
+        + selection.execution_id + '"}&db='
+        + selection.db;
+    console.log('selection', selection);
     console.log('url', url);
 
     $.ajax({
@@ -48,7 +48,7 @@ function getData() {
 function buildUI(dataDivId, data) { // build User Interface
 
     var dataDiv = document.getElementById(dataDivId);
-    dataDiv.innerHTML = '<h4>' + data.length + ' ' + (selected.cancer_type).toUpperCase() + ' Diagnostic Images:</h4>';
+    dataDiv.innerHTML = '<h4>' + data.length + ' ' + (selection.cancer_type).toUpperCase() + ' Diagnostic Images:</h4>';
 
     var tbl = document.createElement('table');
     tbl.className = "table table-striped";
@@ -84,7 +84,7 @@ function buildUI(dataDivId, data) { // build User Interface
         // caMicro
         var link = document.createElement('a');
         link.setAttribute("href",
-            abcUtil.caMicroLink(tissueId, selected.cancer_type));
+            abcUtil.caMicroLink(tissueId, selection.cancer_type));
         link.setAttribute("target", "_blank");
         link.innerHTML = tissueId + "";
 
@@ -119,9 +119,9 @@ function buildUI(dataDivId, data) { // build User Interface
             var v = abcUtil.randval();
             var url = config.domain + '/featurescape/?' +
                 config.findAPI + ':' + config.port + '?limit=' + sz + '&find={"randval":{"$gte":' + v
-                + '},"provenance.analysis.execution_id":"' + selected.execution_id
+                + '},"provenance.analysis.execution_id":"' + selection.execution_id
                 + '","provenance.image.case_id":"' + tissueId
-                + '"}&db=' + selected.db + '&c=' + selected.cancer_type;
+                + '"}&db=' + selection.db + '&c=' + selection.cancer_type;
             window.open(url);
 
         };

@@ -4,7 +4,7 @@
 $(function () {
 
     mugshots = {};
-    selected = {};
+    selection = {};
     mugshots.findApi = config.findAPI + ':' + config.port + '/';
 
     url = '';
@@ -27,7 +27,7 @@ $(function () {
 });
 
 function buildQueryStr(db, exec) {
-    abcUtil.selectBox({}, selected);
+    abcUtil.selectBox({}, selection);
     var rand = abcUtil.randval();
     mugshots.db = db;
     url = mugshots.findApi + '?collection=objects&limit=12&find={"provenance.analysis.execution_id":"' + exec + '","randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
@@ -37,7 +37,7 @@ function buildQueryStr(db, exec) {
 
 function buildQueryString(q) {
 
-    abcUtil.selectBox({}, selected);
+    abcUtil.selectBox({}, selection);
     var case_id = abcUtil.getQueryVariable('case_id', q);
     var subject_id = abcUtil.getQueryVariable('subject_id', q);
     var fx = abcUtil.getQueryVariable('fx', q);
@@ -49,13 +49,13 @@ function buildQueryString(q) {
     var db = abcUtil.getQueryVariable('db', q);
 
     mugshots.db = db;
-    selected.db = db;
-    selected.cancer_type = db.substring(4);
+    selection.db = db;
+    selection.cancer_type = db.substring(4);
     // PTF.
-    if (selected.db == 'u24_radpath') {
-        selected.cancer_type = "gbm"
+    if (selection.db == 'u24_radpath') {
+        selection.cancer_type = "gbm"
     }
-    selected.selected = selected.cancer_type;
+    selection.selected = selection.cancer_type;
 
     // Remember it stops at '='
     // https://falcon.bmi.stonybrook.edu:4500/?limit
@@ -242,7 +242,7 @@ function parseData(data, size, query) {
         if (thisisrandom) {
 
             div.innerHTML = text + ' from random <strong>'
-                + selected.cancer_type.toUpperCase()
+                + selection.cancer_type.toUpperCase()
                 + ' <a href="#anchor">diagnostic images</a></strong>.'
                 + ' May represent either a single or multiple patients.';
 
@@ -267,7 +267,7 @@ function parseData(data, size, query) {
                 parm = 'subject_id';
             }
             div.innerHTML = text + ' having morphologic ranges selected from <strong>'
-                + selected.cancer_type.toUpperCase()
+                + selection.cancer_type.toUpperCase()
                 + '</strong> '
                 + (parm == 'case_id' ? 'diagnostic image' : 'patient') + ' <strong>' + id + '</strong>:';
             document.getElementById('info2').innerHTML =
@@ -318,8 +318,8 @@ function draw(targetDiv, data, query, layout) {
 
     if (slides_not_found) {
         abcUtil.clrMsg('');
-        doMessage('msg', document.body, 'We have no slides for ' + selected.cancer_type + ' now. Please check back later. Thank you! :)', 'red');
-        //document.write('not found for ', JSON.stringify(selected));
+        doMessage('msg', document.body, 'We have no slides for ' + selection.cancer_type + ' now. Please check back later. Thank you! :)', 'red');
+        //document.write('not found for ', JSON.stringify(selection));
     }
     else {
         var div = document.getElementById(targetDiv);
@@ -389,7 +389,7 @@ function draw(targetDiv, data, query, layout) {
 
                 var link = document.createElement('a');
                 link.setAttribute("href",
-                    abcUtil.caMicroLink(data[ind].case_id, selected.cancer_type, obj.x, obj.y));
+                    abcUtil.caMicroLink(data[ind].case_id, selection.cancer_type, obj.x, obj.y));
                 link.setAttribute("target", "_blank");
                 var col = document.createElement('td');
 
