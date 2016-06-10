@@ -1,12 +1,43 @@
-console.log('u24Preview.js');
+$(function () {
 
-u24p = function () {
-};
+    selected = {};
+    select = document.getElementById('select');
+    select.innerHTML = abcUtil.selectBox({}, selected);
+    getData();
 
-u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Interface
+    tumorChanged = function (evt) {
+        var opt = evt.selectedOptions[0].value;
+        var partsOfStr = opt.split(',');
 
-    //var dataOriginDiv = document.getElementById(dataOriginDivId);
-    //dataOriginDiv.innerHTML = '<strong>' + data.length + ' ' + (selected.cancer_type).toUpperCase() + 'Diagnostic Images:</strong>';
+        selected.cancer_type = partsOfStr[0];
+        selected.db = partsOfStr[1];
+        selected.execution_id = partsOfStr[2];
+
+        getData();
+    };
+
+});
+
+function getData() {
+    var url = config.findAPI + ':' + config.port
+        + '/?limit=50&collection=metadata&find={"provenance.analysis_execution_id":"'
+        + selected.execution_id + '"}&db='
+        + selected.db;
+    console.log('selected', selected);
+    console.log('url', url);
+
+    $.ajax({
+        url: url,
+        async: false,
+        dataType: 'json',
+        success: function (json) {
+            buildUI('section', json);
+        }
+    });
+
+}
+
+function buildUI(dataDivId, data) { // build User Interface
 
     var dataDiv = document.getElementById(dataDivId);
     dataDiv.innerHTML = '<h4>' + data.length + ' ' + (selected.cancer_type).toUpperCase() + ' Diagnostic Images:</h4>';
@@ -34,7 +65,6 @@ u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Inter
         row.appendChild(col);
 
         // cBio
-        // Note: TCGA's case_id parm actually refers to the patient ("subject"); not the case_id.
         // eg. http://www.cbioportal.org/case.do?cancer_study_id=luad_tcga&case_id=TCGA-05-4395
         link = document.createElement('a');
         link.setAttribute("href",
@@ -59,48 +89,15 @@ u24p.buildUI = function (dataOriginDivId, dataDivId, data) { // build User Inter
         btFeature.onclick = function () {
             var sz = 1000;
             var v = abcUtil.randval();
-            // Yes, we really do need absolute path for this url:
-            var url = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '?limit=' + sz + '&find={"randval":{"$gte":' + v + '},"provenance.analysis.execution_id":"' + selected.execution_id + '","provenance.image.case_id":"' + tissueId + '"}&db=' + selected.db;
+            var url = config.domain + '/featurescape/?' +
+                config.findAPI + ':' + config.port + '?limit=' + sz + '&find={"randval":{"$gte":' + v
+                + '},"provenance.analysis.execution_id":"' + selected.execution_id
+                + '","provenance.image.case_id":"' + tissueId
+                + '"}&db=' + selected.db + '&c=' + selected.cancer_type;
             window.open(url);
 
         };
         row.appendChild(col);
     })
 
-};
-
-function getData() {
-    var url = config.findAPI + ':' + config.port + '/?limit=50&collection=metadata&find={"provenance.analysis_execution_id":"' + selected.execution_id + '"}&db=' + selected.db;
-    console.log('selected', selected);
-    console.log('url', url);
-
-    $.ajax({
-        url: url,
-        async: false,
-        dataType: 'json',
-        success: function (json) {
-            u24p.buildUI('info2', 'section', json);
-        }
-    });
-
 }
-
-$(function () {
-
-    selected = trace = {};
-    select = document.getElementById('select');
-    select.innerHTML = abcUtil.selectBox(trace, selected);
-    getData();
-
-    tumorChanged = function (evt) {
-        var opt = evt.selectedOptions[0].value;
-        var partsOfStr = opt.split(',');
-
-        selected.cancer_type = partsOfStr[0];
-        selected.db = partsOfStr[1];
-        selected.execution_id = partsOfStr[2];
-
-        getData();
-    };
-
-});
