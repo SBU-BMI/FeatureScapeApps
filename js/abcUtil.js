@@ -305,7 +305,11 @@ abcUtil = {
             var v = abcUtil.randval();
             var textContent = v.toString().slice(0, 5);
             var exec = '"provenance.analysis.execution_id":"' + selected.execution_id + '"';
-            var find = '{"randval":{"$gte":' + textContent + '},' + exec + ',"provenance.image.subject_id":"' + (typeof patient[x.textContent] == 'undefined' ? x.textContent : patient[x.textContent]["bcr_patient_barcode"]) + '"}&db=' + selected.db;
+            var find = '{"randval":{"$gte":' + textContent + '},' + exec 
+            + ',"provenance.image.subject_id":"' 
+            + (typeof patient[x.textContent] == 'undefined' ? x.textContent : patient[x.textContent]["bcr_patient_barcode"]) 
+            + '"}&db=' + selected.db + '&c=' + selected.cancer_type;
+
             // FEATURESCAPE
             var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
             moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'

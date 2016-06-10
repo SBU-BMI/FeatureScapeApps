@@ -97,13 +97,9 @@ fscape.fun = function (data, url) {
         if (selection.cancer_type == null) {
 
             if (location.search.length > 1) {
-                var f = abcUtil.getQueryVariable('db', location.search.slice(1));
-                selection.db = f;
-                selection.cancer_type = f.substring(4);
-                // PTF.
-                if (selection.db == 'u24_radpath') {
-                    selection.cancer_type = "gbm"
-                }
+                var hash = location.search.slice(1);
+                selection.db = abcUtil.getQueryVariable('db', hash);
+                selection.cancer_type = abcUtil.getQueryVariable('c', hash);
             }
             else {
                 selection.cancer_type = 'unknown';

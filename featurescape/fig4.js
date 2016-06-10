@@ -52,9 +52,8 @@ $(function () {
         url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={"analysis_id":"' + selection.execution_id + '"}&db=' + selection.db;
 
         if (location.search.length > 1) {
-            var currentState = history.state;
-            var stateObj = {foo: "bar"}; // just clear it without reloading
-            history.pushState(stateObj, "FeatureExplorer", "fig4.html");
+            var currentState = {foo: "bar"}; // just clear it without reloading
+            history.pushState(currentState, "FeatureExplorer", "fig4.html");
         }
 
         if (location.hash.length > 1) {
@@ -129,9 +128,9 @@ function doFigure4(data) {
     docs = data;
     abcUtil.featureArrays(selection);
     var genomic = abcUtil.genomic;
-    //console.log(genomic);
+    console.log(genomic);
     var features = abcUtil.features;
-    //console.log(features);
+    console.log(features);
 
     // build table
     var h = '<table>';
@@ -211,12 +210,12 @@ function doFigure4(data) {
     if (searchParms.morph1) {
         morphParm1.value = searchParms.morph1
     } else {
-        morphParm1.value = "Roundness_median"
+        morphParm1.value = features[0]; //"Roundness_median"
     }
     if (searchParms.morph2) {
         morphParm2.value = searchParms.morph2
     } else {
-        morphParm2.value = "stdR_median"
+        morphParm2.value = features[1]; //"stdR_median"
     }
 
     /**
