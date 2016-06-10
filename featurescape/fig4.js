@@ -135,8 +135,8 @@ function doFigure4(data) {
     // build table
     var h = '<table>';
     h += '<tr><td id="fig4_1" style="vertical-align:top">';
-    h += '<h3 style="color:maroon">Gene Mutation</h3>';
-    h += '<p style="color:maroon">Click on bars to select molecular cohorts,<br>Xaxis: # patients; Yaxis: mutation status<br>[<b style="color:blue">blue</b><b style="color:YellowGreen">-</b><b style="color:red">red</b>] color range indicates fraction of total.</p>';
+    h += '<h3 style="color:maroon">Cohorts</h3>';
+    h += '<p style="color:maroon">Click on bars to select cohorts,<br>Xaxis: # patients; Yaxis: status<br>[<b style="color:blue">blue</b><b style="color:YellowGreen">-</b><b style="color:red">red</b>] color range indicates fraction of total.</p>';
 
     genomic.forEach(function (gen) {
         h += '<h4 style="color:navy" id="fig4_1_' + gen + '">' + gen + '</h4>';
@@ -383,9 +383,9 @@ function doFigure4(data) {
         gene[gn].C = dc.rowChart("#fig4_1_" + gn);
         gene[gn].D = cf.dimension(function (d) {
             if (d[gn] === 0) {
-                return 'no mutation'
+                return 'absent'
             } else if (d[gn] === 1) {
-                return 'mutation present'
+                return 'present'
             } else {
                 return 'NA'
             }
