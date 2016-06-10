@@ -221,6 +221,9 @@ abcUtil = {
 
     },
 
+    /**
+     * TABULAR LIST OF PATIENTS AND DIAGNOSTIC IMAGES.
+     */
     listSlides: function (patient, selection, data, R, S, P) {
         //slideImages.parentNode.hidden = "true";
         var parm = '';
@@ -462,6 +465,9 @@ abcUtil = {
         return patients;
     },
 
+    /**
+     * TABULAR LIST OF PATIENTS or DIAGNOSTIC IMAGES.
+     */
     doPatients: function (data, idx, url, win) {
 
         var ptslides = document.getElementById('ptslides');
@@ -490,7 +496,8 @@ abcUtil = {
             h = data.length + ' Diagnostic Images:';
         }
 
-        var t = '<a name="anchor"></a><table id="patientSlideTable"><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">' + h + '</td></tr><tr><td><em>Click button to view FeatureScape</em></td></tr>';
+        var t = '<a name="anchor"></a><table id="patientSlideTable"><tr><td id="tcgaPatientsHeader" style="color:maroon;font-weight:bold">'
+            + h + '</td></tr><tr><td><em>Click button to view FeatureScape</em></td></tr>';
 
         data.forEach(function (dd) {
             var x = dd[idx];

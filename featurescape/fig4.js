@@ -24,8 +24,8 @@ $(function () {
         if (location.search.length > 1) {
             var q = location.search.slice(1);
             db = abcUtil.getQueryVariable('db', q);
-            c = abcUtil.getQueryVariable("c", q);
-            exec = abcUtil.getQueryVariable("exec", q);
+            c = abcUtil.getQueryVariable('c', q);
+            exec = abcUtil.getQueryVariable('exec', q);
             gob(db, exec, c);
         }
         else {
@@ -128,9 +128,9 @@ function doFigure4(data) {
     docs = data;
     abcUtil.featureArrays(selection);
     var genomic = abcUtil.genomic;
-    console.log(genomic);
+    //console.log(genomic);
     var features = abcUtil.features;
-    console.log(features);
+    //console.log(features);
 
     // build table
     var h = '<table>';
@@ -289,6 +289,7 @@ function doFigure4(data) {
                 var xy = dcStatus.G.all().filter(function (xyi) {
                     return xyi.value
                 });
+                //console.log('xy', xy.length);
                 var x = [], y = [];
                 xy.map(function (xyi, i) {
                     x[i] = xyi.key[0];
@@ -363,6 +364,7 @@ function doFigure4(data) {
             }
         });
         ind.forEach(function (i) {
+            //console.log(docs[i]);
             bcr.push(docs[i])
         });
         abcUtil.doPatients(bcr, 'bcr_patient_barcode');
