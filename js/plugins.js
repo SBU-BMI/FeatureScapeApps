@@ -1,12 +1,16 @@
-// remap jQuery to $
-(function ($) {
-})(window.jQuery);
-//(this.jQuery);
+/**
+ * Push log function to window object
+ */
+var log = {};
+var window = {};
 
 window.log = function () {
+
     log.history = log.history || [];   // store logs to an array for reference
     log.history.push(arguments);
-    if (this.console) {
+
+    if (window.console) {
         console.log(Array.prototype.slice.call(arguments));
     }
+
 };
