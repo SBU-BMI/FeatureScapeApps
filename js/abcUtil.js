@@ -133,7 +133,7 @@ abcUtil = {
                             selection.db = item.db;
                             selection.execution_id = item.execution_id;
                             selection.cancer_type = item.cancer_type;
-                            attr = 'selection';
+                            attr = 'selected';
                         }
                     }
 
@@ -475,7 +475,6 @@ abcUtil = {
         //ptslides.innerHTML = abcUtil.setupDC2();
 
         /*
-         // TODO:
          setTimeout(function () {
          abcUtil.listSlides(data, selection);
          }, 1000);
