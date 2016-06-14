@@ -23,15 +23,15 @@ openHealth.ini = function () {
                 lk.rel = 'stylesheet';
                 lk.href = src;
                 if (!!fun) {
-                    lk.onload = fun
+                    lk.onload = fun;
                 } // if there is a callback run it
                 document.head.appendChild(lk);
-                return src
+                return src;
             } else { // it's javascript
                 var s = document.createElement('script');
                 s.src = src;
                 if (!!fun) {
-                    s.onload = fun
+                    s.onload = fun;
                 } // if there is a callback run it
                 document.head.appendChild(s);
                 return src; // I never know what to do about returns in asynchronous calls ...
@@ -41,16 +41,16 @@ openHealth.ini = function () {
 
     this.require = function (libs, fun) { // load dependencies / extension libraries
         if (typeof(libs) == "string") {
-            libs = [libs]
+            libs = [libs];
         }
         libs = libs.map(function (libi) {
             if (!libi.match(/\//)) {
-                libi = libi + '/' + libi + '.js'
+                libi = libi + '/' + libi + '.js';
             } // say if ei is "tcga" it is converted into "tcga/tcga.js"
-            return libi
+            return libi;
         });
         openHealth.getScript(libs, fun);
-        return this
+        return this;
     };
 
     this.docs2tab = function (docs) { // convert array of docs into table
@@ -68,10 +68,10 @@ openHealth.ini = function () {
             if (!tab[Fj].join('').match(/[^\d\.\s]/g)) {
                 tab[Fj] = tab[Fj].map(function (xi) {
                     return parseFloat(xi);
-                })
+                });
             }
         }
-        return tab
+        return tab;
     };
 
     this.tab2docs = function (tab) {
@@ -85,12 +85,12 @@ openHealth.ini = function () {
                 docs[i][F[j]] = tab[F[j]][i];
             }
         }
-        return docs
+        return docs;
     };
 
     this.unique = function (x) { // x should be an Array
         if (typeof(x) == 'string') {
-            x = x.split('')
+            x = x.split('');
         } // if it is a string, break it into an array of its characters
         var u = []; // store unique here
         u[0] = x[0];
@@ -99,7 +99,7 @@ openHealth.ini = function () {
             if (u.map(function (ui) {
                     return ui === x[i]
                 }).reduce(function (a, b) {
-                    return a + b
+                    return a + b;
                 }) == 0) {
                 u[u.length] = x[i];
             }
@@ -122,7 +122,7 @@ openHealth.ini = function () {
                 }
             }
         }
-        return y
+        return y;
     };
 
     this.sort = function (x) { // [y,I]=sort(x), where y is the sorted array and I contains the indexes
@@ -132,7 +132,7 @@ openHealth.ini = function () {
         x.sort(function (a, b) {
             return a[0] - b[0]
         });
-        return this.transpose(x)
+        return this.transpose(x);
     };
 
     this.createLog = function (h) { // create log div, if possible, within an existing openHealth div
@@ -155,12 +155,12 @@ openHealth.ini = function () {
         if (divMsg) {
             var sUrl = window.location.search.slice(1);
             if (sUrl.slice(-1) == "/") {
-                sUrl = sUrl.slice(0, -1)
+                sUrl = sUrl.slice(0, -1);
             }
             divMsg.innerHTML = 'Processing ... : <a href="' + sUrl + '" target=_blank>' + sUrl + '</a>';
             divMsg.style.color = "red";
         }
-        this.createLog('<p style="color:red">Executing job, please wait ...</p>')
+        this.createLog('<p style="color:red">Executing job, please wait ...</p>');
     };
 
     this.endJobMsgURL = function () { // post URL of job into the div.id="msg" if it exists
