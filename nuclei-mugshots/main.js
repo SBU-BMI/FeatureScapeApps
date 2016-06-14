@@ -37,7 +37,6 @@ function buildQueryStr(db, exec) {
 
 function buildQueryString(q) {
 
-    abcUtil.selectBox({}, selection);
     var case_id = abcUtil.getQueryVariable('case_id', q);
     var subject_id = abcUtil.getQueryVariable('subject_id', q);
     var fx = abcUtil.getQueryVariable('fx', q);
@@ -47,14 +46,12 @@ function buildQueryString(q) {
     var ymin = abcUtil.getQueryVariable('ymin', q);
     var ymax = abcUtil.getQueryVariable('ymax', q);
     var db = abcUtil.getQueryVariable('db', q);
+    var c = abcUtil.getQueryVariable('c', q);
 
     mugshots.db = db;
     selection.db = db;
-    selection.cancer_type = db.substring(4);
-    // PTF.
-    if (selection.db == 'u24_radpath') {
-        selection.cancer_type = "gbm"
-    }
+
+    selection.cancer_type = c;
     selection.selected = selection.cancer_type;
 
     // Remember it stops at '='
@@ -66,8 +63,7 @@ function buildQueryString(q) {
     // "find1: {"randval":{"$gte":0.399},"provenance.analysis.execution_id":"luad:20160215","provenance.image.case_id":"TCGA-05-4244-01Z-00-DX1"}"
     var find = abcUtil.getQueryVariable('find', q);
 
-    // TODO:
-    var myUrl = '';
+    var myUrl;
     /*
      if (!fx && !fy) {
      myUrl = base + '&find=' + find;
