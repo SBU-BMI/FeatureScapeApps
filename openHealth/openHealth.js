@@ -1,9 +1,10 @@
-openHealth = function () {
-};
+/**
+ * openHealth
+ */
+openHealth = function () {};
 
 openHealth.ini = function () {
-    this.buildUI = function () {
-    };
+    this.buildUI = function () {};
     this.data = {}; // <-- put your data here
     this.getScript = function (src, fun) {
         if (Array.isArray(src)) { // multiple scripts are being loaded
@@ -38,41 +39,6 @@ openHealth.ini = function () {
         }
     };
 
-    this.startJobMsgURL = function () { // post URL of job into the div.id="msg" if it exists
-        var divMsg = document.getElementById("msg");
-        if (divMsg) {
-            var sUrl = window.location.search.slice(1);
-            if (sUrl.slice(-1) == "/") {
-                sUrl = sUrl.slice(0, -1)
-            }
-            divMsg.innerHTML = 'Processing ... : <a href="' + sUrl + '" target=_blank>' + sUrl + '</a>';
-            divMsg.style.color = "red";
-        }
-        this.createLog('<p style="color:red">Executing job, please wait ...</p>')
-    };
-
-    this.endJobMsgURL = function () {
-        var divMsg = document.getElementById("msg");
-        if (divMsg) {
-            divMsg.textContent = '';
-        }
-    };
-
-    this.createLog = function (h) { // create log div, if possible, within an existing openHealth div
-        var div0 = document.getElementById("openHealth");
-        if (!div0) {
-            div0 = document.createElement('div');
-            document.body.appendChild(div0);
-        }
-        var divLog = document.createElement('div');
-        divLog.id = "openHealthJob";
-        if (h) {
-            divLog.innerHTML = h
-        }
-        div0.appendChild(divLog);
-        return divLog;
-    };
-
     this.require = function (libs, fun) { // load dependencies / extension libraries
         if (typeof(libs) == "string") {
             libs = [libs]
@@ -85,20 +51,6 @@ openHealth.ini = function () {
         });
         openHealth.getScript(libs, fun);
         return this
-    };
-
-    this.tab2docs = function (tab) {
-        var docs = [];
-        var F = Object.getOwnPropertyNames(tab);
-        var n = tab[F[0]].length; // # rows
-        var m = F.length; // # fields
-        for (var i = 0; i < n; i++) {
-            docs[i] = {};
-            for (var j = 0; j < m; j++) {
-                docs[i][F[j]] = tab[F[j]][i];
-            }
-        }
-        return docs
     };
 
     this.docs2tab = function (docs) { // convert array of docs into table
@@ -122,11 +74,24 @@ openHealth.ini = function () {
         return tab
     };
 
+    this.tab2docs = function (tab) {
+        var docs = [];
+        var F = Object.getOwnPropertyNames(tab);
+        var n = tab[F[0]].length; // # rows
+        var m = F.length; // # fields
+        for (var i = 0; i < n; i++) {
+            docs[i] = {};
+            for (var j = 0; j < m; j++) {
+                docs[i][F[j]] = tab[F[j]][i];
+            }
+        }
+        return docs
+    };
+
     this.unique = function (x) { // x should be an Array
         if (typeof(x) == 'string') {
             x = x.split('')
-        }
-        // if it is a string, break it into an array of its characters
+        } // if it is a string, break it into an array of its characters
         var u = []; // store unique here
         u[0] = x[0];
         for (var i = 1; i < x.length; i++) {
@@ -142,22 +107,14 @@ openHealth.ini = function () {
         return u;
     };
 
-    this.sort = function (x) { // [y,I]=sort(x), where y is the sorted array and I contains the indexes
-        x = x.map(function (xi, i) {
-            return [xi, i]
-        });
-        x.sort(function (a, b) {
-            return a[0] - b[0]
-        });
-        return this.transpose(x)
-    };
-
     this.transpose = function (x) { // transposes 2D array
         if (!Array.isArray(x[0])) {
             y = [x]
-        }  // in case x is a 1D Array
+        } // in case x is a 1D Array
         else {
-            var y = [], n = x.length, m = x[0].length;
+            var y = [],
+                n = x.length,
+                m = x[0].length;
             for (var j = 0; j < m; j++) {
                 y[j] = [];
                 for (var i = 0; i < n; i++) {
@@ -168,22 +125,67 @@ openHealth.ini = function () {
         return y
     };
 
-    this.xhr = function (url, meth, fun) { // XMLHttpRequest
-        if (typeof(meth) == "function") {
-            fun = meth;
-            meth = "GET"
-        } // in case this is a regular GET call
-        if (!meth) {
-            meth = "GET"
+    this.sort = function (x) { // [y,I]=sort(x), where y is the sorted array and I contains the indexes
+        x = x.map(function (xi, i) {
+            return [xi, i]
+        });
+        x.sort(function (a, b) {
+            return a[0] - b[0]
+        });
+        return this.transpose(x)
+    };
+
+    this.createLog = function (h) { // create log div, if possible, within an existing openHealth div
+        var div0 = document.getElementById("openHealth");
+        if (!div0) {
+            div0 = document.createElement('div');
+            document.body.appendChild(div0);
         }
-        var r = new XMLHttpRequest();
-        if (!!fun) {
-            r.onload = fun
+        var divLog = document.createElement('div');
+        divLog.id = "openHealthJob";
+        if (h) {
+            divLog.innerHTML = h
         }
-        // callback
-        r.open(meth, url, true);
-        r.send();
-        return r
+        div0.appendChild(divLog);
+        return divLog;
+    };
+
+    this.startJobMsgURL = function () { // post URL of job into the div.id="msg" if it exists
+        var divMsg = document.getElementById("msg");
+        if (divMsg) {
+            var sUrl = window.location.search.slice(1);
+            if (sUrl.slice(-1) == "/") {
+                sUrl = sUrl.slice(0, -1)
+            }
+            divMsg.innerHTML = 'Processing ... : <a href="' + sUrl + '" target=_blank>' + sUrl + '</a>';
+            divMsg.style.color = "red";
+        }
+        this.createLog('<p style="color:red">Executing job, please wait ...</p>')
+    };
+
+    this.endJobMsgURL = function () { // post URL of job into the div.id="msg" if it exists
+        var divMsg = document.getElementById("msg");
+        if (divMsg) {
+            divMsg.textContent = '';
+            /*
+             //document.getElementById("openHealthJob").innerHTML="";
+             divMsg.style.color = "blue";
+             var sUrl = window.location.search.slice(1);
+             if (sUrl.slice(-1) == "/") {
+             sUrl = sUrl.slice(0, -1)
+             }
+             divMsg.innerHTML = 'Processing ... done : <a href="' + sUrl + '" target=_blank>' + sUrl + '</a>';
+             setTimeout(function() {
+             var sUrl = window.location.search.slice(1);
+             if (sUrl.slice(-1) == "/") {
+             sUrl = sUrl.slice(0, -1)
+             }
+             divMsg.innerHTML = 'Script (<a href="' + sUrl + '" target=_blank>' + sUrl + '</a>) processed <i>' + new Date(Date.now()) + '</i>:';
+             divMsg.style.color = "green";
+             }, 1000)
+             */
+
+        }
     };
 
 };
@@ -198,6 +200,5 @@ window.onload = function () {
         openHealth.getScript(window.location.search.slice(1).replace(/\/$/, ''), function () {
             openHealth.endJobMsgURL();
         });
-
     }
 };
