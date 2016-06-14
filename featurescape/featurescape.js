@@ -529,15 +529,11 @@ fscape.scatterPlot = function (div0, i, j) {
 
             var parm = (s.split('.'))[2];
             var m = location.search.match(config.findAPI + '[^\;]+')[0];
-            var urlMug = config.domain + "/nuclei-mugshots/#" + parm + "=" + patient + "&fx=" + fi + '&xmin=' + xmin + '&xmax=' + xmax + "&fy=" + fj + '&ymin=' + ymin + '&ymax=' + ymax + '&url=' + m;
-            console.log('m', m);
-            window.open(urlMug);
+            window.open(config.domain + "/nuclei-mugshots/#" + parm + "=" + patient + "&fx=" + fi + '&xmin=' + xmin + '&xmax=' + xmax + "&fy=" + fj + '&ymin=' + ymin + '&ymax=' + ymax + '&url=' + m);
 
         }
         else {
-            //var m = 'http://quip1.uhmc.sunysb.edu:4000/?limit=1000&find={"randval":{"$gte":0.425},"provenance.analysis.execution_id":"luad:bg:20160520","provenance.image.subject_id":"TCGA-05-4244"}&db=u24_luad';
-            var urlMug = config.domain + "/nuclei-mugshots/#case_id=" + case_id + "&fx=" + fi + '&xmin=' + xmin + '&xmax=' + xmax + "&fy=" + fj + '&ymin=' + ymin + '&ymax=' + ymax + '&url=' + query;
-            window.open(urlMug);
+            window.open(config.domain + "/nuclei-mugshots/#case_id=" + case_id + "&fx=" + fi + '&xmin=' + xmin + '&xmax=' + xmax + "&fy=" + fj + '&ymin=' + ymin + '&ymax=' + ymax + '&url=' + query + '&c=' + selection.cancer_type);
         }
 
     };
