@@ -1,14 +1,13 @@
 /**
  * Nuclear Mugshots.
  */
+var mugshots = {};
+var selection = {};
+
 $(function () {
 
-    mugshots = {};
-    selection = {};
     mugshots.findApi = config.findAPI + ':' + config.port + '/';
 
-    url = '';
-    docs = [];
     if (location.hash.length > 1) {
         hash = location.hash.slice(1);
         thisisrandom = false;
@@ -19,20 +18,21 @@ $(function () {
     else {
         // Default
         thisisrandom = true;
-        url = buildQueryStr(config.default_db, config.default_execution_id);
+        url = buildQueryStr();
     }
 
     getData(url);
 
 });
 
-function buildQueryStr(db, exec) {
+function buildQueryStr() {
     abcUtil.selectBox({}, selection);
-    var rand = abcUtil.randval();
-    mugshots.db = db;
-    url = mugshots.findApi + '?collection=objects&limit=12&find={"provenance.analysis.execution_id":"' + exec + '","randval":{"$gte":' + rand + '}}&db=' + mugshots.db;
-
-    return url;
+    return (mugshots.findApi
+    + '?collection=objects&limit=12&find={"provenance.analysis.execution_id":"'
+    + selection.execution_id
+    + '","randval":{"$gte":'
+    + abcUtil.randval() + '}}&db='
+    + selection.db);
 }
 
 function buildQueryString(q) {
@@ -48,9 +48,7 @@ function buildQueryString(q) {
     var db = abcUtil.getQueryVariable('db', q);
     var c = abcUtil.getQueryVariable('c', q);
 
-    mugshots.db = db;
     selection.db = db;
-
     selection.cancer_type = c;
     selection.selected = selection.cancer_type;
 
@@ -110,7 +108,7 @@ function getData(url) {
                 draw('section', data, url);
             }
 
-        })
+        });
     }
     catch (err) {
         slides_not_found = true;
@@ -159,10 +157,8 @@ function parseData(data, size, query) {
     try {
         if (sameCaseId) {
             // Get info about the slide.
-            var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + prevCaseId + '"}&db=' + mugshots.db;
-
             $.ajax({
-                url: url,
+                url: mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + prevCaseId + '"}&db=' + selection.db,
                 async: false,
                 dataType: 'json',
                 success: function (json) {
@@ -189,14 +185,13 @@ function parseData(data, size, query) {
     var h = '';
     try {
         randomMembers.forEach(function (doc) {
-            var url = mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + doc.provenance.image.case_id + '"}&db=' + mugshots.db;
             h += '<tr><td>' + doc.provenance.image.case_id + '</td></tr>';
             //console.log(' *** ' + url);
 
             if (!sameCaseId) {
                 // Get info about the slide.
                 $.ajax({
-                    url: url,
+                    url: mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + doc.provenance.image.case_id + '"}&db=' + selection.db,
                     async: false,
                     dataType: 'json',
                     success: function (json) {
@@ -222,11 +217,11 @@ function parseData(data, size, query) {
                 identifier: identifier,
                 slideWidth: slideWidth,
                 slideHeight: slideHeight
-            })
+            });
         });
-    } catch (err) {
+    } catch (err1) {
         slides_not_found = true;
-        document.getElementById("info1").innerHTML = err.message;
+        document.getElementById("info1").innerHTML = err1.message;
     }
 
     if (slides_not_found) {
@@ -302,15 +297,7 @@ function draw(targetDiv, data, query, layout) {
         $('<hr><div id="' + targetDiv + '"></div>').appendTo(document.body);
     }
 
-    if (!data) {
-        document.getElementById(targetDiv).innerHTML = 'Alright now... you need to give me some data in order to get some nuclei!';
-        return false;
-    }
-    else {
-        data = parseData(data, size, query);
-
-    }
-
+    data = parseData(data, size, query);
 
     if (slides_not_found) {
         abcUtil.clrMsg('');
@@ -329,12 +316,12 @@ function draw(targetDiv, data, query, layout) {
         fragment.appendChild(tbl);
 
         var ind = 0;
-        for (var i = 0; i < tableRows; i++) {
+        for (i = 0; i < tableRows; i++) {
             //str += '<tr>';
             var row = document.createElement('tr');
             tbl.appendChild(row);
 
-            for (var j = 0; j < tds; j++) {
+            for (j = 0; j < tds; j++) {
                 //console.log(ind + ': ' + JSON.stringify(data[ind]));
 
                 var obj = {
