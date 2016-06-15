@@ -1,5 +1,8 @@
 /**
  * Nuclear Mugshots.
+ * Displays m by n matrix of tiles containing nuclear segmentations from diagnostic images.
+ * Program can be called by itself; in which case, it gives a random selection of tiles of tumor type LUAD.
+ * Or one can pass parameters indicating what to display.
  */
 var mugshots, selection, thisisrandom, slides_not_found;
 
@@ -274,12 +277,12 @@ function draw(targetDiv, data, query, layout) {
 
         fragment.appendChild(tbl);
 
-        // Rows
+        // m rows
         for (i = 0; i < mugshots.m; i++) {
             row = document.createElement('tr');
             tbl.appendChild(row);
 
-            // Columns
+            // n columns
             for (j = 0; j < mugshots.n; j++) {
 
                 obj = {
