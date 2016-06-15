@@ -1,3 +1,6 @@
+/**
+ * Configure app in a block instead of hard-coding values inside the scripts.
+ */
 var config = {
     domain: 'http://sbu-bmi.github.io/FeatureScapeApps',
     //domain: 'http://localhost:63342/FeatureScapeApps',
