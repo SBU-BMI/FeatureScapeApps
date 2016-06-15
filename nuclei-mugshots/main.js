@@ -1,29 +1,7 @@
 /**
  * Nuclear Mugshots.
  */
-var mugshots = {};
-var selection = {};
-
-$(function () {
-
-    mugshots.findApi = config.findAPI + ':' + config.port + '/';
-
-    if (location.hash.length > 1) {
-        hash = location.hash.slice(1);
-        thisisrandom = false;
-        mugshots.n = abcUtil.getQueryVariable('n', hash);
-        mugshots.m = abcUtil.getQueryVariable('m', hash);
-        url = buildQueryString(hash);
-    }
-    else {
-        // Default
-        thisisrandom = true;
-        url = buildQueryStr();
-    }
-
-    getData(url);
-
-});
+var mugshots, selection, thisisrandom, slides_not_found;
 
 function buildQueryStr() {
     abcUtil.selectBox({}, selection);
@@ -37,47 +15,38 @@ function buildQueryStr() {
 
 function buildQueryString(q) {
 
-    var case_id = abcUtil.getQueryVariable('case_id', q);
-    var subject_id = abcUtil.getQueryVariable('subject_id', q);
-    var fx = abcUtil.getQueryVariable('fx', q);
-    var xmin = abcUtil.getQueryVariable('xmin', q);
-    var xmax = abcUtil.getQueryVariable('xmax', q);
-    var fy = abcUtil.getQueryVariable('fy', q);
-    var ymin = abcUtil.getQueryVariable('ymin', q);
-    var ymax = abcUtil.getQueryVariable('ymax', q);
-    var db = abcUtil.getQueryVariable('db', q);
-    var c = abcUtil.getQueryVariable('c', q);
+    var fx = abcUtil.getQueryVariable('fx', q),
+        xmin = abcUtil.getQueryVariable('xmin', q),
+        xmax = abcUtil.getQueryVariable('xmax', q),
+        fy = abcUtil.getQueryVariable('fy', q),
+        ymin = abcUtil.getQueryVariable('ymin', q),
+        ymax = abcUtil.getQueryVariable('ymax', q),
+        db = abcUtil.getQueryVariable('db', q),
+        c = abcUtil.getQueryVariable('c', q),
+        base,
+        find,
+        myUrl,
+        range_a,
+        range_b;
+
+    // Remember it stops at '='
+    // https://falcon.bmi.stonybrook.edu:4500/?limit
+    base = abcUtil.getQueryVariable('url', q);
+    // Resample 50 (performance reasons); we're only rendering 12.
+    base = base + '=50';
+
+    // "find: {"randval":{"$gte":0.399},"provenance.analysis.execution_id":"luad:20160215","provenance.image.case_id":"TCGA-05-4244-01Z-00-DX1"}"
+    find = abcUtil.getQueryVariable('find', q);
+    // remove the last '}'
+    find = find.substring(0, find.length - 1);
 
     selection.db = db;
     selection.cancer_type = c;
     selection.selected = selection.cancer_type;
 
-    // Remember it stops at '='
-    // https://falcon.bmi.stonybrook.edu:4500/?limit
-    var base = abcUtil.getQueryVariable('url', q);
-    // Resample 50 (performance reasons); we're only rendering 12.
-    base = base + '=50';
-
-    // "find1: {"randval":{"$gte":0.399},"provenance.analysis.execution_id":"luad:20160215","provenance.image.case_id":"TCGA-05-4244-01Z-00-DX1"}"
-    var find = abcUtil.getQueryVariable('find', q);
-
-    var myUrl;
-    /*
-     if (!fx && !fy) {
-     myUrl = base + '&find=' + find;
-
-     if (db) {
-     myUrl = myUrl + '&db=' + db;
-     }
-     }
-     else {
-     */
-    // remove the last '}'
-    find = find.substring(0, find.length - 1);
-
     // Build our "find"
-    var range_a = '"$and":[{' + '"properties.scalar_features":{' + '"$elemMatch":{' + '"nv":{' + '"$elemMatch":{' + '"name":"' + fx + '",' + '"value":{' + '"$gte":' + xmin + '}}}}}},{' + '"properties.scalar_features":{' + '"$elemMatch":{' + '"nv":{' + '"$elemMatch":{' + '"name":"' + fx + '",' + '"value":{' + '"$lte":' + xmax + '}}}}}}]';
-    var range_b = '"$and":[{' + '"properties.scalar_features":{' + '"$elemMatch":{' + '"nv":{' + '"$elemMatch":{' + '"name":"' + fy + '",' + '"value":{' + '"$gte":' + ymin + '}}}}}},{' + '"properties.scalar_features":{' + '"$elemMatch":{' + '"nv":{' + '"$elemMatch":{' + '"name":"' + fy + '",' + '"value":{' + '"$lte":' + ymax + '}}}}}}]';
+    range_a = '"$and":[{' + '"properties.scalar_features":{' + '"$elemMatch":{' + '"nv":{' + '"$elemMatch":{' + '"name":"' + fx + '",' + '"value":{' + '"$gte":' + xmin + '}}}}}},{' + '"properties.scalar_features":{' + '"$elemMatch":{' + '"nv":{' + '"$elemMatch":{' + '"name":"' + fx + '",' + '"value":{' + '"$lte":' + xmax + '}}}}}}]';
+    range_b = '"$and":[{' + '"properties.scalar_features":{' + '"$elemMatch":{' + '"nv":{' + '"$elemMatch":{' + '"name":"' + fy + '",' + '"value":{' + '"$gte":' + ymin + '}}}}}},{' + '"properties.scalar_features":{' + '"$elemMatch":{' + '"nv":{' + '"$elemMatch":{' + '"name":"' + fy + '",' + '"value":{' + '"$lte":' + ymax + '}}}}}}]';
 
     myUrl = base + '&find=' + find + ',"$and":[{' + range_a + '},{' + range_b + '}]}';
 
@@ -85,36 +54,7 @@ function buildQueryString(q) {
         myUrl = myUrl + '&db=' + db;
     }
 
-    //}
-
     return myUrl;
-
-}
-
-function getData(url) {
-
-    doMessage('msg', document.body, 'loading, please wait ...', 'red');
-    abcUtil.clrMsg('');
-    slides_not_found = false;
-
-    try {
-        $.getJSON(url).then(function (data) {
-
-            // Object (nuclei) data
-            if (data.length == 0) {
-                abcUtil.noDataJoy(url);
-            }
-            else {
-                draw('section', data, url);
-            }
-
-        });
-    }
-    catch (err) {
-        slides_not_found = true;
-        document.getElementById("info1").innerHTML = err.message;
-    }
-
 
 }
 
@@ -134,31 +74,99 @@ function doMessage(name, location, text, color) {
     div.style.color = color;
 }
 
+function doInfo(newData, query) {
+    var fx, xmin, xmax,
+        fy, ymin, ymax,
+        id, parm, l,
+        text = 'Displaying <strong>' + newData.length + '</strong> tiles containing nuclear segmentations';
+
+    if (thisisrandom) {
+
+        document.getElementById('info1').innerHTML = text + ' from random <strong>'
+            + selection.cancer_type.toUpperCase()
+            + ' <a href="#anchor">diagnostic images</a></strong>.'
+            + ' May represent either a single or multiple patients.';
+
+        abcUtil.doPatients(newData, 'case_id', query);
+
+    } else {
+        l = location.hash.slice(1);
+        fx = abcUtil.getQueryVariable('fx', l);
+        xmin = abcUtil.getQueryVariable('xmin', l);
+        xmax = abcUtil.getQueryVariable('xmax', l);
+        fy = abcUtil.getQueryVariable('fy', l);
+        ymin = abcUtil.getQueryVariable('ymin', l);
+        ymax = abcUtil.getQueryVariable('ymax', l);
+        id = abcUtil.getQueryVariable('case_id', l);
+        parm = 'case_id';
+
+        if (!id) {
+            id = abcUtil.getQueryVariable('subject_id', l);
+            parm = 'subject_id';
+        }
+
+        document.getElementById('info1').innerHTML = text + ' having morphologic ranges selected from <strong>'
+            + selection.cancer_type.toUpperCase()
+            + '</strong> '
+            + (parm == 'case_id' ? 'diagnostic image' : 'patient') + ' <strong>' + id + '</strong>:';
+
+        document.getElementById('info2').innerHTML =
+            fx + ' between ' + xmin + ' and ' + xmax + '<br>' +
+            fy + ' between ' + ymin + ' and ' + ymax;
+
+    }
+}
+
 function parseData(data, size, query) {
-    var newData = [];
+    var newData = [],
+        randomMembers = abcUtil.getRandomSubarrayPartialShuffle(data, size),
+        sameCaseId = true,
+        prevCaseId = "",
+        identifier = "",
+        slideWidth = 0,
+        slideHeight = 0,
+        i;
 
-    var randomMembers = abcUtil.getRandomSubarrayPartialShuffle(data, size);
-    //console.log(randomMembers);
+    // Determine whether we have multiple case ids or just one.
+    for (i = 0; i < randomMembers.length; i++) {
 
-    var sameCaseId = true;
-    var prevCaseId = '';
+        if (prevCaseId != "" && prevCaseId != randomMembers[i].provenance.image.case_id) {
+            sameCaseId = false;
+            break;
+        }
+
+        prevCaseId = randomMembers[i].provenance.image.case_id;
+
+    }
+
+    if (sameCaseId) {
+        // Get info about the slide, once.
+        $.ajax({
+            url: mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + prevCaseId + '"}&db=' + selection.db,
+            async: false,
+            dataType: 'json',
+            success: function (json) {
+                if (json.length > 0) {
+                    identifier = json[0].filename;
+                    slideWidth = json[0].width;
+                    slideHeight = json[0].height;
+
+                } else {
+                    slides_not_found = true;
+
+                }
+            }
+        });
+
+    }
+
+    // Reformat our data
     randomMembers.forEach(function (doc) {
 
-        if (prevCaseId != '' && prevCaseId != doc.provenance.image.case_id) {
-            sameCaseId = false;
-        }
-        prevCaseId = doc.provenance.image.case_id;
-    });
-
-    var identifier = '';
-    var slideWidth = 0;
-    var slideHeight = 0;
-
-    try {
-        if (sameCaseId) {
-            // Get info about the slide.
+        if (!sameCaseId) {
+            // Get info about each slide.
             $.ajax({
-                url: mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + prevCaseId + '"}&db=' + selection.db,
+                url: mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + doc.provenance.image.case_id + '"}&db=' + selection.db,
                 async: false,
                 dataType: 'json',
                 success: function (json) {
@@ -167,114 +175,62 @@ function parseData(data, size, query) {
                         slideWidth = json[0].width;
                         slideHeight = json[0].height;
 
-                    }
-                    else {
+                    } else {
                         slides_not_found = true;
-
                     }
                 }
             });
 
         }
-    }
-    catch (err) {
-        slides_not_found = true;
-        document.getElementById("info1").innerHTML = err.message;
-    }
 
-    var h = '';
-    try {
-        randomMembers.forEach(function (doc) {
-            h += '<tr><td>' + doc.provenance.image.case_id + '</td></tr>';
-            //console.log(' *** ' + url);
-
-            if (!sameCaseId) {
-                // Get info about the slide.
-                $.ajax({
-                    url: mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + doc.provenance.image.case_id + '"}&db=' + selection.db,
-                    async: false,
-                    dataType: 'json',
-                    success: function (json) {
-                        if (json.length > 0) {
-                            identifier = json[0].filename;
-                            slideWidth = json[0].width;
-                            slideHeight = json[0].height;
-
-                        }
-                        else {
-                            slides_not_found = true;
-
-                        }
-                    }
-                });
-
-            }
-
-            newData.push({
-                markup: doc.bbox,
-                normalized: doc.normalized,
-                case_id: doc.provenance.image.case_id,
-                identifier: identifier,
-                slideWidth: slideWidth,
-                slideHeight: slideHeight
-            });
+        newData.push({
+            markup: doc.bbox,
+            normalized: doc.normalized,
+            case_id: doc.provenance.image.case_id,
+            identifier: identifier,
+            slideWidth: slideWidth,
+            slideHeight: slideHeight
         });
-    } catch (err1) {
-        slides_not_found = true;
-        document.getElementById("info1").innerHTML = err1.message;
-    }
+    });
+
 
     if (slides_not_found) {
         newData = null;
     }
     else {
-        var div = document.getElementById('info1');
-        var text = 'Displaying <strong>' + newData.length + '</strong> tiles containing nuclear segmentations';
-        if (thisisrandom) {
-
-            div.innerHTML = text + ' from random <strong>'
-                + selection.cancer_type.toUpperCase()
-                + ' <a href="#anchor">diagnostic images</a></strong>.'
-                + ' May represent either a single or multiple patients.';
-
-            //document.getElementById('ptslides').innerHTML = '<a name="anchor"></a><p><span style="color:maroon;font-weight:bold">Tissue slides:</span><table id="patientSlideTable" border="1">' + h + '</table></p>';
-            abcUtil.doPatients(newData, 'case_id', query);
-
-        }
-        else {
-            var l = location.hash.slice(1);
-            var fx = abcUtil.getQueryVariable('fx', l);
-            var xmin = abcUtil.getQueryVariable('xmin', l);
-            var xmax = abcUtil.getQueryVariable('xmax', l);
-            var fy = abcUtil.getQueryVariable('fy', l);
-            var ymin = abcUtil.getQueryVariable('ymin', l);
-            var ymax = abcUtil.getQueryVariable('ymax', l);
-
-            var id = abcUtil.getQueryVariable('case_id', l);
-
-            var parm = 'case_id';
-            if (!id) {
-                id = abcUtil.getQueryVariable('subject_id', l);
-                parm = 'subject_id';
-            }
-            div.innerHTML = text + ' having morphologic ranges selected from <strong>'
-                + selection.cancer_type.toUpperCase()
-                + '</strong> '
-                + (parm == 'case_id' ? 'diagnostic image' : 'patient') + ' <strong>' + id + '</strong>:';
-            document.getElementById('info2').innerHTML =
-                fx + ' between ' + xmin + ' and ' + xmax + '<br>' +
-                fy + ' between ' + ymin + ' and ' + ymax;
-
-        }
+        doInfo(newData, query);
     }
-
 
     return newData;
 
 }
 
-function draw(targetDiv, data, query, layout) {
+function drawLines(canvas, context, obj) {
+    var x = (canvas.width / 2),
+        y = (canvas.height / 2),
+        new_x = (x - (obj.w / 2)),
+        new_y = (y - (obj.h / 2));
 
+    // yellow rectangle
+    context.beginPath();
+    context.lineWidth = "2";
+    context.strokeStyle = "yellow";
+    context.rect(new_x, new_y, obj.w, obj.h);
+    context.stroke();
+}
+
+function drawBackground(canvas, context, imgSrc, obj) {
+
+    var imagePaper = new Image();
+
+    imagePaper.onload = function () {
+        context.drawImage(imagePaper, 0, 0);
+        drawLines(canvas, context, obj);
+    };
+    imagePaper.src = imgSrc;
+}
+
+function draw(targetDiv, data, query, layout) {
 
     if (!layout) {
         layout = {
@@ -291,52 +247,54 @@ function draw(targetDiv, data, query, layout) {
     if (!mugshots.n) {
         mugshots.n = layout.columns;
     }
-    size = mugshots.m * mugshots.n;
 
     if (!document.getElementById(targetDiv)) {
         $('<hr><div id="' + targetDiv + '"></div>').appendTo(document.body);
     }
 
-    data = parseData(data, size, query);
+    data = parseData(data, (mugshots.m * mugshots.n), query);
 
     if (slides_not_found) {
         abcUtil.clrMsg('');
         doMessage('msg', document.body, 'We have no slides for ' + selection.cancer_type + ' now. Please check back later. Thank you! :)', 'red');
-        //document.write('not found for ', JSON.stringify(selection));
     }
     else {
-        var div = document.getElementById(targetDiv);
-        //doMessage('info', div, '<br>Click on any tile to go to the location in caMicroscope, to view the mugshot of interest in the context of the whole slide image.<br><br>', 'blue');
+        var fragment = document.createDocumentFragment(),
+            tbl = document.createElement('table'),
+            idx = 0, i, j, row, col,
+            scheme = 'http',
+            server = config.iiifServer,
+            prefix = config.iiifPrefix,
+            region = '',
+            iSize = 'full',
+            rotation = '0',
+            quality = 'default',
+            format = 'jpg',
+            obj, normalized, canvas, w, h, new_x, new_y, uri, link, context, imgSrc;
 
-        var k = 0, tableRows = mugshots.m,
-            tds = mugshots.n,
-            fragment = document.createDocumentFragment();
-
-        var tbl = document.createElement('table');
         fragment.appendChild(tbl);
 
-        var ind = 0;
-        for (i = 0; i < tableRows; i++) {
-            //str += '<tr>';
-            var row = document.createElement('tr');
+        // Rows
+        for (i = 0; i < mugshots.m; i++) {
+            row = document.createElement('tr');
             tbl.appendChild(row);
 
-            for (j = 0; j < tds; j++) {
-                //console.log(ind + ': ' + JSON.stringify(data[ind]));
+            // Columns
+            for (j = 0; j < mugshots.n; j++) {
 
-                var obj = {
-                    x: data[ind].markup[0],
-                    y: data[ind].markup[1],
-                    w: (data[ind].markup[2] - data[ind].markup[0]),
-                    h: (data[ind].markup[3] - data[ind].markup[1])
+                obj = {
+                    x: data[idx].markup[0],
+                    y: data[idx].markup[1],
+                    w: (data[idx].markup[2] - data[idx].markup[0]),
+                    h: (data[idx].markup[3] - data[idx].markup[1])
                 };
 
-                var normalized = data[ind].normalized;
+                normalized = data[idx].normalized;
                 if (normalized === 'true') {
-                    obj.x = obj.x * data[ind].slideWidth;
-                    obj.y = obj.y * data[ind].slideHeight;
-                    obj.w = obj.w * data[ind].slideWidth;
-                    obj.h = obj.h * data[ind].slideHeight;
+                    obj.x = obj.x * data[idx].slideWidth;
+                    obj.y = obj.y * data[idx].slideHeight;
+                    obj.w = obj.w * data[idx].slideWidth;
+                    obj.h = obj.h * data[idx].slideHeight;
                 }
 
                 // IIIF wants whole numbers.
@@ -345,55 +303,45 @@ function draw(targetDiv, data, query, layout) {
                 obj.w = Math.round(obj.w);
                 obj.h = Math.round(obj.h);
 
-                // IIIF Image Request URI Syntax
-                var scheme = 'http',
-                    server = config.iiifServer,
-                    prefix = config.iiifPrefix,
-                    region = '',
-                    size = 'full',
-                    rotation = '0',
-                    quality = 'default',
-                    format = 'jpg';
-
-                var canvas = document.createElement('canvas');
+                canvas = document.createElement('canvas');
                 canvas.width = 150;
                 canvas.height = 150;
 
                 // Expand bounding box, with nucleus in center
-                var w = (canvas.width / 2),
-                    h = (canvas.height / 2);
+                w = (canvas.width / 2);
+                h = (canvas.height / 2);
 
-                var new_x = ((obj.x + (obj.w / 2)) - w),
-                    new_y = ((obj.y + (obj.h / 2)) - h);
+                new_x = ((obj.x + (obj.w / 2)) - w);
+                new_y = ((obj.y + (obj.h / 2)) - h);
 
                 region = new_x + "," + new_y + "," + canvas.width + "," + canvas.height;
 
-                var uri = scheme + "://" + server + "/" + prefix + data[ind].identifier + "/" + region + "/" + size + "/" + rotation + "/" + quality + "." + format;
+                uri = scheme + "://" + server + "/" + prefix + data[idx].identifier + "/" + region + "/" + iSize + "/" + rotation + "/" + quality + "." + format;
 
-                var link = document.createElement('a');
+                link = document.createElement('a');
                 link.setAttribute("href",
-                    abcUtil.caMicroLink(data[ind].case_id, selection.cancer_type, obj.x, obj.y));
+                    abcUtil.caMicroLink(data[idx].case_id, selection.cancer_type, obj.x, obj.y));
                 link.setAttribute("target", "_blank");
-                var col = document.createElement('td');
+                col = document.createElement('td');
 
                 canvas.setAttribute('id', 'canvas' + j);
                 link.appendChild(canvas);
                 col.appendChild(link);
-                var context = canvas.getContext("2d");
+                context = canvas.getContext("2d");
 
-                var imgSrc = uri;
+                imgSrc = uri;
 
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 drawBackground(canvas, context, imgSrc, obj);
                 row.appendChild(col);
 
-                ind = ind + 1;
+                idx = idx + 1;
             }
         }
 
 
         // Write the table to the html div.
-        div.appendChild(fragment);
+        document.getElementById(targetDiv).appendChild(fragment);
 
         // Clear hash.
         //location.hash = '';
@@ -404,28 +352,51 @@ function draw(targetDiv, data, query, layout) {
     }
 }
 
-function drawBackground(canvas, context, imgSrc, obj) {
+function getData(url) {
 
-    var imagePaper = new Image();
+    doMessage('msg', document.body, 'loading, please wait ...', 'red');
+    abcUtil.clrMsg('');
+    slides_not_found = false;
 
-    imagePaper.onload = function () {
-        context.drawImage(imagePaper, 0, 0);
-        drawLines(canvas, context, obj);
-    };
-    imagePaper.src = imgSrc;
+    try {
+        $.getJSON(url).then(function (data) {
+
+            // Object (nuclei) data
+            if (data.length == 0) {
+                abcUtil.noDataJoy(url);
+            } else {
+                draw('section', data, url);
+            }
+
+        });
+    }
+    catch (err) {
+        slides_not_found = true;
+        document.getElementById("info1").innerHTML = err.message;
+    }
+
+
 }
 
-function drawLines(canvas, context, obj) {
-    var x = (canvas.width / 2),
-        y = (canvas.height / 2);
+$(function () {
 
-    var new_x = (x - (obj.w / 2)),
-        new_y = (y - (obj.h / 2));
+    selection = {};
+    mugshots = {};
+    mugshots.findApi = config.findAPI + ':' + config.port + '/';
+    var url, hash;
 
-    // yellow rectangle
-    context.beginPath();
-    context.lineWidth = "2";
-    context.strokeStyle = "yellow";
-    context.rect(new_x, new_y, obj.w, obj.h);
-    context.stroke();
-}
+    if (location.hash.length > 1) {
+        hash = location.hash.slice(1);
+        thisisrandom = false;
+        mugshots.n = abcUtil.getQueryVariable('n', hash);
+        mugshots.m = abcUtil.getQueryVariable('m', hash);
+        url = buildQueryString(hash);
+    } else {
+        // Default
+        thisisrandom = true;
+        url = buildQueryStr();
+    }
+
+    getData(url);
+
+});
