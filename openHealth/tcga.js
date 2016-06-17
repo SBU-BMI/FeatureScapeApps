@@ -24,6 +24,7 @@ openHealth.tcga = (function (oh) {
         var uid = "tcgaCall" + Math.random().toString().slice(2);
         tcga.call[uid] = fun;
         url = "https://script.google.com/macros/s/AKfycbyU3x7wOEuxFbzzcuW6vcVMii9be3ujqyoaTpoWllQUONNU1j9a/exec?url=" + url + "&callback=openHealth.tcga.call." + uid;
+        log(url);
         openHealth.getScript(url); // note that second argument, some fun, is not needed because this is being called with a JSONP-style callback
         return tcga;
     };
