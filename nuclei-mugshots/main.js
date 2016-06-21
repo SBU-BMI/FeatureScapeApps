@@ -320,6 +320,7 @@ function draw(targetDiv, data, query, layout) {
                 region = new_x + "," + new_y + "," + canvas.width + "," + canvas.height;
 
                 uri = scheme + "://" + server + "/" + prefix + data[idx].identifier + "/" + region + "/" + iSize + "/" + rotation + "/" + quality + "." + format;
+                log(uri);
 
                 link = document.createElement('a');
                 link.setAttribute("href",
