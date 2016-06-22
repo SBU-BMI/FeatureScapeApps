@@ -24,6 +24,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         };
 
     }
+
     doSelectBox();
 
 
@@ -41,18 +42,43 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             tab = cancer_type + 'Tab';
             dx = cancer_type + 'Dx';
 
-            if (!x) {
-                var str = openHealth.biosFile = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + filename + ".txt";
-                openHealth.tcga.getTable(str,
-                    function (x) {
-                        openHealth.tcga.dt[filename] = x;
-                        localforage.setItem(filename, x);
-                        console.log(filename + ' loaded from TCGA and cached for this machine');
-                        drawGraphs(cancer_type, clinical_patient, biospecimen_slide, docs, tab, dx);
-                    },
-                    0,
-                    2
-                )
+            // Flag whatever
+            var fl = true;
+            if (x) {
+                if ((!x['<html>']) && (!x['<head>'])) {
+                    fl = false;
+                }
+            }
+
+            log('fl', fl);
+
+            //if (!x) {
+            if (fl) {
+
+                log('data', filename + '.json');
+
+                $.getJSON('../data/' + filename + '.json', function (x) {
+                    openHealth.tcga.dt[filename] = x;
+                    localforage.setItem(filename, x);
+                    console.log(filename + ' loaded from TCGA and cached for this machine');
+                    drawGraphs(cancer_type, clinical_patient, biospecimen_slide, docs, tab, dx);
+                });
+
+                openHealth.biosFile = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + filename + ".txt";
+
+                /*
+                 var str = openHealth.biosFile = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + filename + ".txt";
+                 openHealth.tcga.getTable(str,
+                 function (x) {
+                 openHealth.tcga.dt[filename] = x;
+                 localforage.setItem(filename, x);
+                 console.log(filename + ' loaded from TCGA and cached for this machine');
+                 drawGraphs(cancer_type, clinical_patient, biospecimen_slide, docs, tab, dx);
+                 },
+                 0,
+                 2
+                 )*/
+
             } else {
                 console.log(filename + ' retrieved from cache');
                 openHealth.tcga.dt[filename] = x;
@@ -71,7 +97,29 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
         localforage.getItem(clinicalFile, function (x) {
 
-            if (!x) {
+            // Flag whatever
+            var fl = true;
+            if (x) {
+                if ((!x['<html>']) && (!x['<head>'])) {
+                    fl = false;
+                }
+            }
+
+            log('fl', fl);
+
+            //if (!x) {
+            if (fl) {
+                log('data', clinicalFile + '.json');
+
+                $.getJSON('../data/' + clinicalFile + '.json', function (x) {
+                    openHealth.tcga.dt[clinicalFile] = x;
+                    localforage.setItem(clinicalFile, x);
+                    console.log(clinicalFile + ' loaded from TCGA and cached for this machine');
+                    get_biospecimen_slide(biosFile, cancer_type)
+                });
+
+                openHealth.clinicalFile = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + clinicalFile + ".txt";
+                /*
                 var str = openHealth.clinicalFile = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + clinicalFile + ".txt";
 
                 openHealth.tcga.getTable(str,
@@ -81,7 +129,8 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                         console.log(clinicalFile + ' loaded from TCGA and cached for this machine');
                         get_biospecimen_slide(biosFile, cancer_type)
                     }
-                )
+                )*/
+
             } else {
                 console.log(clinicalFile + ' retrieved from cache');
                 openHealth.tcga.dt[clinicalFile] = x;
@@ -92,6 +141,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         })
 
     }
+
     getTcgaData(selection.cancer_type);
 
 
@@ -114,14 +164,26 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         }
 
         // Extract SURVIVAL
+        if (openHealth.tcga.dt[clinical_patient].days_to_death != null) {
+            openHealth.tcga.dt[clinical_patient].survival = openHealth.tcga.dt[clinical_patient].days_to_death.map(function (xi, i) {
+                if (xi == "[Not Applicable]") {
+                    xi = openHealth.tcga.dt[clinical_patient].days_to_last_followup[i]; // this is not ideal so we'll need to flag the vital status in teh analysis
+                }
+                return parseInt(xi)
+            });
+        }
+
         // "death_days_to":["days_to_death","CDE_ID: ...
-        openHealth.tcga.dt[clinical_patient].survival = openHealth.tcga.dt[clinical_patient].death_days_to.map(function (xi, i) {
-            if (xi == "[Not Applicable]") {
-                // "last_contact_days_to":["days_to_last_followup","CDE_ID: ...
-                xi = openHealth.tcga.dt[clinical_patient].last_contact_days_to[i]; // this is not ideal so we'll need to flag the vital status in teh analysis
-            }
-            return parseInt(xi)
-        });
+        if (openHealth.tcga.dt[clinical_patient].death_days_to != null) {
+            openHealth.tcga.dt[clinical_patient].survival = openHealth.tcga.dt[clinical_patient].death_days_to.map(function (xi, i) {
+                if (xi == "[Not Applicable]") {
+                    // "last_contact_days_to":["days_to_last_followup","CDE_ID: ...
+                    xi = openHealth.tcga.dt[clinical_patient].last_contact_days_to[i]; // this is not ideal so we'll need to flag the vital status in teh analysis
+                }
+                return parseInt(xi)
+            });
+
+        }
 
         openHealth.tcga.dt[clinical_patient].dead = openHealth.tcga.dt[clinical_patient].vital_status.map(function (xi) {
             return xi == "Dead"
@@ -435,7 +497,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             AddXAxis(C.gender, '# images found');
             AddXAxis(C.race, '# images found');
 
-            if (C.karnofsky_score !== null) {
+            if (C.karnofsky_score !== null && typeof C.karnofsky_score !== 'undefined') {
                 AddXAxis(C.karnofsky_score, '# images found');
             }
 
