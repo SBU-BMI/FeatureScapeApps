@@ -6,7 +6,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
     function doSelectBox() {
         var diva = document.getElementById('select');
-        diva.innerHTML = abcUtil.selectBox({}, selection)
+        diva.innerHTML = abcUtil.selectBox({}, selection, ["brca", "paad"])
             + '&nbsp;&nbsp;'
             + '<input id="btnFig4" name="btnFig4" class="btn btn-primary" type="button" value="FeatureExplorer" />';
 
@@ -50,12 +50,8 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                 }
             }
 
-            log('fl', fl);
-
             //if (!x) {
             if (fl) {
-
-                log('data', filename + '.json');
 
                 $.getJSON('../data/' + filename + '.json', function (x) {
                     openHealth.tcga.dt[filename] = x;
@@ -105,8 +101,6 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                 }
             }
 
-            log('fl', fl);
-
             //if (!x) {
             if (fl) {
                 log('data', clinicalFile + '.json');
@@ -120,16 +114,16 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
 
                 openHealth.clinicalFile = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + clinicalFile + ".txt";
                 /*
-                var str = openHealth.clinicalFile = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + clinicalFile + ".txt";
+                 var str = openHealth.clinicalFile = cancer_type + "/bcr/biotab/clin/nationwidechildrens.org_" + clinicalFile + ".txt";
 
-                openHealth.tcga.getTable(str,
-                    function (x) {
-                        openHealth.tcga.dt[clinicalFile] = x;
-                        localforage.setItem(clinicalFile, x);
-                        console.log(clinicalFile + ' loaded from TCGA and cached for this machine');
-                        get_biospecimen_slide(biosFile, cancer_type)
-                    }
-                )*/
+                 openHealth.tcga.getTable(str,
+                 function (x) {
+                 openHealth.tcga.dt[clinicalFile] = x;
+                 localforage.setItem(clinicalFile, x);
+                 console.log(clinicalFile + ' loaded from TCGA and cached for this machine');
+                 get_biospecimen_slide(biosFile, cancer_type)
+                 }
+                 )*/
 
             } else {
                 console.log(clinicalFile + ' retrieved from cache');
@@ -167,7 +161,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         if (openHealth.tcga.dt[clinical_patient].days_to_death != null) {
             openHealth.tcga.dt[clinical_patient].survival = openHealth.tcga.dt[clinical_patient].days_to_death.map(function (xi, i) {
                 if (xi == "[Not Applicable]") {
-                    xi = openHealth.tcga.dt[clinical_patient].days_to_last_followup[i]; // this is not ideal so we'll need to flag the vital status in teh analysis
+                    xi = openHealth.tcga.dt[clinical_patient].days_to_last_followup[i]; // this is not ideal so we'll need to flag the vital status in the analysis
                 }
                 return parseInt(xi)
             });
@@ -178,7 +172,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             openHealth.tcga.dt[clinical_patient].survival = openHealth.tcga.dt[clinical_patient].death_days_to.map(function (xi, i) {
                 if (xi == "[Not Applicable]") {
                     // "last_contact_days_to":["days_to_last_followup","CDE_ID: ...
-                    xi = openHealth.tcga.dt[clinical_patient].last_contact_days_to[i]; // this is not ideal so we'll need to flag the vital status in teh analysis
+                    xi = openHealth.tcga.dt[clinical_patient].last_contact_days_to[i];
                 }
                 return parseInt(xi)
             });
@@ -190,18 +184,30 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         });
 
         // Extract KARNOFSKY
-
-        //"karnofsky_score":["karnofsky_performance_score","CDE_ID: ...
-        if (openHealth.tcga.dt[clinical_patient].karnofsky_score != null) {
-            openHealth.tcga.dt[clinical_patient].score = openHealth.tcga.dt[clinical_patient].karnofsky_score.map(function (xi, i) {
+        if (openHealth.tcga.dt[clinical_patient].karnofsky_performance_score != null) {
+            openHealth.tcga.dt[clinical_patient].score = openHealth.tcga.dt[clinical_patient].karnofsky_performance_score.map(function (xi, i) {
                 if (!parseFloat(xi)) {
                     return NaN
                 }
                 else {
                     return parseInt(xi)
-                }	// karnofsky_score
+                }	// karnofsky_performance_score
             });
         }
+        else {
+            //"karnofsky_score":["karnofsky_performance_score","CDE_ID: ...
+            if (openHealth.tcga.dt[clinical_patient].karnofsky_score != null) {
+                openHealth.tcga.dt[clinical_patient].score = openHealth.tcga.dt[clinical_patient].karnofsky_score.map(function (xi, i) {
+                    if (!parseFloat(xi)) {
+                        return NaN
+                    }
+                    else {
+                        return parseInt(xi)
+                    }   // karnofsky_score
+                });
+            }
+        }
+
 
         // Create Docs
         var docs = openHealth.tab2docs(openHealth.tcga.dt[biospecimen_slide]); // one doc per image
@@ -226,7 +232,17 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                 xi.gender = p.gender;
                 xi.race = p.race;
                 xi.score = p.score;
-                xi.karnofsky_score = p.karnofsky_score
+                if (typeof p.karnofsky_performance_score != 'undefined') {
+                    xi.karnofsky_performance_score = p.karnofsky_performance_score
+                }
+                else {
+                    if (typeof p.karnofsky_performance_score != 'undefined') {
+                        xi.karnofsky_performance_score = p.karnofsky_score;
+                    }
+
+                }
+
+
             } else {
                 console.log('patient ' + bcr + ' not found for slide ' + i)
             }
@@ -251,7 +267,13 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
         openHealth.getScript(["https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js", "https://www.google.com/jsapi", "https://square.github.io/crossfilter/crossfilter.v1.min.js", "https://dc-js.github.io/dc.js/js/dc.js", "https://dc-js.github.io/dc.js/css/dc.css"], function () { // after satisfying d3 dependency
             openHealthJobMsg.textContent = "Assembling charts ...";
 
-            openHealthJobDC.innerHTML = abcUtil.setupDC1(openHealth.tcga.dt[clinical_patient].karnofsky_score) + abcUtil.setupDC2();
+            if (typeof openHealth.tcga.dt[clinical_patient].karnofsky_performance_score != 'undefined') {
+                openHealthJobDC.innerHTML = abcUtil.setupDC1(openHealth.tcga.dt[clinical_patient].karnofsky_performance_score) + abcUtil.setupDC2();
+            }
+            else {
+                openHealthJobDC.innerHTML = abcUtil.setupDC1(openHealth.tcga.dt[clinical_patient].karnofsky_score) + abcUtil.setupDC2();
+            }
+
 
             var docs = openHealth.tcga.dt[xxxDocs];
 
@@ -389,10 +411,10 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             addRowChart('race', openHealth.unique(openHealth.tcga.dt[xxxTab].race));
 
 
-            if (openHealth.tcga.dt[clinical_patient].karnofsky_score != null) {
+            if (openHealth.tcga.dt[clinical_patient].karnofsky_performance_score != null) {
                 addRowChart(
-                    'karnofsky_score',
-                    openHealth.unique(openHealth.tcga.dt[xxxTab].karnofsky_score),
+                    'karnofsky_performance_score',
+                    openHealth.unique(openHealth.tcga.dt[xxxTab].karnofsky_performance_score),
                     function (CRT) {
                         CRT
                             .colors(d3.scale.linear().domain([-1, 0, 40, 80, 90, 100]).range(["silver", "red", "red", "yellow", "green", "green"]))
@@ -408,6 +430,28 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
                     }
                 );
 
+            }
+            else {
+                if (openHealth.tcga.dt[clinical_patient].karnofsky_score != null) {
+                    addRowChart(
+                        'karnofsky_score',
+                        openHealth.unique(openHealth.tcga.dt[xxxTab].karnofsky_score),
+                        function (CRT) {
+                            CRT
+                                .colors(d3.scale.linear().domain([-1, 0, 40, 80, 90, 100]).range(["silver", "red", "red", "yellow", "green", "green"]))
+                                .colorAccessor(function (d, i) {
+                                    var v = parseFloat(d.key);
+                                    if (isNaN(v)) {
+                                        return -1
+                                    }
+                                    else {
+                                        return v
+                                    }
+                                })
+                        }
+                    );
+
+                }
             }
 
             C.tumorProgression = dc.bubbleChart("#tumorProgression");
@@ -497,8 +541,14 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             AddXAxis(C.gender, '# images found');
             AddXAxis(C.race, '# images found');
 
-            if (C.karnofsky_score !== null && typeof C.karnofsky_score !== 'undefined') {
-                AddXAxis(C.karnofsky_score, '# images found');
+            if (typeof C.karnofsky_performance_score !== 'undefined') {
+                AddXAxis(C.karnofsky_performance_score, '# images found');
+            }
+            else {
+                if (typeof C.karnofsky_score !== 'undefined') {
+                    AddXAxis(C.karnofsky_score, '# images found');
+                }
+
             }
 
             // clear bootstrap to make room

@@ -82,8 +82,12 @@ abcUtil = {
 
     },
 
-    selectBox: function (trace, selection) {
+    selectBox: function (trace, selection, disableArray) {
 
+        if (!disableArray) {
+            // Disable nothing
+            disableArray = [""];
+        }
         if (jQuery.isEmptyObject(trace)) {
             trace = {
                 url: config.findAPI + ':' + config.port + '/?limit=12&collection=metadata&find={}&db=u24_meta',
@@ -122,14 +126,17 @@ abcUtil = {
                     var attr = '';
                     var exec = item.execution_id;
 
+                    if (disableArray.indexOf(tm) > -1) {
+                        attr = 'disabled';
+                    }
+
                     if (tm == selection.cancer_type) {
 
                         if (selection.execution_id == null) {
                             selection.execution_id = item.execution_id;
                         }
 
-                        if (selection.execution_id == item.execution_id)
-                        {
+                        if (selection.execution_id == item.execution_id) {
                             selection.db = item.db;
                             selection.execution_id = item.execution_id;
                             selection.cancer_type = item.cancer_type;
@@ -311,10 +318,10 @@ abcUtil = {
             var v = abcUtil.randval();
             var textContent = v.toString().slice(0, 5);
             var exec = '"provenance.analysis.execution_id":"' + selection.execution_id + '"';
-            var find = '{"randval":{"$gte":' + textContent + '},' + exec 
-            + ',"provenance.image.subject_id":"' 
-            + (typeof patient[x.textContent] == 'undefined' ? x.textContent : patient[x.textContent]["bcr_patient_barcode"]) 
-            + '"}&db=' + selection.db + '&c=' + selection.cancer_type;
+            var find = '{"randval":{"$gte":' + textContent + '},' + exec
+                + ',"provenance.image.subject_id":"'
+                + (typeof patient[x.textContent] == 'undefined' ? x.textContent : patient[x.textContent]["bcr_patient_barcode"])
+                + '"}&db=' + selection.db + '&c=' + selection.cancer_type;
 
             // FEATURESCAPE
             var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
@@ -360,20 +367,20 @@ abcUtil = {
         abcUtil.listDxSlides(pp, data)
     },
 
-    setupDC1: function (karnofsky_score) {
+    setupDC1: function (karnofsky_performance_score) {
 
         var ks = '';
         var ks1 = '';
-        if (karnofsky_score != null) {
+        if (karnofsky_performance_score != null) {
 
             ks = '<div style="color:blue">Karnofsky Score:</div>'
-                + '<div id="karnofsky_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div>';
+                + '<div id="karnofsky_performance_score" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888"></div>';
 
             ks1 = 'color indicates Karnofsky performance score (see framed bar chart);';
         }
         else {
             ks = '<div style="color:blue">Karnofsky Score:</div>'
-                + '<div id="karnofsky_score" class="well" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888">Scores not available</div>';
+                + '<div id="karnofsky_performance_score" class="well" style="border:solid;border-color:blue;box-shadow:10px 10px 5px #888888">Scores not available</div>';
 
         }
 
