@@ -42,7 +42,7 @@ openHealth.require(config.domain + '/openHealth/tcga.js', function () {
             tab = cancer_type + 'Tab';
             dx = cancer_type + 'Dx';
 
-            // Flag whatever
+            // Flag both absence of data and bad data for loading
             var fl = true;
             if (x) {
                 if ((!x['<html>']) && (!x['<head>'])) {
