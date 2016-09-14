@@ -231,14 +231,17 @@ function doFigure4(data) {
     };
 
     // Add survival information
+    // convert status into survival
     survivalPlot = function () {
+        
         trace0 = {
             x: tab.months_followup,
             y: tab.status,
             mode: 'lines'
         };
 
-        // convert status into survival
+        // First, sift through the arrays and
+        // keep only the numeric values.
         var x = [], y = [], ind = [];
         trace0.x.forEach(function (v, i) {
             var xi = trace0.x[i];
