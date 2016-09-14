@@ -251,6 +251,12 @@ function doFigure4(data) {
                 y.push(yi);
                 ind.push(i)
             }
+            else
+            {
+                // "WE GOT ONE!!!" (Janine Melnitz)
+                console.log('One of these is not a number:', xi, yi);
+            }
+            
         });
 
         var jj = jmat.sort(x)[1];
