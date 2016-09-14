@@ -260,10 +260,10 @@ function doFigure4(data) {
             ind: []
         };
 
-        jj.map(function (j, i) {
-            surv0.tt[i] = x[j];
-            surv0.status[i] = y[j]; // note this is the former y value (status)
-            surv0.ind[i] = ind[j]
+        jj.map(function (value, index) {
+            surv0.tt[index] = x[value];
+            surv0.status[index] = y[value]; // note this is the former y value (status)
+            surv0.ind[index] = ind[value]
         });
 
         // calculating survival for unique times
