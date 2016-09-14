@@ -244,8 +244,6 @@ function doFigure4(data) {
             mode: 'lines'
         };
 
-        console.log('BEFORE', JSON.stringify(trace0, null, 3));
-
         // First, sift through the arrays and keep only the numeric values.
         var x = [], y = [], ind = [];
         trace0.x.forEach(function (value, index) {
@@ -289,13 +287,19 @@ function doFigure4(data) {
             return s
         };
 
+        console.log('BEFORE survCalc', JSON.stringify(trace0, null, 3));
+
         surv0.yy = survCalc(surv0.status);
         trace0.x = surv0.time;
         trace0.y = surv0.yy;
 
+        console.log('AFTER survCalc', JSON.stringify(trace0, null, 3));
+
         surv0.yy.forEach(function (yi, i) {
             data[surv0.ind[i]].KM = yi; // recording Kaplan Meier in the original docs
         });
+
+
 
         // now only for the selected patients
         if (typeof(dcSurv) != "undefined") {
@@ -331,7 +335,7 @@ function doFigure4(data) {
                 }
             })()
         }
-        console.log('AFTER', JSON.stringify(trace0, null, 3));
+
 
         var layout = {
             title: 'Blue - whole population; Orange - selected cohort',
