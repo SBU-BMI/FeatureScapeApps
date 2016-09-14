@@ -273,7 +273,14 @@ function doFigure4(data) {
             surv0.ind[index] = ind[idxArrVal];
         });
 
-        // calculating survival for unique times
+        /**
+         * KM estimator
+         * See: https://en.wikipedia.org/wiki/Kaplan%E2%80%93Meier_estimator#Formulation
+         * Calculating survival for unique times
+         *
+         * @param status
+         * @returns {number[]}
+         */
         survCalc = function (status) { // status, ordered chronologically
             var currentObj = [status[0]];
             var numEl = status.length;
