@@ -337,7 +337,7 @@ function doFigure4(data) {
                     // typeof(xy[i].key[0]) is usually a number.
                     // There might have been (maybe still potential for) a scenario where the value was empty.
                     // So we are protecting the next two lines from that situation.
-                    if (xy[idxArrVal].key[0] !== "" && xy[idxArrVal].key[0] !== 0) {
+                    if (xy[idxArrVal].key[0] !== "") {
                         x.push(xy[idxArrVal].key[0]);
                         y.push(xy[idxArrVal].key[1])
                     }
