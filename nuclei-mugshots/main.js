@@ -144,6 +144,7 @@ function parseData(data, size, query) {
 
     if (sameCaseId) {
         // Get info about the slide, once.
+        console.log("THUMBNAIL A " + mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + prevCaseId + '"}&db=' + selection.db);
         $.ajax({
             url: mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + prevCaseId + '"}&db=' + selection.db,
             async: false,
@@ -168,6 +169,7 @@ function parseData(data, size, query) {
 
         if (!sameCaseId) {
             // Get info about each slide.
+            console.log("THUMBNAIL B " + mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + doc.provenance.image.case_id + '"}&db=' + selection.db);
             $.ajax({
                 url: mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + doc.provenance.image.case_id + '"}&db=' + selection.db,
                 async: false,
