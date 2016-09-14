@@ -245,7 +245,6 @@ function doFigure4(data) {
         };
 
         // First, sift through the arrays and keep only the numeric values.
-        // Also, save index (ind) for later.
         var x = [], y = [], ind = [];
         trace0.x.forEach(function (value, index) {
             var xi = trace0.x[index]; // months_followup
@@ -258,17 +257,20 @@ function doFigure4(data) {
 
         });
 
-        var jj = jmat.sort(x)[1];
+        // Sort months_followup and get array of indices.
+        var indexArray = jmat.sort(x)[1];
+
         surv0 = {
-            tt: [],
+            time: [],
             status: [],
             ind: []
         };
 
-        jj.map(function (value, index) {
-            surv0.tt[index] = x[value];
-            surv0.status[index] = y[value];
-            surv0.ind[index] = ind[value]
+        // Sorted array
+        indexArray.map(function (idxArrVal, index) {
+            surv0.time[index] = x[idxArrVal];
+            surv0.status[index] = y[idxArrVal];
+            surv0.ind[index] = ind[idxArrVal];
         });
 
         //console.log('surv0', JSON.stringify(surv0, null, 3));
@@ -286,7 +288,7 @@ function doFigure4(data) {
         };
 
         surv0.yy = survCalc(surv0.status);
-        trace0.x = surv0.tt;
+        trace0.x = surv0.time;
         trace0.y = surv0.yy;
 
         surv0.yy.forEach(function (yi, i) {
