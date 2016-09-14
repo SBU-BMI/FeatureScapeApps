@@ -654,7 +654,11 @@ function wrangle(oldArr) {
             if (item.vital_status === 'Alive') {
                 item.vital_status = 0;
             }
+            else if (item.vital_status === 'Dead') {
+                item.vital_status = 1;
+            }
             else {
+                console.log('undead', item.vital_status);
                 item.vital_status = 1;
             }
 
