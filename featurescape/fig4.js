@@ -273,27 +273,26 @@ function doFigure4(data) {
             surv0.ind[index] = ind[idxArrVal];
         });
 
-        //console.log('surv0', JSON.stringify(surv0, null, 3));
-
         // calculating survival for unique times
         survCalc = function (status) { // status, ordered chronologically
-            var y = [status[0]];
-            var n = status.length;
-            var s = [1];
-            for (var i = 1; i < n; i++) {
-                y[i] = y[i - 1] + status[i];
-                s[i] = s[i - 1] * (1 - status[i] / (n - i));
+            var currentObj = [status[0]];
+            var numEl = status.length;
+            var surv = [1];
+
+            for (var i = 1; i < numEl; i++) {
+                currentObj[i] = currentObj[i - 1] + status[i];
+                surv[i] = surv[i - 1] * (1 - status[i] / (numEl - i));
             }
-            return s
+            return surv
         };
 
-        console.log('BEFORE survCalc', JSON.stringify(trace0, null, 3));
+        //console.log('BEFORE survCalc', JSON.stringify(trace0, null, 3));
 
         surv0.yy = survCalc(surv0.status);
         trace0.x = surv0.time;
         trace0.y = surv0.yy;
 
-        console.log('AFTER survCalc', JSON.stringify(trace0, null, 3));
+        //console.log('AFTER survCalc', JSON.stringify(trace0, null, 3));
 
         surv0.yy.forEach(function (yi, i) {
             data[surv0.ind[i]].KM = yi; // recording Kaplan Meier in the original docs
