@@ -307,16 +307,15 @@ function doFigure4(data) {
 
         // now only for the selected patients
         if (typeof(dcSurv) != "undefined") {
+            // Setting up the second "trace" (x,y) for the Plotly graph
+            // Status vs Months Followup
             trace1 = (function () {
 
                 /*
                 // Copy dcStatus.G.all() into xy.
                 // Each element looks something like this:
                 {
-                    "key": [
-                    0,
-                    1
-                ],
+                    "key": [ 0, 1 ],
                     "value": 1
                 }
                 */
@@ -330,6 +329,7 @@ function doFigure4(data) {
                     x[i] = xyi.key[0];
                     y[i] = xyi.key[1]
                 });
+
                 var ind = jmat.sort(x)[1];
                 x = [];
                 y = [];
@@ -343,7 +343,7 @@ function doFigure4(data) {
                 var numEl = x.length;
                 var surv = [1];
                 for (var i = 1; i < numEl; i++) {
-                    surv[i] = surv[i - 1] * (1 - y[i] / (numEl - i))
+                    surv[i] = surv[i - 1] * (1 - y[i] / (numEl - i));
                 }
 
                 return {
