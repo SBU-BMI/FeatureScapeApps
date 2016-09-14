@@ -305,15 +305,26 @@ function doFigure4(data) {
             data[surv0.ind[i]].KM = yi; // recording Kaplan Meier in the original docs
         });
 
-
-
         // now only for the selected patients
         if (typeof(dcSurv) != "undefined") {
             trace1 = (function () {
+
+                /*
+                // Copy dcStatus.G.all() into xy.
+                // Each element looks something like this:
+                {
+                    "key": [
+                    0,
+                    1
+                ],
+                    "value": 1
+                }
+                */
                 var xy = dcStatus.G.all().filter(function (xyi) {
                     return xyi.value
                 });
                 //console.log('xy', xy.length);
+
                 var x = [], y = [];
                 xy.map(function (xyi, i) {
                     x[i] = xyi.key[0];
@@ -329,15 +340,15 @@ function doFigure4(data) {
                     }
                 });
 
-                var n = x.length;
-                var s = [1];
-                for (var i = 1; i < n; i++) {
-                    s[i] = s[i - 1] * (1 - y[i] / (n - i))
+                var numEl = x.length;
+                var surv = [1];
+                for (var i = 1; i < numEl; i++) {
+                    surv[i] = surv[i - 1] * (1 - y[i] / (numEl - i))
                 }
 
                 return {
                     x: x,
-                    y: s
+                    y: surv
                 }
             })()
         }
