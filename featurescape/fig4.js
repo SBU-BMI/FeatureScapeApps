@@ -244,6 +244,8 @@ function doFigure4(data) {
             mode: 'lines'
         };
 
+        console.log('BEFORE', JSON.stringify(trace0, null, 3));
+
         // First, sift through the arrays and keep only the numeric values.
         var x = [], y = [], ind = [];
         trace0.x.forEach(function (value, index) {
@@ -282,7 +284,7 @@ function doFigure4(data) {
             var s = [1];
             for (var i = 1; i < n; i++) {
                 y[i] = y[i - 1] + status[i];
-                s[i] = s[i - 1] * (1 - status[i] / (n - i))
+                s[i] = s[i - 1] * (1 - status[i] / (n - i));
             }
             return s
         };
@@ -329,6 +331,7 @@ function doFigure4(data) {
                 }
             })()
         }
+        console.log('AFTER', JSON.stringify(trace0, null, 3));
 
         var layout = {
             title: 'Blue - whole population; Orange - selected cohort',
