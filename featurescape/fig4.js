@@ -334,14 +334,11 @@ function doFigure4(data) {
                 x = [];
                 y = [];
                 indexArray.forEach(function (idxArrVal, index) {
-                    if (xy[idxArrVal].key[0] !== "" && xy[idxArrVal].key[0] != 0) {
+                    if (xy[idxArrVal].key[0] !== "" && xy[idxArrVal].key[0] !== 0) {
                         x.push(xy[idxArrVal].key[0]);
                         y.push(xy[idxArrVal].key[1])
                     }
 
-                    if (xy[idxArrVal].key[0] < 0) {
-                        console.log("LT ZERO", xy[idxArrVal].key[0]);
-                    }
                 });
 
                 var numEl = x.length;
@@ -399,9 +396,11 @@ function doFigure4(data) {
         var ind = [];
         var bcr = [];
         dcStatus.G.all().forEach(function (d, i) {
+            // If the value > 0, we selected it.
             if (d.value > 0) {
                 ind.push(i)
             }
+
         });
         ind.forEach(function (i) {
             //console.log(docs[i]);
@@ -759,7 +758,6 @@ function showInfo(data) {
             }
             else {
                 console.log('Unknown tumor type ', tt);
-                document.getElementById('msg').textContent = "Unknown tumor.";
             }
         }
     }
