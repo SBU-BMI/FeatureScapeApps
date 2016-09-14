@@ -237,43 +237,41 @@ function doFigure4(data) {
     survivalPlot = function () {
 
         // Setting up the first "trace" (x,y) for the Plotly graph
+        // Status vs Months Followup
         trace0 = {
             x: tab.months_followup,
             y: tab.status,
             mode: 'lines'
         };
 
-        // First, sift through the arrays and
-        // keep only the numeric values.
+        // First, sift through the arrays and keep only the numeric values.
+        // Also, save index (ind) for later.
         var x = [], y = [], ind = [];
-        trace0.x.forEach(function (v, i) {
-            var xi = trace0.x[i];
-            var yi = trace0.y[i];
+        trace0.x.forEach(function (value, index) {
+            var xi = trace0.x[index]; // months_followup
+            var yi = trace0.y[index]; // status
             if ((typeof(xi) == 'number') && (typeof(yi) == 'number')) {
                 x.push(xi);
                 y.push(yi);
-                ind.push(i)
+                ind.push(index)
             }
-            else
-            {
-                // "WE GOT ONE!!!" (Janine Melnitz)
-                console.log('One of these is not a number:', xi, yi);
-            }
-            
+
         });
 
         var jj = jmat.sort(x)[1];
-        surv0 = { // calculating survival here
+        surv0 = {
             tt: [],
-            status: [], // survival, we'll have to calculate it
+            status: [],
             ind: []
         };
 
         jj.map(function (value, index) {
             surv0.tt[index] = x[value];
-            surv0.status[index] = y[value]; // note this is the former y value (status)
+            surv0.status[index] = y[value];
             surv0.ind[index] = ind[value]
         });
+
+        //console.log('surv0', JSON.stringify(surv0, null, 3));
 
         // calculating survival for unique times
         survCalc = function (x) { // x is the status, ordered chronologically
