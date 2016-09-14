@@ -695,7 +695,12 @@ function showInfo(data) {
     }
 
     if (tt === '') {
+        tt = selection.cancer_type;
+    }
+
+    if (tt === '') {
         console.log('Unknown tumor');
+        document.getElementById('msg').textContent = "Unknown tumor.";
     }
     else {
         if (isNaN(tt)) {
