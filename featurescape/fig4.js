@@ -276,13 +276,13 @@ function doFigure4(data) {
         //console.log('surv0', JSON.stringify(surv0, null, 3));
 
         // calculating survival for unique times
-        survCalc = function (x) { // x is the status, ordered chronologically
-            var y = [x[0]];
-            var n = x.length;
+        survCalc = function (status) { // status, ordered chronologically
+            var y = [status[0]];
+            var n = status.length;
             var s = [1];
             for (var i = 1; i < n; i++) {
-                y[i] = y[i - 1] + x[i];
-                s[i] = s[i - 1] * (1 - x[i] / (n - i))
+                y[i] = y[i - 1] + status[i];
+                s[i] = s[i - 1] * (1 - status[i] / (n - i))
             }
             return s
         };
