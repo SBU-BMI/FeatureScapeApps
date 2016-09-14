@@ -330,13 +330,17 @@ function doFigure4(data) {
                     y[i] = xyi.key[1]
                 });
 
-                var ind = jmat.sort(x)[1];
+                var indexArray = jmat.sort(x)[1];
                 x = [];
                 y = [];
-                ind.forEach(function (i, j) {
-                    if (xy[i].key[0] !== "") {
-                        x.push(xy[i].key[0]);
-                        y.push(xy[i].key[1])
+                indexArray.forEach(function (idxArrVal, index) {
+                    if (xy[idxArrVal].key[0] !== "" && xy[idxArrVal].key[0] != 0) {
+                        x.push(xy[idxArrVal].key[0]);
+                        y.push(xy[idxArrVal].key[1])
+                    }
+
+                    if (xy[idxArrVal].key[0] < 0) {
+                        console.log("LT ZERO", xy[idxArrVal].key[0]);
                     }
                 });
 
@@ -755,6 +759,7 @@ function showInfo(data) {
             }
             else {
                 console.log('Unknown tumor type ', tt);
+                document.getElementById('msg').textContent = "Unknown tumor.";
             }
         }
     }
