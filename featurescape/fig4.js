@@ -230,10 +230,13 @@ function doFigure4(data) {
 
     };
 
-    // Add survival information
-    // convert status into survival
+    /**
+     * Add survival information
+     * Convert status into survival
+     */
     survivalPlot = function () {
-        
+
+        // Setting up the first "trace" (x,y) for the Plotly graph
         trace0 = {
             x: tab.months_followup,
             y: tab.status,
