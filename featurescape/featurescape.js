@@ -152,30 +152,10 @@ fscape.clust2html = function (cl) {
             return Math.round(cij * 255)
         })
     });
-/*
-    var h = '<h4 style="color:maroon">Cross-tabulated feature correlations</h4>'
-        + '<table id="featurecrossTB"><tr><td colspan="' + T.length + '" align="right"><em>(click on symbols for densities)</em></td></tr>';
-    ind.forEach(function (i, j) {
-        h += '<tr><td>' + fscape.dt.parmNum[i] + '</td>';
-        T.forEach(function (c, k) {
-            var x = Math.pow(c[j], 2); // E[0,1]
-            if (isNaN(x)) {
-                x = 1
-            }
-            var v = Math.round((1 - x) * 50);
-            v = Math.min(v, 50);
-            v = Math.max(v, 0);
-            var cm = 'rgb(' + cmap[v].toString() + ')';
-            h += '<td id="' + i + ',' + ind[k] + '" style="color: ' + cm + '; font-size: ' + (14 - 4 * c[j]) + 'px">O</td>';
 
-        });
-        h += '</tr>'
-    });
-    h += '</table><p id="featuremoreTD"></p>';
-    */
-    
     var h = '<h4 style="color:maroon">Cross-tabulated feature correlations</h4>'
     h +='<table id="featurecrossTB">';
+
     //header
     h += '<thead>'
         h +='<tr style="height:100px;vertical-align:bottom">'
@@ -186,11 +166,7 @@ fscape.clust2html = function (cl) {
             })
         h +='</tr>'
     h += '</thead>'
-    //class="textColVertical"
-    //style = document.createElement("style");
-    //style.appendChild(document.createTextNode("")) // WebKit hack :(
-    //document.head.appendChild(style);
-    //style.insertRule("textColVertical {color:red}", 1);
+
     // body
     h += '<tbody>'
     ind.forEach(function (i, j) {
