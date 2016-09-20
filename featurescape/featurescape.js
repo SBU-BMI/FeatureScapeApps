@@ -186,8 +186,8 @@ fscape.clust2html = function (cl) {
         h += '</tr>'
     });
     h += '</tbody>'
-    h += '</table><p id="featuremoreTD" style="color:blue">(click on symbols for densities)</p>&nbsp;<div id="featureNet">Similar neighbor network</div><div id="featureNetSlider"></div>';
-
+    h += '</table><p id="featuremoreTD"></p>';
+    
     return h
 };
 
