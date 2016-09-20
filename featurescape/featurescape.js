@@ -284,7 +284,7 @@ fscape.plot = function (x) { // when ready to do it
 
     featurecrossTD.innerHTML = "<label>Click to choose a different cancer type &amp; tissue slide image:&nbsp;"
         + '<input type="button" class="btn btn-secondary" onclick="window.location.href=\'u24Preview.html\'" name="btnSelect" id="btnSelect" value="Go!" />'
-        + "</label>" + fscape.clust2html(cl);
+        + "</label><br><br>" + fscape.clust2html(cl);
 
     setTimeout(function () {
         var tdfun = function () {
