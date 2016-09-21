@@ -92,19 +92,6 @@ function getData(url) {
 }
 
 function doFigure4(data) {
-    /*
-     var msg1 = function (txt, clr) {
-     if (!clr) {
-     clr = "blue"
-     }
-     msg.textContent = '> ' + txt;
-     msg.style.color = clr;
-     setTimeout(function () {
-     msg.textContent = ""
-     }, 5000)
-     };
-     msg1('loaded ' + data.length + ' records');
-     */
 
     data = flatten(data);
 
@@ -112,7 +99,7 @@ function doFigure4(data) {
 
     showInfo(data);
 
-    //unpack data into table, tab
+    // unpack data into table, tab
     tab = {};
     var parms = Object.getOwnPropertyNames(data[0]);
     parms.forEach(function (p) {
@@ -128,9 +115,7 @@ function doFigure4(data) {
     docs = data;
     abcUtil.featureArrays(selection);
     var genomic = abcUtil.genomic;
-    //console.log(genomic);
     var features = abcUtil.features;
-    //console.log(features);
 
     // build table
     var h = '<table>';
@@ -144,7 +129,6 @@ function doFigure4(data) {
 
     h += '</td>';
     h += '<td id="fig4_2" style="vertical-align:top">';
-    //h += '<h3 style="color:maroon">Morphology, Epi, etc</h3>';
     h += '<h3 style="color:maroon" data-toggle="tooltip" title="eg. nuclear morphology, features, patient demographics"><span class="lightup">Cohort character</span></h3>';
     h += '<p style="color:maroon">';
     h += 'Var 1: <select id="morphParm1"></select><br>';
@@ -153,11 +137,9 @@ function doFigure4(data) {
     h += '</p>';
     h += '<div id="fig4_2_1"><span style="color:blue">Var 1: </span></div>';
     h += '<div id="fig4_2_2"><span style="color:blue">Var 2: </span></div>';
-    //h += '<div id="fig4_2_3"><span style="color:blue">Var 2: </span></div>';
     h += '</td>';
     h += '<td id="fig4_3" style="vertical-align:top">';
     h += '<h3 style="color:maroon">Survival<h3>';
-    //h +='...'
     h += '<div id="survival"></div>';
     h += '<p style="font-size:small">Zoomable KM estimator (i.e. select ranges, each dot is a patient)</p>';
     h += '<div id="dcSurvival"></div>';
@@ -293,13 +275,9 @@ function doFigure4(data) {
             return surv
         };
 
-        //console.log('BEFORE survCalc', JSON.stringify(trace0, null, 3));
-
         surv0.yy = survCalc(surv0.status);
         trace0.x = surv0.time;
         trace0.y = surv0.yy;
-
-        //console.log('AFTER survCalc', JSON.stringify(trace0, null, 3));
 
         surv0.yy.forEach(function (yi, i) {
             data[surv0.ind[i]].KM = yi; // recording Kaplan Meier in the original docs
@@ -322,7 +300,6 @@ function doFigure4(data) {
                 var xy = dcStatus.G.all().filter(function (xyi) {
                     return xyi.value
                 });
-                //console.log('xy', xy.length);
 
                 var x = [], y = [];
                 xy.map(function (xyi, i) {
@@ -386,8 +363,6 @@ function doFigure4(data) {
 
         // Draw main Survival graph
         Plotly.newPlot('survival', plotData, layout);
-        //var plotDiv = document.getElementById('survival');
-        //console.log('plotly', plotDiv.data);
 
     };
 
@@ -396,11 +371,19 @@ function doFigure4(data) {
 
     docs = data;
 
-    // time for cross filter
+    /**
+     * Cross filter
+     * When subset of cohort graph is selected, survival graphs change
+     * @param parm = the variable name of the cohort graph that was selected.
+     */
     var onFiltered = function (parm) {
+        // If we turn off survival plot here, only 1st KM graph is affected.
         survivalPlot(parm);
+
         var ind = [];
         var bcr = [];
+
+        // For Diagnostic Images:
         dcStatus.G.all().forEach(function (d, i) {
             // If the value > 0, we selected it.
             if (d.value > 0) {
@@ -409,25 +392,34 @@ function doFigure4(data) {
 
         });
         ind.forEach(function (i) {
-            //console.log(docs[i]);
             bcr.push(docs[i])
         });
         abcUtil.doPatients(bcr, 'bcr_patient_barcode');
+
     };
 
     var cf = crossfilter(data);
 
     gene = {};
 
+    /**
+     * Gene Plot, AKA "Cohorts", 1st column on page.
+     *
+     * @param gn
+     * @returns {{}|*}
+     */
     genePlot = function (gn) { // gene name
         gene[gn] = {};
         gene[gn].R = {
-            low: 0,
-            high: 0,
+            absent: 0, // aka "low"
+            present: 0, // aka "high"
             NA: 0
         };
 
+        // The chart for 'this' gene
         gene[gn].C = dc.rowChart("#fig4_1_" + gn);
+
+        // Map gene value to bar label
         gene[gn].D = cf.dimension(function (d) {
             if (d[gn] === 0) {
                 return 'absent'
@@ -438,15 +430,16 @@ function doFigure4(data) {
             }
         });
 
+        // Tally number of elements for each bar
         gene[gn].G = gene[gn].D.group().reduce(
             // reduce in
             function (p, v) {
                 if (v[gn] === 0) {
-                    gene[gn].R.low += 1;
-                    return gene[gn].R.low
+                    gene[gn].R.absent += 1;
+                    return gene[gn].R.absent
                 } else if (v[gn] === 1) {
-                    gene[gn].R.high += 1;
-                    return gene[gn].R.high
+                    gene[gn].R.present += 1;
+                    return gene[gn].R.present
                 } else {
                     gene[gn].R.NA += 1;
                     return gene[gn].R.NA
@@ -455,11 +448,11 @@ function doFigure4(data) {
             // reduce out
             function (p, v) {
                 if (v[gn] === 0) {
-                    gene[gn].R.low -= 1;
-                    return gene[gn].R.low
+                    gene[gn].R.absent -= 1;
+                    return gene[gn].R.absent
                 } else if (v[gn] === 1) {
-                    gene[gn].R.high -= 1;
-                    return gene[gn].R.high
+                    gene[gn].R.present -= 1;
+                    return gene[gn].R.present
                 } else {
                     gene[gn].R.NA -= 1;
                     return gene[gn].R.NA
@@ -472,6 +465,7 @@ function doFigure4(data) {
         );
 
         try {
+            // Render the chart
             gene[gn].C
                 .width(500)
                 .height(100)
@@ -483,9 +477,9 @@ function doFigure4(data) {
                 .colorAccessor(function (d, i) {
                     if (typeof gene[gn] != 'undefined') {
                         var na = gene[gn].R.NA;
-                        var high = gene[gn].R.high;
-                        var low = gene[gn].R.low;
-                        return d.value / (na + high + low)
+                        var present = gene[gn].R.present;
+                        var absent = gene[gn].R.absent;
+                        return d.value / (na + present + absent);
                     }
                 })
                 .on('filtered', function () {
@@ -509,40 +503,32 @@ function doFigure4(data) {
     // morphPlot
     morph = {};
 
+    /**
+     * Cohort graphs (middle column on page)
+     *
+     * @param divId
+     * @param p
+     * @returns {{}|*}
+     */
     morphPlot = function (divId, p) {
         var div = document.getElementById(divId);
-        //div.innerHTML += p + '<br>';
         div.innerHTML = p + '<br>';
         div.style.color = 'navy';
         div.style.fontWeight = 'bold';
         morph[p] = {};
-        morph[p].R = {};
-        morph[p].C = dc.barChart('#' + divId);
-        morph[p].D = cf.dimension(function (d) {
+        morph[p].R = {}; // RANGE values
+        morph[p].C = dc.barChart('#' + divId); // CHART
+        morph[p].D = cf.dimension(function (d) { // DIMENSION
             var v = d[p];
             if (v !== "") {
                 return v
             } else {
-                4
+                // nada
             }
 
         });
 
-        morph[p].G = morph[p].D.group();
-        /*.reduce(
-         // reduce in
-         function(p,v){
-         return p+1
-         },
-         // reduce out
-         function(p,v){
-         return p-1
-         },
-         // ini
-         function(p,v){
-         return 0
-         }
-         )*/
+        morph[p].G = morph[p].D.group(); // GROUP
 
         var xx = tab[p].filter(function (v) {
             return typeof(v) == 'number'
@@ -587,9 +573,11 @@ function doFigure4(data) {
     // Cohort graphs (middle column on page)
     morphPlot("fig4_2_1", morphParm1.value);
     morphPlot("fig4_2_2", morphParm2.value);
-    //morphPlot("fig4_2_3", morphParm2.value);
 
-    // DC Survival
+    /**
+     * SURVIVAL
+     */
+    
     dcSurv = {
         R: []
     };
@@ -650,19 +638,19 @@ function flatten(data) {
     data.forEach(function (item) {
         var newObject = {};
 
-        //clinical_features
+        // clinical_features
         var feat = item.clinical_features;
         feat.forEach(function (f) {
             newObject[f.name] = f.value;
         });
 
-        //genomic_features
+        // genomic_features
         feat = item.genomic_features;
         feat.forEach(function (f) {
             newObject[f.name] = f.value;
         });
 
-        //imaging_features
+        // imaging_features
         feat = item.imaging_features;
         feat.forEach(function (f) {
             newObject[f.name] = f.value;
