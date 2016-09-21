@@ -384,11 +384,14 @@ function doFigure4(data) {
             plotData = [trace0]
         }
 
+        // Draw main Survival graph
         Plotly.newPlot('survival', plotData, layout);
         //var plotDiv = document.getElementById('survival');
         //console.log('plotly', plotDiv.data);
 
     };
+
+    // Calculate "Zoomable KM estimator" graph data
     survivalPlot();
 
     docs = data;
@@ -581,6 +584,7 @@ function doFigure4(data) {
 
     };
 
+    // Cohort graphs (middle column on page)
     morphPlot("fig4_2_1", morphParm1.value);
     morphPlot("fig4_2_2", morphParm2.value);
     //morphPlot("fig4_2_3", morphParm2.value);
@@ -596,6 +600,8 @@ function doFigure4(data) {
     });
 
     dcSurv.G = dcSurv.D.group();
+
+    // "Zoomable KM estimator" graph
     dcSurv.C
         .width(500)
         .height(300)
@@ -618,6 +624,8 @@ function doFigure4(data) {
     });
 
     dcStatus.G = dcStatus.D.group();
+
+    // Small graph
     dcStatus.C
         .width(500)
         .height(100)
@@ -630,7 +638,7 @@ function doFigure4(data) {
         .dimension(dcStatus.D)
         .group(dcStatus.G);
 
-    // ready to render
+    // Renders "Zoomable KM estimator" and the small graph below it
     dc.renderAll();
     $('.dc-chart g.row text').css('fill', 'black');
 
