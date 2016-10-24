@@ -5,6 +5,8 @@
  * Or one can pass parameters indicating what to display.
  */
 var mugshots, selection, thisisrandom, slides_not_found;
+var findhost = "";
+var findport = "";
 
 function buildQueryStr() {
     abcUtil.selectBox({}, selection);
@@ -35,6 +37,17 @@ function buildQueryString(q) {
     // Remember it stops at '='
     // https://falcon.bmi.stonybrook.edu:4500/?limit
     base = abcUtil.getQueryVariable('url', q);
+
+    var arr = q.split("/");
+    var tmp = arr[2];
+    findhost = tmp.substring(0, tmp.indexOf(":"));
+    findport = tmp.substring(tmp.indexOf(":") + 1, tmp.indexOf("?"));
+    console.log("Here");
+    console.log("findhost", findhost);
+    console.log("findport", findport);
+
+    mugshots.findApi = 'http://' + findhost + ':' + findport + '/';
+
     // Resample 50 (performance reasons); we're only rendering 12.
     base = base + '=50';
 
@@ -388,7 +401,7 @@ $(function () {
 
     selection = {};
     mugshots = {};
-    mugshots.findApi = config.findAPI + ':' + config.port + '/';
+    //mugshots.findApi = config.findAPI + ':' + config.port + '/';
     var url, hash;
 
     if (location.hash.length > 1) {
@@ -400,6 +413,7 @@ $(function () {
     } else {
         // Default
         thisisrandom = true;
+        mugshots.findApi = config.findAPI + ':' + config.port + '/';
         url = buildQueryStr();
     }
 
