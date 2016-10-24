@@ -200,6 +200,7 @@ window.onload = function () {
         console.log("sUrl", sUrl);
         if (sUrl.indexOf("_ijt=") > -1)
         {
+            // IDE stuff; just reload it.
             window.location.search = "";
         }
 
