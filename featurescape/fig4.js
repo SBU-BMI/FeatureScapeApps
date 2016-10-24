@@ -1,6 +1,8 @@
 var selection = {};
 var url = '';
 var docs = [];
+var findhost = "";
+var findport = "";
 
 $(function () {
 
@@ -8,11 +10,20 @@ $(function () {
         c = '',
         exec = '';
 
+    // HASH = From TCGAScope
     if (location.hash.length > 1) {
 
+        console.log("HASH");
         url = location.hash.slice(1);
+        if (findhost == "" && findport == "")
+        {
+            var arr = url.split(":");
+            findhost = arr[0] + ":" + arr[1];
+            findport = arr[2].substring(0, arr[2].indexOf("?"));
+            console.log("findhost", findhost);
+            console.log("findport", findport);
+        }
 
-        // From TCGAScope
         db = abcUtil.getQueryVariable('db', url);
         c = abcUtil.getQueryVariable('c', url);
         exec = abcUtil.getFindParm('analysis_id', abcUtil.getQueryVariable('find', url));
@@ -21,21 +32,35 @@ $(function () {
     }
     else {
 
+        console.log("SEARCH");
+        // Search = Cohort characters
         if (location.search.length > 1) {
-            // Cohort characters
+
             var q = location.search.slice(1);
-            db = abcUtil.getQueryVariable('db', q);
-            c = abcUtil.getQueryVariable('c', q);
-            exec = abcUtil.getQueryVariable('exec', q);
-            setvars(db, exec, c);
+            if (q.indexOf("_ijt=") > -1)
+            {
+                // IDE stuff; just reload it.
+                location.search = "";
+            }
+            else {
+                // Cohort characters
+                db = abcUtil.getQueryVariable('db', q);
+                c = abcUtil.getQueryVariable('c', q);
+                exec = abcUtil.getQueryVariable('exec', q);
+                setvars(db, exec, c);
+            }
         }
         else {
             // Default
+            console.log("DEFAULT");
+            findhost = config.findAPI;
+            findport = config.port;
             db = config.default_db;
             setvars(db, config.default_execution_id, db.substring(4));
         }
 
-        url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={"analysis_id":"' + selection.execution_id + '"}&db=' + selection.db;
+        url = findhost + ':' + findport + '?collection=patients&limit=1000&find={"analysis_id":"' + selection.execution_id + '"}&db=' + selection.db;
+        log(url);
     }
 
     select = document.getElementById('select');
@@ -50,7 +75,7 @@ $(function () {
 
         setvars(partsOfStr[1], partsOfStr[2], partsOfStr[0]);
 
-        url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={"analysis_id":"' + selection.execution_id + '"}&db=' + selection.db;
+        url = findhost + ':' + findport + '?collection=patients&limit=1000&find={"analysis_id":"' + selection.execution_id + '"}&db=' + selection.db;
 
         if (location.search.length > 1) {
             var currentState = {foo: "bar"}; // just clear it without reloading
@@ -71,11 +96,17 @@ function setvars(db, exec, c) {
     selection.db = db;
     selection.execution_id = exec;
     selection.cancer_type = c;
+    if (!selection.findhost)
+    {
+        selection.findhost = findhost;
+        selection.findport = findport;
+    }
+
 }
 
 function getData(url) {
 
-    console.log(url);
+    //console.log(url);
     document.getElementById('msg').textContent = '';
 
     $.getJSON(url).then(function (data) {

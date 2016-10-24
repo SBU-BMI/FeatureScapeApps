@@ -84,13 +84,27 @@ abcUtil = {
 
     selectBox: function (trace, selection, disableArray) {
 
+        if (selection.findhost == undefined || selection.findhost == "")
+        {
+            console.log("Default FindAPI");
+            selection.findhost = config.findAPI;
+            selection.findport = config.port;
+        }
+        else
+        {
+            console.log("ok");
+        }
+
+        console.log("selection", selection);
+
         if (!disableArray) {
             // Disable nothing
             disableArray = [""];
         }
         if (jQuery.isEmptyObject(trace)) {
+
             trace = {
-                url: config.findAPI + ':' + config.port + '/?limit=12&collection=metadata&find={}&db=u24_meta',
+                url: selection.findhost + ':' + selection.findport + '/?limit=12&collection=metadata&find={}&db=u24_meta',
                 id: 'selectTumor',
                 onchange: 'tumorChanged(this)',
                 font_color: 'navy',
