@@ -196,6 +196,13 @@ openHealth.ini();
 // run external analysis if called with a search argument
 window.onload = function () {
     if (window.location.search.length > 0) {
+        var sUrl = window.location.search.slice(1);
+        console.log("sUrl", sUrl);
+        if (sUrl.indexOf("_ijt=") > -1)
+        {
+            window.location.search = "";
+        }
+
         openHealth.startJobMsgURL();
         openHealth.getScript(window.location.search.slice(1).replace(/\/$/, ''), function () {
             openHealth.endJobMsgURL();
