@@ -26,13 +26,18 @@ fscape.UI = function () {
         }
         else
         {
-            var arr = q.split("/");
-            var tmp = arr[2];
-            findhost = tmp.substring(0, tmp.indexOf(":"));
-            findport = tmp.substring(tmp.indexOf(":") + 1);
-            console.log("Here");
+            // Query from url
+            var arr = q.split(":");
+            findhost = arr[0] + ":" + arr[1];
+            findport = arr[2].substring(0, arr[2].indexOf("?"));
+            if (findport.length == 5)
+            {
+                // sometimes it have trailing slash
+                findport = findport.substring(0, 4);
+            }
             console.log("findhost", findhost);
             console.log("findport", findport);
+            // We just gonna pass q along to fscape.loadURL, below.
 
         }
 

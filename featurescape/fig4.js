@@ -47,7 +47,15 @@ $(function () {
                 db = abcUtil.getQueryVariable('db', q);
                 c = abcUtil.getQueryVariable('c', q);
                 exec = abcUtil.getQueryVariable('exec', q);
+
+                findhost = abcUtil.getQueryVariable('h', q);
+                findport = abcUtil.getQueryVariable('p', q);
+
+                console.log("findhost", findhost);
+                console.log("findport", findport);
+
                 setvars(db, exec, c);
+
             }
         }
         else {
@@ -60,7 +68,8 @@ $(function () {
         }
 
         url = findhost + ':' + findport + '?collection=patients&limit=1000&find={"analysis_id":"' + selection.execution_id + '"}&db=' + selection.db;
-        log(url);
+        console.log("url", url);
+
     }
 
     select = document.getElementById('select');
@@ -237,10 +246,13 @@ function doFigure4(data) {
      */
     morphParm1.onchange = morphParm2.onchange = function () {
 
+        // Because you're going to lose everything upon page reload.
         location.search = '?morph1=' + morphParm1.value + '&morph2=' + morphParm2.value
             + '&db=' + selection.db
             + '&c=' + selection.cancer_type
-            + '&exec=' + selection.execution_id;
+            + '&exec=' + selection.execution_id
+            + '&h=' + selection.findhost
+            + '&p=' + selection.findport;
 
     };
 

@@ -38,15 +38,19 @@ function buildQueryString(q) {
     // https://falcon.bmi.stonybrook.edu:4500/?limit
     base = abcUtil.getQueryVariable('url', q);
 
-    var arr = q.split("/");
-    var tmp = arr[2];
-    findhost = tmp.substring(0, tmp.indexOf(":"));
-    findport = tmp.substring(tmp.indexOf(":") + 1, tmp.indexOf("?"));
-    console.log("Here");
+    var arr = base.split(":");
+    findhost = arr[0] + ":" + arr[1];
+    findport = arr[2].substring(0, arr[2].indexOf("?"));
     console.log("findhost", findhost);
+
+    if (findport.length == 5)
+    {
+        // sometimes it have trailing slash
+        findport = findport.substring(0, 4);
+    }
     console.log("findport", findport);
 
-    mugshots.findApi = 'http://' + findhost + ':' + findport + '/';
+    mugshots.findApi = findhost + ':' + findport + '/';
 
     // Resample 50 (performance reasons); we're only rendering 12.
     base = base + '=50';
