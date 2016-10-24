@@ -47,14 +47,6 @@ fscape.loadURL = function (url) {
     log(url);
     msg.textContent = "loading, please wait ...";
 
-    /*
-     var greetings = ["loading, please wait ...", "--> loading, please wait ..."];
-     msg.textContent = greetings[0];
-     setTimeout(function () {
-     msg.textContent = greetings[1];
-     }, 4000);
-     */
-
     localforage.getItem(url)
         .then(function (x) {
             if (!x) {
@@ -170,12 +162,10 @@ fscape.clust2html = function (cl) {
         })
     });
 
-    //var h = '<h4 style="color:maroon">Cross-tabulated feature correlations</h4>';
-    //h +='<table id="featurecrossTB">';
     var h = '<h4 style="color:maroon">Cross-tabulated feature correlations</h4>'
         + '<table id="featurecrossTB">';
 
-    //header
+    // header
     h += '<thead>';
     h += '<tr style="height:100px;vertical-align:bottom">';
     h += '<td style="color:navy">Variable</td>';
@@ -200,7 +190,7 @@ fscape.clust2html = function (cl) {
             v = Math.max(v, 0);
             var cm = 'rgb(' + cmap[v].toString() + ')';
             h += '<td id="' + i + ',' + ind[k] + '" style="color:' + cm + ';font-size:' + (14 - 4 * c[j]) + '">O</td>';
-            //h+='<td style="color:rgb(255,">X</td>'
+
         });
         h += '</tr>'
     });
@@ -308,7 +298,6 @@ fscape.plot = function (x) { // when ready to do it
                 this.textContent = "X";
                 setTimeout(function () {
                     fscape.scatterPlot("featuremapTD", i, j);
-                    //fscape.featuremap(i,j) // not a mistake, the axis need to be switched to fulfill right hand rule
                 }, 0)
             }
         };
@@ -341,9 +330,6 @@ fscape.plot = function (x) { // when ready to do it
         $('td', featurecrossTB).click(tdfun);
         $('td', featurecrossTB).mouseover(tdover);
 
-        //featureNet.innerHTML='featureNet :-)'
-        //setTimeout(function () {...}
-
         msg.textContent = '';
 
     }, 0);
@@ -352,8 +338,7 @@ fscape.plot = function (x) { // when ready to do it
 
 // fscape.featuremap
 fscape.featuremap = function (i, j) {
-    // cross filter from hereon
-    //cf = crossfilter(fscape.dt.docs)
+    // cross filter
     var ind = fscape.dt.cl[0];
     var ii = ind.indexOf(i), jj = ind.indexOf(j);
     var fi = fscape.dt.parmNum[i];
@@ -385,7 +370,6 @@ fscape.featuremap = function (i, j) {
         h += '<table id="quantileMap" style="visibility:hidden">'; // notice it starts hidden
         h += '<tr><td id="legendFj">fj</td><td></td></tr>';
         h += '<tr><td id="featuremapTableTD"></td><td id="legendFi">fi</td></tr>';
-        //h+='<tr><td id="legendFj">fj</td><td></td><td id="featuremapTableTD"></td><td id="legendFi">fi</td></tr>'
         h += '</table><div id="featuremapMoreDiv"><div>';
         featuremapTD.innerHTML = h;
         // 2d scatter plot
@@ -427,8 +411,6 @@ fscape.featuremap = function (i, j) {
         $('#featureheatmapTable >>> td').mouseover(mapTDover);
         legendFi.style.transform = "rotate(-90deg)";
         quantileMap.style.visibility = "visible";
-        //legendFi.style.transformOrigin="center 100px"
-        //<table id="featuremapTable">'
     } else {
         fscape.scatterPlot(document.getElementById("2DscatterPlot"), i, j)
     }
@@ -441,8 +423,6 @@ fscape.featuremap = function (i, j) {
     var M = jmat.zeros(fscape.dt.n, fscape.dt.n);
     var N = fscape.dt.n - 1 / fscape.dt.tab[fi].length; // to shave the ceiling
 
-    //var tii=jmat.range(0,fscape.dt.n-1)
-    //var tjj=jmat.range(0,fscape.dt.n-1)
     var s = fscape.dt.n / (fscape.dt.tabmemb[fi].length); // step increase
     jmat.transpose([fscape.dt.tabmemb[fi], fscape.dt.tabmemb[fj]]).forEach(function (xij) {
         M[Math.floor(xij[0] * N)][Math.floor(xij[1] * N)] += s
@@ -464,7 +444,6 @@ fscape.featuremap = function (i, j) {
             var v = Math.round(63 * d);
             v = Math.min(63, v);
             var c = 'rgb(' + cmap[v].toString() + ')';
-            //td.textContent=Math.round(M[ti][tj]*100)
             td.style.backgroundColor = c
         })
     });
@@ -488,7 +467,6 @@ fscape.scatterPlot = function (div0, i, j) {
 
     div0.innerHTML = '';
     var div = document.createElement('div');
-    //div.id="lala"
     div0.appendChild(div);
     var fi = fscape.dt.parmNum[i];
     var fj = fscape.dt.parmNum[j];
@@ -509,7 +487,6 @@ fscape.scatterPlot = function (div0, i, j) {
     };
 
     var layout = {
-        //title: 'Quarter 1 Growth',
         xaxis: {
             title: fi,
             showline: false,
@@ -525,11 +502,9 @@ fscape.scatterPlot = function (div0, i, j) {
     fscape.plt = Plotly.newPlot(div, [trace0], layout);
     window.scrollTo(window.innerWidth, window.scrollY);
 
-    //console.log(fscape.plt._result._fullLayout.xaxis._tmin, fscape.plt._result._fullLayout.xaxis._tmax, fscape.plt._result._fullLayout.yaxis._tmin, fscape.plt._result._fullLayout.yaxis._tmax);
     console.log(div._fullLayout.xaxis._tmin, div._fullLayout.xaxis._tmax, div._fullLayout.yaxis._tmin, div._fullLayout.yaxis._tmax);
 
     //Click nuclear mugshots button to view the nuclei of interest.
-    //Select region from scatterplot. Then click <abbr title="below the scatterplot">nuclear mugshots</abbr> button to view the nuclei of interest.
     document.getElementById('lalainfo').textContent = 'Select region from scatterplot. Then click nuclear mugshots button to view the nuclei of interest.';
     var divZ = document.createElement('div');
     divZ.setAttribute('align', 'center');
@@ -576,12 +551,7 @@ fscape.scatterPlot = function (div0, i, j) {
 };
 
 function createQuery(db, exec) {
-    /*
-     var r = getSubject(db, exec);
-     r = JSON.parse(r);
-     case_id = r[0].provenance.image.case_id;
-     */
-    //"provenance.image.subject_id":"TCGA-05-4244"}
+    
     case_id = config.default_case_id;
     query = findhost + ':' + findport
         + '?limit=1000&find={"randval":{"$gte":' + abcUtil.randval() + '},'
@@ -590,18 +560,6 @@ function createQuery(db, exec) {
         + '&db=' + db;
 
     return query;
-}
-
-function getSubject(db, exec) {
-    var q = findhost + ':' + findport
-        + '?limit=1&find={"randval":{"$gte":' + abcUtil.randval() + '},'
-        + '"provenance.analysis.execution_id":"' + exec + '"}'
-        + '&db=' + db;
-    var value = $.ajax({
-        url: q,
-        async: false
-    }).responseText;
-    return value;
 }
 
 function getPatient(q) {
