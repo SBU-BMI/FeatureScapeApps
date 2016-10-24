@@ -16,7 +16,7 @@ $(function () {
         db = abcUtil.getQueryVariable('db', url);
         c = abcUtil.getQueryVariable('c', url);
         exec = abcUtil.getFindParm('analysis_id', abcUtil.getQueryVariable('find', url));
-        gob(db, exec, c);
+        setvars(db, exec, c);
 
     }
     else {
@@ -26,12 +26,12 @@ $(function () {
             db = abcUtil.getQueryVariable('db', q);
             c = abcUtil.getQueryVariable('c', q);
             exec = abcUtil.getQueryVariable('exec', q);
-            gob(db, exec, c);
+            setvars(db, exec, c);
         }
         else {
             // Default
             db = config.default_db;
-            gob(db, config.default_execution_id, db.substring(4));
+            setvars(db, config.default_execution_id, db.substring(4));
         }
 
         url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={"analysis_id":"' + selection.execution_id + '"}&db=' + selection.db;
@@ -47,7 +47,7 @@ $(function () {
         var opt = evt.selectedOptions[0].value;
         var partsOfStr = opt.split(',');
 
-        gob(partsOfStr[1], partsOfStr[2], partsOfStr[0]);
+        setvars(partsOfStr[1], partsOfStr[2], partsOfStr[0]);
 
         url = config.findAPI + ':' + config.port + '?collection=patients&limit=1000&find={"analysis_id":"' + selection.execution_id + '"}&db=' + selection.db;
 
@@ -66,7 +66,7 @@ $(function () {
     getData(url);
 });
 
-function gob(db, exec, c) {
+function setvars(db, exec, c) {
     selection.db = db;
     selection.execution_id = exec;
     selection.cancer_type = c;
