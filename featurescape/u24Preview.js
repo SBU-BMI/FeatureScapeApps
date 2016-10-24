@@ -7,6 +7,9 @@
  * User may select different projects from dropdown selection.
  */
 var selection, tumorChanged;
+var findhost = "";
+var findport = "";
+var findapi = "";
 
 function buildUI(dataDivId, data) { // build User Interface
 
@@ -86,7 +89,7 @@ function buildUI(dataDivId, data) { // build User Interface
             size = 1000;
             randval = abcUtil.randval();
             fscapeUrl = config.domain + '/featurescape/?' +
-                config.findAPI + ':' + config.port + '?limit=' + size + '&find={"randval":{"$gte":' + randval
+                findapi + '?limit=' + size + '&find={"randval":{"$gte":' + randval
                 + '},"provenance.analysis.execution_id":"' + selection.execution_id
                 + '","provenance.image.case_id":"' + tissueId
                 + '"}&db=' + selection.db + '&c=' + selection.cancer_type;
@@ -99,7 +102,7 @@ function buildUI(dataDivId, data) { // build User Interface
 }
 
 function getData() {
-    var url = config.findAPI + ':' + config.port
+    var url = findapi
         + '/?limit=50&collection=metadata&find={"provenance.analysis_execution_id":"'
         + selection.execution_id + '"}&db='
         + selection.db;
@@ -120,6 +123,28 @@ function getData() {
 $(function () {
 
     selection = {};
+    if (location.hash.length > 1) {
+        console.log("HASH");
+        var hash = location.hash.slice(1);
+        var arr = hash.split(":");
+        findhost = arr[0] + ":" + arr[1];
+        findport = arr[2];
+        console.log("findhost", findhost);
+        console.log("findport", findport);
+
+    }
+    else {
+        console.log("DEFAULT");
+        findhost = config.findAPI;
+        findport = config.port;
+        console.log("findhost", findhost);
+        console.log("findport", findport);
+    }
+
+    findapi = findhost + ':' + findport;
+    selection.findhost = findhost;
+    selection.findport = findport;
+
     document.getElementById('select').innerHTML = abcUtil.selectBox({}, selection);
     getData();
 

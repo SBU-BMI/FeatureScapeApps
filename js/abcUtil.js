@@ -125,6 +125,8 @@ abcUtil = {
             + ';font-size:' + trace.font_size + '" id="' + trace.id + '">';
         //+ ' id="' + trace.id + '">';
 
+        console.log("trace.url", trace.url);
+
         $.ajax({
             url: trace.url,
             async: false,
