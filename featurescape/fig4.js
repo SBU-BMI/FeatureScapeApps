@@ -12,7 +12,7 @@ $(function () {
 
         url = location.hash.slice(1);
 
-        //http://quip1.bmi.stonybrook.edu:4000?collection=patients&limit=13&find={"analysis_id":"rad:path:ver1","bcr_patient_barcode":{"$in":["TCGA-14-0817","TCGA-06-1804","TCGA-12-1091","TCGA-14-1402","TCGA-02-0113","TCGA-12-1599","TCGA-27-1833","TCGA-28-1746","TCGA-27-1836","TCGA-32-1982","TCGA-06-A5U0","TCGA-06-0413","TCGA-32-2495"]}}&db=u24_radpath&c=gbm
+        // From TCGAScope
         db = abcUtil.getQueryVariable('db', url);
         c = abcUtil.getQueryVariable('c', url);
         exec = abcUtil.getFindParm('analysis_id', abcUtil.getQueryVariable('find', url));
@@ -22,6 +22,7 @@ $(function () {
     else {
 
         if (location.search.length > 1) {
+            // Cohort characters
             var q = location.search.slice(1);
             db = abcUtil.getQueryVariable('db', q);
             c = abcUtil.getQueryVariable('c', q);
