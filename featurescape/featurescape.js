@@ -30,6 +30,9 @@ fscape.UI = function () {
             var tmp = arr[2];
             findhost = tmp.substring(0, tmp.indexOf(":"));
             findport = tmp.substring(tmp.indexOf(":") + 1);
+            console.log("Here");
+            console.log("findhost", findhost);
+            console.log("findport", findport);
 
         }
 
@@ -38,6 +41,9 @@ fscape.UI = function () {
         // Default
         findhost = config.findAPI;
         findport = config.port;
+        console.log("Here 1");
+        console.log("findhost", findhost);
+        console.log("findport", findport);
         q = createQuery(config.default_db, config.default_execution_id);
     }
     fscape.loadURL(q);
@@ -551,13 +557,15 @@ fscape.scatterPlot = function (div0, i, j) {
 };
 
 function createQuery(db, exec) {
-    
+    console.log("Creating query...");
     case_id = config.default_case_id;
     query = findhost + ':' + findport
         + '?limit=1000&find={"randval":{"$gte":' + abcUtil.randval() + '},'
         + '"provenance.analysis.execution_id":"' + exec + '",'
         + '"provenance.image.case_id":"' + case_id + '"}'
         + '&db=' + db;
+
+    console.log("query", query);
 
     return query;
 }
