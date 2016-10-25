@@ -32,14 +32,26 @@ abcUtil = {
         }
     },
 
-    caMicroLink: function (case_id, cancer_type, x, y) {
+    caMicroLink: function (case_id, cancer_type, x, y, findhost) {
         var arr = [];
-
-        if (x == undefined && y == undefined) {
-            arr = [config.quipUrl, '?tissueId=', case_id, '&cancerType=', cancer_type];
+        var url = "";
+        /*
+        // Until we get images on osprey, use default quip url.
+        if (!findhost)
+        {
+            // Default
+            url = config.quipUrl;
         }
         else {
-            arr = [config.quipUrl, '?tissueId=', case_id, '&cancerType=', cancer_type, '&x=', x, '&y=', y];
+            url = findhost;
+        }*/
+        url = config.quipUrl;
+
+        if (x == undefined && y == undefined) {
+            arr = [url, '?tissueId=', case_id, '&cancerType=', cancer_type];
+        }
+        else {
+            arr = [url, '?tissueId=', case_id, '&cancerType=', cancer_type, '&x=', x, '&y=', y];
         }
 
         return arr.join("");

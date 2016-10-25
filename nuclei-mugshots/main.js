@@ -125,6 +125,13 @@ function doInfo(newData, query) {
             parm = 'subject_id';
         }
 
+        if (!selection.cancer_type)
+        {
+            selection.cancer_type = (selection.db).substring(4);
+            selection.selected = selection.cancer_type;
+        }
+        console.log(selection);
+
         document.getElementById('info1').innerHTML = text + ' having morphologic ranges selected from <strong>'
             + selection.cancer_type.toUpperCase()
             + '</strong> '
@@ -285,7 +292,7 @@ function draw(targetDiv, data, query, layout) {
             tbl = document.createElement('table'),
             idx = 0, i, j, row, col,
             scheme = 'http',
-            server = config.iiifServer,
+            server = findhost.substring(7), //config.iiifServer,
             prefix = config.iiifPrefix,
             region = '',
             iSize = 'full',
@@ -342,8 +349,11 @@ function draw(targetDiv, data, query, layout) {
                 log(uri);
 
                 link = document.createElement('a');
+
+
                 link.setAttribute("href",
-                    abcUtil.caMicroLink(data[idx].case_id, selection.cancer_type, obj.x, obj.y));
+                    abcUtil.caMicroLink(data[idx].case_id, selection.cancer_type, obj.x, obj.y, findhost));
+
                 link.setAttribute("target", "_blank");
                 col = document.createElement('td');
 
