@@ -62,9 +62,19 @@ abcUtil = {
     },
 
     featureArrays: function (selection) {
+        var q = "";
 
-        var q = config.findAPI + ':' + config.port + '/?limit=100&collection=metadata&find={"cancer_type":"'
-            + selection.cancer_type + '","execution_id":"' + selection.execution_id + '"}&db=u24_meta';
+        if (selection.findhost) {
+            console.log("selection.findhost", selection.findhost);
+            console.log("selection.findport", selection.findport);
+            q = selection.findhost + ':' + selection.findport + '/?limit=100&collection=metadata&find={"cancer_type":"'
+                + selection.cancer_type + '","execution_id":"' + selection.execution_id + '"}&db=u24_meta';
+        }
+        else {
+            console.log("No selection.findhost, using default from config file.");
+            q = config.findAPI + ':' + config.port + '/?limit=100&collection=metadata&find={"cancer_type":"'
+                + selection.cancer_type + '","execution_id":"' + selection.execution_id + '"}&db=u24_meta';
+        }
 
         $.ajax({
             url: q,
@@ -84,14 +94,12 @@ abcUtil = {
 
     selectBox: function (trace, selection, disableArray) {
 
-        if (selection.findhost == undefined || selection.findhost == "")
-        {
+        if (selection.findhost == undefined || selection.findhost == "") {
             console.log("Default FindAPI");
             selection.findhost = config.findAPI;
             selection.findport = config.port;
         }
-        else
-        {
+        else {
             console.log("ok");
         }
 
@@ -176,7 +184,18 @@ abcUtil = {
         // check DxImages available
         if (!data) {
 
-            var url = config.findAPI + ':' + config.port + '/?limit=1000&collection=metadata&find={"provenance.analysis_execution_id":"' + selection.execution_id + '"}&project={"_id":0,"image.subject_id":1,"image.case_id":1}&db=' + selection.db;
+            var url = "";
+
+            if (selection.findhost) {
+                console.log("selection.findhost", selection.findhost);
+                console.log("selection.findport", selection.findport);
+
+                url = selection.findhost + ':' + selection.findport + '/?limit=1000&collection=metadata&find={"provenance.analysis_execution_id":"' + selection.execution_id + '"}&project={"_id":0,"image.subject_id":1,"image.case_id":1}&db=' + selection.db;
+            }
+            else {
+                console.log("No selection.findhost, using default from config file.");
+                url = config.findAPI + ':' + config.port + '/?limit=1000&collection=metadata&find={"provenance.analysis_execution_id":"' + selection.execution_id + '"}&project={"_id":0,"image.subject_id":1,"image.case_id":1}&db=' + selection.db;
+            }
 
             $.ajax({
                 url: url,
@@ -314,10 +333,22 @@ abcUtil = {
         });
         ppp = ppp.slice(0, -1);
 
-        fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port
-            + '?collection=patients&limit=' + pp.length + '&find={"analysis_id":"'
-            + selection.execution_id + '","bcr_patient_barcode":{"$in":[' + ppp + ']}}&db='
-            + selection.db + '&c=' + selection.cancer_type;
+        if (selection.findhost) {
+            console.log("selection.findhost", selection.findhost);
+            console.log("selection.findport", selection.findport);
+
+            fig4 = config.domain + '/featurescape/fig4.html#' + selection.findhost + ':' + selection.findport
+                + '?collection=patients&limit=' + pp.length + '&find={"analysis_id":"'
+                + selection.execution_id + '","bcr_patient_barcode":{"$in":[' + ppp + ']}}&db='
+                + selection.db + '&c=' + selection.cancer_type;
+        }
+        else {
+            console.log("No selection.findhost, using default from config file.");
+            fig4 = config.domain + '/featurescape/fig4.html#' + config.findAPI + ':' + config.port
+                + '?collection=patients&limit=' + pp.length + '&find={"analysis_id":"'
+                + selection.execution_id + '","bcr_patient_barcode":{"$in":[' + ppp + ']}}&db='
+                + selection.db + '&c=' + selection.cancer_type;
+        }
 
         if (btnFig4) {
             //btnFig4.innerHTML = '<button id="btnFig4" onclick="resultsPatient(this)">' + p + '</button>&nbsp;';

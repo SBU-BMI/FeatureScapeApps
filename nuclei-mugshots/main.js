@@ -405,7 +405,6 @@ $(function () {
 
     selection = {};
     mugshots = {};
-    //mugshots.findApi = config.findAPI + ':' + config.port + '/';
     var url, hash;
 
     if (location.hash.length > 1) {
