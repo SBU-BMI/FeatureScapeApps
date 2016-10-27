@@ -112,9 +112,10 @@ fscape.fun = function (data, url) {
     }
     else {
 
-        selection.cancer_type = data[0].provenance.analysis.study_id;
+        //selection.cancer_type = data[0].provenance.analysis.study_id;
 
         if (selection.cancer_type == null) {
+            console.log('here');
 
             if (location.search.length > 1) {
                 var hash = location.search.slice(1);
@@ -122,6 +123,7 @@ fscape.fun = function (data, url) {
                 selection.cancer_type = abcUtil.getQueryVariable('c', hash);
             }
             else {
+                console.log('there');
                 selection.cancer_type = 'unknown';
             }
         }
