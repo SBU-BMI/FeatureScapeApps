@@ -9,8 +9,8 @@ wget https://code.jquery.com/jquery-2.2.4.min.js
 wget https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js
 
 # https://cdnjs.com/libraries/localforage
-wget https://cdnjs.cloudflare.com/ajax/libs/localforage/1.4.2/localforage.min.js
-#wget https://cdnjs.cloudflare.com/ajax/libs/localforage/1.3.1/localforage.min.js
+#wget https://cdnjs.cloudflare.com/ajax/libs/localforage/1.4.2/localforage.min.js
+wget https://cdnjs.cloudflare.com/ajax/libs/localforage/1.3.1/localforage.min.js
 #wget https://cdnjs.cloudflare.com/ajax/libs/localforage/1.3.0/localforage.min.js
 
 # https://cdnjs.com/libraries/d3
