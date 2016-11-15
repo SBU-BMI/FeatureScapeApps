@@ -36,15 +36,15 @@ abcUtil = {
         var arr = [];
         var url = "";
         /*
-        // Until we get images on osprey, use default quip url.
-        if (!findhost)
-        {
-            // Default
-            url = config.quipUrl;
-        }
-        else {
-            url = findhost;
-        }*/
+         // Until we get images on osprey, use default quip url.
+         if (!findhost)
+         {
+         // Default
+         url = config.quipUrl;
+         }
+         else {
+         url = findhost;
+         }*/
         url = config.quipUrl;
 
         if (x == undefined && y == undefined) {
@@ -383,21 +383,19 @@ abcUtil = {
                 + '"}&db=' + selection.db + '&c=' + selection.cancer_type;
 
             // FEATURESCAPE
+            //var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
             var fscape = "";
-        if (selection.findhost) {
-            console.log("selection.findhost", selection.findhost);
-            console.log("selection.findport", selection.findport);
-
-             fscape = config.domain + '/featurescape/?' + selection.findhost + ':' + selection.findport + '/?limit=1000&find=' + find;
-        }
-        else {
-            console.log("No selection.findhost, using default from config file.");
-             fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
-        }
-
+            if (selection.findhost) {
+                console.log("selection.findhost", selection.findhost);
+                console.log("selection.findport", selection.findport);
+                fscape = config.domain + '/featurescape/?' + selection.findhost + ':' + selection.findport + '/?limit=1000&find=' + find;
+            }
+            else {
+                console.log("No selection.findhost, using default from config file.");
+                fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
+            }
             moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
                 + '&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
-
 
             /*
              moreInfo.innerHTML = ' <button type="button" id="fscapeButton" class="btn btn-secondary" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
@@ -604,7 +602,17 @@ abcUtil = {
         if (xxx.length > 12)
             parm = 'case_id';
         var find = '{"randval":{"$gte":' + textContent + '},"provenance.image.' + parm + '":"' + xxx + '"}&db=' + db + '&c=' + selection.cancer_type;
-        var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
+        //var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
+        var fscape = "";
+        if (selection.findhost) {
+            console.log("selection.findhost", selection.findhost);
+            console.log("selection.findport", selection.findport);
+            fscape = config.domain + '/featurescape/?' + selection.findhost + ':' + selection.findport + '/?limit=1000&find=' + find;
+        }
+        else {
+            console.log("No selection.findhost, using default from config file.");
+            fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
+        }
         window.open(fscape);
     },
 
