@@ -4,8 +4,10 @@
 var config = {
     domain: 'http://sbu-bmi.github.io/FeatureScapeApps',
     //domain: 'http://localhost:63342/FeatureScapeApps',
-    findAPI: 'http://quip1.bmi.stonybrook.edu',
-    port: 4000,
+    //findAPI: 'http://quip1.bmi.stonybrook.edu',
+    //port: 4000,
+    findAPI: 'http://quip1-new.uhmc.sunysb.edu',
+    port: 3000,
     quipUrl: 'http://quip1.bmi.stonybrook.edu/camicroscope/osdCamicroscope.php',
     reserve4Url: 'http://reserve4.informatics.stonybrook.edu/dev1/osdCamicroscope.php',
     imgcoll: 'images',
