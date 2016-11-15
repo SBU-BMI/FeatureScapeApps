@@ -383,9 +383,21 @@ abcUtil = {
                 + '"}&db=' + selection.db + '&c=' + selection.cancer_type;
 
             // FEATURESCAPE
-            var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
+            var fscape = "";
+        if (selection.findhost) {
+            console.log("selection.findhost", selection.findhost);
+            console.log("selection.findport", selection.findport);
+
+             fscape = config.domain + '/featurescape/?' + selection.findhost + ':' + selection.findport + '/?limit=1000&find=' + find;
+        }
+        else {
+            console.log("No selection.findhost, using default from config file.");
+             fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
+        }
+
             moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
                 + '&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
+
 
             /*
              moreInfo.innerHTML = ' <button type="button" id="fscapeButton" class="btn btn-secondary" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
