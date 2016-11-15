@@ -1,6 +1,32 @@
-var selection = {};
+var selection, tumorChanged;
+var findhost = "";
+var findport = "";
+var findapi = "";
 
 openHealth.require(config.domain + '/openHealth/tcga.js', function () {
+
+    selection = {};
+    if (location.hash.length > 1) {
+        console.log("HASH");
+        var hash = location.hash.slice(1);
+        var arr = hash.split(":");
+        findhost = arr[0] + ":" + arr[1];
+        findport = arr[2];
+        console.log("findhost", findhost);
+        console.log("findport", findport);
+
+    }
+    else {
+        console.log("DEFAULT");
+        findhost = config.findAPI;
+        findport = config.port;
+        console.log("findhost", findhost);
+        console.log("findport", findport);
+    }
+
+    findapi = findhost + ':' + findport;
+    selection.findhost = findhost;
+    selection.findport = findport;
 
     openHealthJob.innerHTML = '<div id="openHealthJobMsg" style="color:red">processing ...</div><div id="openHealthJobDC"></div>';
 
