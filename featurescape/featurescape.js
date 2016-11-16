@@ -80,7 +80,7 @@ fscape.loadURL = function (url) {
             }
 
             console.log("Calling function");
-            fscape.fun(x, url);
+            fscape.fun(json, url);
         }
     });
 
