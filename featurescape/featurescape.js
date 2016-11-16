@@ -55,6 +55,7 @@ fscape.loadURL = function (url) {
     log(url);
     msg.textContent = "loading, please wait ...";
 
+    /*
     $.getJSON(url).then(function (x) {
         console.log("Here in getJSON");
         if (!fscape.dt) {
@@ -64,7 +65,24 @@ fscape.loadURL = function (url) {
         else {
             console.log("We have data");
         }
-    })
+    });*/
+
+    $.ajax({
+        url: url,
+        async: false,
+        dataType: 'json',
+        success: function (json) {
+            if (json.length > 0) {
+                console.log("Got data");
+
+            } else {
+                console.log("No data");
+            }
+
+            console.log("Calling function");
+            fscape.fun(x, url);
+        }
+    });
 
 };
 
