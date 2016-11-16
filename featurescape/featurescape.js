@@ -56,32 +56,57 @@ fscape.loadURL = function (url) {
     msg.textContent = "loading, please wait ...";
 
     /*
-    $.getJSON(url).then(function (x) {
-        console.log("Here in getJSON");
-        if (!fscape.dt) {
-            console.log("Calling function");
-            fscape.fun(x, url);
-        }
-        else {
-            console.log("We have data");
-        }
-    });*/
+     $.getJSON(url).then(function (x) {
+     console.log("Here in getJSON");
+     if (!fscape.dt) {
+     console.log("Calling function");
+     fscape.fun(x, url);
+     }
+     else {
+     console.log("We have data");
+     }
+     });*/
 
-    $.ajax({
-        url: url,
-        async: false,
-        dataType: 'json',
-        success: function (json) {
-            if (json.length > 0) {
-                console.log("Got data");
+    /*
+     $.ajax({
+     url: url,
+     async: false,
+     dataType: 'json',
+     success: function (json) {
+     if (json.length > 0) {
+     console.log("Got data");
 
-            } else {
-                console.log("No data");
-            }
+     } else {
+     console.log("No data");
+     }
 
-            console.log("Calling function");
-            fscape.fun(json, url);
-        }
+     console.log("Calling function");
+     fscape.fun(json, url);
+     }
+     });
+     */
+
+    // Assign handlers immediately after making the request,
+    // and remember the jqxhr object for this request
+    var jqxhr = $.getJSON(url, function (data) {
+        console.log("success");
+        fscape.fun(data, url);
+    })
+        .done(function () {
+            console.log("second success");
+        })
+        .fail(function () {
+            console.log("error");
+        })
+        .always(function () {
+            console.log("complete");
+        });
+
+    // Perform other work here ...
+
+    // Set another completion function for the request above
+    jqxhr.complete(function () {
+        console.log("second complete");
     });
 
 };
