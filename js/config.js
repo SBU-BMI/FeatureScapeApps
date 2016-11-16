@@ -2,6 +2,7 @@
  * Configure app in a block instead of hard-coding values inside the scripts.
  */
 var config = {
+    //domain: 'http://localhost:63342/FeatureScapeApps',
     domain: 'http://sbu-bmi.github.io/FeatureScapeApps',
     findAPI: 'http://quip1-new.uhmc.sunysb.edu',
     port: 3000,

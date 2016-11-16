@@ -19,19 +19,16 @@ fscape.UI = function () {
         var ss = location.search.slice(1).split(';');
         q = ss[0];
 
-        if (q.indexOf("_ijt=") > -1)
-        {
+        if (q.indexOf("_ijt=") > -1) {
             // IDE stuff; just reload it.
             location.search = "";
         }
-        else
-        {
+        else {
             // Query from url
             var arr = q.split(":");
             findhost = arr[0] + ":" + arr[1];
             findport = arr[2].substring(0, arr[2].indexOf("?"));
-            if (findport.length == 5)
-            {
+            if (findport.length == 5) {
                 // sometimes it have trailing slash
                 findport = findport.substring(0, 4);
             }
@@ -46,7 +43,6 @@ fscape.UI = function () {
         // Default
         findhost = config.findAPI;
         findport = config.port;
-        console.log("Here 1");
         console.log("findhost", findhost);
         console.log("findport", findport);
         q = createQuery(config.default_db, config.default_execution_id);
@@ -55,31 +51,18 @@ fscape.UI = function () {
 };
 
 fscape.loadURL = function (url) {
+    console.log("*** getJSON ***");
     log(url);
     msg.textContent = "loading, please wait ...";
 
-    localforage.getItem(url)
-        .then(function (x) {
-            if (!x) {
-                $.getJSON(url).then(function (x) {
-                    if (!fscape.dt) {
-                        fscape.fun(x, url);
-                        localforage.setItem(url, x)
-                    }
-                })
-            } else {
-                fscape.fun(x, url)
-            }
-
-        })
-        .catch(function () {
-            $.getJSON(url).then(function (x) {
-                if (!fscape.dt) {
-                    fscape.fun(x, url);
-                    localforage.setItem(url, x)
-                }
-            })
-        });
+    $.getJSON(url).then(function (x) {
+        if (!fscape.dt) {
+            fscape.fun(x, url);
+        }
+        else {
+            console.log("We have data");
+        }
+    })
 
 };
 
@@ -91,6 +74,7 @@ fscape.log = function (divID, txt, color) {
 
 fscape.cleanUI = function () { // and create fscapeAnalysisDiv
 
+    console.log("Preparing UI");
     if (!document.getElementById('fscapeAnalysisDiv')) {
         $('<div id="fscapeAnalysisDiv"></div>').appendTo(fscape.div);
         fscapeAnalysisDiv.hidden = true;
@@ -101,9 +85,11 @@ fscape.cleanUI = function () { // and create fscapeAnalysisDiv
 };
 
 fscape.fun = function (data, url) {
+
     //msg.textContent = '--> processing ...';
 
     if (data.length == 0) {
+        console.log("data.length == 0");
 
         document.getElementById('section').innerHTML = '<span style="color:red">Data not available for patient:</span><br>'
             + getPatient(url);
@@ -112,10 +98,10 @@ fscape.fun = function (data, url) {
     }
     else {
 
+        console.log("Processing data");
         //selection.cancer_type = data[0].provenance.analysis.study_id;
 
         if (selection.cancer_type == null) {
-            console.log('here');
 
             if (location.search.length > 1) {
                 var hash = location.search.slice(1);
@@ -123,7 +109,6 @@ fscape.fun = function (data, url) {
                 selection.cancer_type = abcUtil.getQueryVariable('c', hash);
             }
             else {
-                console.log('there');
                 selection.cancer_type = 'unknown';
             }
         }
@@ -150,8 +135,7 @@ fscape.fun = function (data, url) {
         msg.textContent = '';
         var p = getPatient(url);
 
-        if (!selection.cancer_type)
-        {
+        if (!selection.cancer_type) {
             selection.cancer_type = (selection.db).substring(4);
         }
         console.log(selection);
@@ -221,6 +205,7 @@ fscape.clust2html = function (cl) {
 
 // do it
 fscape.plot = function (x) { // when ready to do it
+    console.log("Plotting graph");
     fscapeAnalysisDiv.innerHTML = '<table id="fscapeAnalysisTab">'
         + '<tr><td id="featurecrossTD" style="vertical-align:top"></td>'
         + '<td id="featuremapTD" style="vertical-align:top"></td></tr>'
