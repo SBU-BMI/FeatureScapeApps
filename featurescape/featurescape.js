@@ -64,10 +64,10 @@ fscape.loadURL = function (url) {
             console.log('getJSON request succeeded!');
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
-            console.log('getJSON request failed! ' + textStatus + ' ' + errorThrown);
-        })
-        .always(function () {
-            console.log('getJSON request ended (hallelujah)!');
+            console.log('getJSON request failed! ' + errorThrown);
+            console.log("error " + textStatus);
+            console.log("incoming Text " + jqXHR.responseText);
+            msg.textContent = jqXHR.responseText;
         });
 };
 
