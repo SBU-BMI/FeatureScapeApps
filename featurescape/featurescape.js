@@ -55,7 +55,7 @@ fscape.loadURL = function (url) {
     log(url);
     msg.textContent = "loading, please wait ...";
 
-    $.getJSON.getJSON(url,
+    $.getJSON(url,
         function (jsonResult) {
             console.log("Success!");
             fscape.fun(jsonResult, url);
