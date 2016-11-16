@@ -55,20 +55,24 @@ fscape.loadURL = function (url) {
     log(url);
     msg.textContent = "loading, please wait ...";
 
-    $.getJSON(url,
-        function (jsonResult) {
-            console.log("Success!");
-            fscape.fun(jsonResult, url);
-        })
-        .done(function () {
-            console.log('getJSON request succeeded!');
-        })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-            console.log('getJSON request failed! ' + errorThrown);
-            console.log("error " + textStatus);
-            console.log("incoming Text " + jqXHR.responseText);
-            msg.textContent = jqXHR.responseText;
-        });
+    try {
+        $.getJSON(url,
+            function (jsonResult) {
+                console.log("Success!");
+                fscape.fun(jsonResult, url);
+            })
+            .done(function () {
+                console.log('getJSON request succeeded!');
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                console.log('getJSON request failed! ' + errorThrown);
+                console.log("error " + textStatus);
+                console.log("incoming Text " + jqXHR.responseText);
+            });
+    }
+    catch(err) {
+        document.getElementById("msg").innerHTML = err.message;
+    }
 };
 
 fscape.log = function (divID, txt, color) {
