@@ -68,7 +68,7 @@ fscape.loadURL = function (url) {
                 console.log('getJSON request failed! ' + errorThrown);
                 console.log("error " + textStatus);
                 console.log("incoming Text " + JSON.stringify(jqXHR, null, 3));
-                document.getElementById("msg").innerHTML = "getJSON request failed<br><pre>" + JSON.stringify(jqXHR, null, 3) + "</pre><br>That's all we know.";
+                document.getElementById("msg").innerHTML = "getJSON request failed<br><pre>" + JSON.stringify(jqXHR, null, 3) + "</pre>That's all we know.";
             });
     }
     catch(err) {
