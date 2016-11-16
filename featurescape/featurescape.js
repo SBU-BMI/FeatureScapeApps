@@ -67,11 +67,13 @@ fscape.loadURL = function (url) {
             .fail(function (jqXHR, textStatus, errorThrown) {
                 console.log('getJSON request failed! ' + errorThrown);
                 console.log("error " + textStatus);
-                console.log("incoming Text " + jqXHR.responseText);
+                //console.log("incoming Text " + jqXHR.responseText);
+                console.log("incoming Text " + JSON.stringify(jqXHR, null, 3));
                 document.getElementById("msg").innerHTML = "getJSON request failed";
             });
     }
     catch(err) {
+        // Control never gets passed here; just want to show we did indeed try it.
         document.getElementById("msg").innerHTML = err.message;
     }
 };
