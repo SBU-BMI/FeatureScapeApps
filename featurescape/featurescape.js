@@ -67,7 +67,7 @@ fscape.loadURL = function (url) {
             console.log('getJSON request failed! ' + textStatus + ' ' + errorThrown);
         })
         .always(function () {
-            console.log('getJSON request ended!');
+            console.log('getJSON request ended (hallelujah)!');
         });
 };
 
