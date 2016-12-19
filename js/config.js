@@ -7,7 +7,7 @@ var config = {
     findAPI: 'http://quip1.uhmc.sunysb.edu',
     port: 3000,
     quipUrl: 'http://quip1.uhmc.sunysb.edu/camicroscope/osdCamicroscope.php',
-    reserve4Url: 'http://reserve4.informatics.stonybrook.edu/dev1/osdCamicroscope.php',
+    //reserve4Url: 'http://reserve4.informatics.stonybrook.edu/dev1/osdCamicroscope.php',
     imgcoll: 'images',
     quot: "%22",
     iiifServer: 'quip1.uhmc.sunysb.edu',
