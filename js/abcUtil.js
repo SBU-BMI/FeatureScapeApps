@@ -602,7 +602,7 @@ abcUtil = {
         var parm = 'subject_id';
         if (xxx.length > 12)
             parm = 'case_id';
-        var find = '{"randval":{"$gte":' + textContent + '},"provenance.image.' + parm + '":"' + xxx + '"}&db=' + db + '&c=' + selection.cancer_type;
+        var find = '{"randval":{"$gte":' + textContent + '},"provenance.analysis.source":"computer","provenance.image.' + parm + '":"' + xxx + '"}&db=' + db + '&c=' + selection.cancer_type;
         //var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
         console.log("B");
         var fscape = "";
