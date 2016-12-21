@@ -132,7 +132,6 @@ fscape.fun = function (data, url) {
 
         var nv = [];
         data.forEach(function (item) {
-            console.log("item", item);
             var JSONArray = item[0]["nv"];
 
             var features = {};
