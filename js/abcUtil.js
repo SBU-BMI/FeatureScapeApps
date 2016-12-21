@@ -384,6 +384,7 @@ abcUtil = {
 
             // FEATURESCAPE
             //var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
+            console.log("A");
             var fscape = "";
             if (selection.findhost) {
                 console.log("selection.findhost", selection.findhost);
@@ -603,6 +604,7 @@ abcUtil = {
             parm = 'case_id';
         var find = '{"randval":{"$gte":' + textContent + '},"provenance.image.' + parm + '":"' + xxx + '"}&db=' + db + '&c=' + selection.cancer_type;
         //var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
+        console.log("B");
         var fscape = "";
         if (selection.findhost) {
             console.log("selection.findhost", selection.findhost);
