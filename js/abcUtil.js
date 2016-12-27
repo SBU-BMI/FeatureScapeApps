@@ -131,7 +131,6 @@ abcUtil = {
                 bg_color: 'silver',
                 font_size: 'large',
                 text: 'Select a dataset'
-                //selection: 'luad'
             };
         }
 
@@ -139,11 +138,9 @@ abcUtil = {
         var selectTumorHTML = '<span style="color:' + trace.font_color + '"><strong><font size="+1">';
         selectTumorHTML += trace.text
             + ':</font></strong>&nbsp;<select onchange="' + trace.onchange + '" '
-            //+ ' class="selectpicker"'
             + ' style="font-color:' + trace.font_color
             + ';background-color:' + trace.bg_color
             + ';font-size:' + trace.font_size + '" id="' + trace.id + '">';
-        //+ ' id="' + trace.id + '">';
 
         console.log("trace.url", trace.url);
 
@@ -279,7 +276,6 @@ abcUtil = {
      * TABULAR LIST OF PATIENTS AND DIAGNOSTIC IMAGES.
      */
     listSlides: function (patient, selection, data, R, S, P) {
-        //slideImages.parentNode.hidden = "true";
         var parm = '';
         var ss = []; // list of slides
         var pp = []; // list of patients
@@ -363,7 +359,6 @@ abcUtil = {
         }
 
         if (btnFig4) {
-            //btnFig4.innerHTML = '<button id="btnFig4" onclick="resultsPatient(this)">' + p + '</button>&nbsp;';
             btnFig4.value = "FeatureExplorer for " + pp.length + " patients";
             btnFig4.color = "indigo";
 
@@ -378,12 +373,12 @@ abcUtil = {
             var textContent = v.toString().slice(0, 5);
             var exec = '"provenance.analysis.execution_id":"' + selection.execution_id + '"';
             var find = '{"randval":{"$gte":' + textContent + '},' + exec
+                + ',"provenance.analysis.source":"computer"'
                 + ',"provenance.image.subject_id":"'
                 + (typeof patient[x.textContent] == 'undefined' ? x.textContent : patient[x.textContent]["bcr_patient_barcode"])
                 + '"}&db=' + selection.db + '&c=' + selection.cancer_type;
 
             // FEATURESCAPE
-            //var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
             console.log("A");
             var fscape = "";
             if (selection.findhost) {
@@ -397,11 +392,6 @@ abcUtil = {
             }
             moreInfo.innerHTML = ' <input id="fscapeButton" style="color:blue" type="button" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
                 + '&nbsp;&nbsp; <input id="fig4Button" style="color:indigo" type="button" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
-
-            /*
-             moreInfo.innerHTML = ' <button type="button" id="fscapeButton" class="btn btn-secondary" value="FeatureScape (if available) for ' + patient[x.textContent]["bcr_patient_barcode"] + '">'
-             + '&nbsp;&nbsp; <button type="button" id="fig4Button" class="btn btn-secondary" value="FeatureExplorer (if available) for ' + pp.length + ' patients"><pre>' + JSON.stringify(patient[x.textContent], null, 3) + '</pre>';
-             */
 
             fscapeButton.onclick = function () {
                 window.open(fscape)
@@ -425,7 +415,6 @@ abcUtil = {
             var num = i + 1;
 
             tr.innerHTML = '<td id="tdPatient_' + p + '" style="vertical-align:top">' + (num <= 9 ? '0' : '') + num + ') '
-                //+ '<button class="btn btn-secondary" onclick="resultsPatient(this)">' + p + '</button>&nbsp;'
                 + '<button onclick="resultsPatient(this)">' + p + '</button>&nbsp;'
                 + '(<a href="http://www.cbioportal.org/case.do?case_id=' + p + '&cancer_study_id=' + selection.cancer_type + '_tcga" target=_blank>cBio</a>)'
                 + '</td>'
@@ -527,7 +516,6 @@ abcUtil = {
 
             if (str.indexOf('[') > -1) {
                 str = str.substring(str.indexOf('[') + 1, str.indexOf(']'));
-                //str = str.slice(0, -1);
             }
 
             if (str.indexOf(',') > -1) {
@@ -548,14 +536,6 @@ abcUtil = {
     doPatients: function (data, idx, url, win) {
 
         var ptslides = document.getElementById('ptslides');
-
-        //ptslides.innerHTML = abcUtil.setupDC2();
-
-        /*
-         setTimeout(function () {
-         abcUtil.listSlides(data, selection);
-         }, 1000);
-         */
 
         var h = '';
         if (url) {
@@ -581,7 +561,6 @@ abcUtil = {
             if (typeof x == 'undefined') {
                 x = dd.provenance.image.subject_id;
             }
-            //t += '<tr><td><button class="btn btn-secondary" onclick="abcUtil.goFeature(this)">' + x + '</button></td></tr>';
             t += '<tr><td><button onclick="abcUtil.goFeature(this)">' + x + '</button></td></tr>';
         });
         t += '</table>';
@@ -593,11 +572,9 @@ abcUtil = {
     goFeature: function (x) {
         var v = abcUtil.randval();
         var textContent = v.toString().slice(0, 5);
-        //var exec = '"provenance.analysis.execution_id":"' + execution_id + '"';
-        //var find = '{"randval":{"$gte":' + textContent + '},' + exec + ',"provenance.image.subject_id":"' + patient[x.textContent]["bcr_patient_barcode"] + '"}&db=' + openHealth.db;
 
         // FEATURESCAPE
-        var db = selection.db;//url.substring(url.indexOf('db=') + 3);
+        var db = selection.db;
         var xxx = x.innerHTML;
         var parm = 'subject_id';
         if (xxx.length > 12)
@@ -605,7 +582,7 @@ abcUtil = {
         
         // "source":"human" is no bueno. Use "source":"computer"
         var find = '{"randval":{"$gte":' + textContent + '},"provenance.analysis.source":"computer","provenance.image.' + parm + '":"' + xxx + '"}&db=' + db + '&c=' + selection.cancer_type;
-        //var fscape = config.domain + '/featurescape/?' + config.findAPI + ':' + config.port + '/?limit=1000&find=' + find;
+
         console.log("B");
         var fscape = "";
         if (selection.findhost) {
@@ -623,15 +600,6 @@ abcUtil = {
     clrMsg: function (h) {
         var a = document.getElementById('msg');
         a.innerHTML = h;
-
-        /*
-         a = document.getElementById('patientInfo');
-         a.innerHTML = '';
-
-         a = document.getElementById('repositoryInfo');
-         a.innerHTML = '';
-
-         */
 
         a = document.getElementById('info1');
         a.innerHTML = '';

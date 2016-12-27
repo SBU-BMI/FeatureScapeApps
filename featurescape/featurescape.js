@@ -53,6 +53,7 @@ function getData(url) {
     console.log(url);
     document.getElementById('msg').textContent = "Fetching data, please wait ...";
 
+    /*
     // Do like fig4.
     $.getJSON(url).then(function (data) {
 
@@ -65,31 +66,36 @@ function getData(url) {
         }
 
     });
+    */
 
-    /*
-     // This section, while decent effort, does not improve speed, nor does it indicate slowness.
-     // Why?  Because nothing is "failing".
-     try {
-     $.getJSON(url,
-     function (jsonResult) {
-     console.log("Success!");
-     doFeaturescape(jsonResult, url);
-     })
-     .done(function () {
-     console.log('getJSON request succeeded!');
-     })
-     .fail(function (jqXHR, textStatus, errorThrown) {
-     console.log('getJSON request failed! ' + errorThrown);
-     console.log("error " + textStatus);
-     console.log("incoming Text " + JSON.stringify(jqXHR, null, 3));
-     document.getElementById("msg").innerHTML = "getJSON request failed<br><pre>" + JSON.stringify(jqXHR, null, 3) + "</pre>That's all we know.";
-     });
-     }
-     catch(err) {
-     // Control never gets passed here; just want to show we did indeed try it.
-     document.getElementById("msg").innerHTML = err.message;
-     }
-     */
+    try {
+        $.getJSON(url,
+            function (data) {
+                console.log("Success!");
+                doFeaturescape(data, url);
+            })
+            .done(function () {
+                console.log('getJSON request succeeded!');
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                console.log('getJSON request failed! ' + errorThrown);
+                //console.log("error " + textStatus);
+                //console.log("incoming Text " + JSON.stringify(jqXHR, null, 3));
+
+                if (errorThrown) {
+                    document.getElementById("msg").innerHTML = "getJSON request failed<br><pre>" + errorThrown + "</pre>";
+                }
+                else {
+                    document.getElementById("msg").innerHTML = "getJSON request failed<br><pre>" + JSON.stringify(jqXHR, null, 3) + "</pre>That's all we know.";
+                }
+
+            });
+    }
+    catch (err) {
+        // Control never gets passed here; just want to show we did indeed try it.
+        document.getElementById("msg").innerHTML = err.message;
+    }
+
 }
 
 function log(divID, txt, color) {
@@ -100,7 +106,6 @@ function log(divID, txt, color) {
 
 function cleanUI() { // and create fscapeAnalysisDiv
 
-    console.log("Preparing UI");
     if (!document.getElementById('fscapeAnalysisDiv')) {
         $('<div id="fscapeAnalysisDiv"></div>').appendTo(fscapeDiv);
         fscapeAnalysisDiv.hidden = true;
@@ -111,21 +116,20 @@ function cleanUI() { // and create fscapeAnalysisDiv
 }
 
 function doFeaturescape(data, url) {
+    console.log("alskdjf;lasdkjf");
 
     document.getElementById('msg').textContent = '--> processing ...';
 
     if (data.length == 0) {
-        console.log("data.length == 0");
 
         document.getElementById('section').innerHTML = '<span style="color:red">Data not available for patient:</span><br>'
             + getPatient(url);
-        document.getElementById('msg').textContent = '';
+        document.getElementById('msg').textContent = 'No data';
 
     }
     else {
 
-        console.log("Processing data");
-        //selection.cancer_type = data[0].provenance.analysis.study_id;
+        document.getElementById('msg').textContent = "Processing data";
 
         if (selection.cancer_type == null) {
 
@@ -142,7 +146,6 @@ function doFeaturescape(data, url) {
         // "VERSION 3"
         data = data.map(function (xi) {
             return xi.properties.scalar_features;
-            //return xi.features;
         });
 
         var nv = [];
@@ -158,7 +161,6 @@ function doFeaturescape(data, url) {
         });
 
         var xx = nv;
-        document.getElementById('msg').textContent = '';
         var p = getPatient(url);
 
         if (!selection.cancer_type) {
@@ -230,7 +232,6 @@ function clust2html(cl) {
 
 // do it
 function plot(x) { // when ready to do it
-    console.log("Plotting graph");
     fscapeAnalysisDiv.innerHTML = '<table id="fscapeAnalysisTab">'
         + '<tr><td id="featurecrossTD" style="vertical-align:top"></td>'
         + '<td id="featuremapTD" style="vertical-align:top"></td></tr>'
@@ -301,6 +302,7 @@ function plot(x) { // when ready to do it
         + "</label><br><br>" + clust2html(cl);
 
     setTimeout(function () {
+
         var tdfun = function () {
             var ij = JSON.parse('[' + this.id + ']');
             if (ij.length > 0) {
@@ -455,7 +457,7 @@ function scatterPlot(div0, i, j) {
 
 }
 function createQuery(db, exec) {
-    console.log("Creating query...");
+    document.getElementById('msg').textContent = "Creating query...";
     case_id = config.default_case_id;
     query = findhost + ':' + findport
         + '?limit=1000&find={"randval":{"$gte":' + abcUtil.randval() + '},'
