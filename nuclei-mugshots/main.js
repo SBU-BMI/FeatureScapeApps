@@ -79,21 +79,24 @@ function buildQueryString(q) {
 }
 
 function doMessage(name, location, text, color) {
-    var div;
+
     if (!document.getElementById(name)) {
         console.log("not exists", name, location, text, color);
         // Element does not exist. Let's create it.
-        div = document.createElement("div");
+        var div = document.createElement("div");
         div.id = name;
+        div.innerHTML = text;
+        div.style.color = color;
         location.appendChild(div);
+
     } else {
         // Element exists. Lets get it by ID.
         console.log("exists", name, location, text, color);
-        div = document.getElementById(name);
+        var div = document.getElementById(name);
+        div.innerHTML = text;
+        div.style.color = color;
     }
 
-    div.innerHTML = text;
-    div.style.color = color;
 }
 
 function doInfo(newData, query) {
@@ -388,8 +391,8 @@ function draw(targetDiv, data, query, layout) {
 
 function getData(url) {
 
-    doMessage('msg', document.body, 'loading, please wait ...', 'red');
     abcUtil.clrMsg('');
+    doMessage('msg', document.body, 'loading, please wait ...', 'red');
     slides_not_found = false;
 
     try {
