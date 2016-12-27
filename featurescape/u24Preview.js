@@ -90,7 +90,7 @@ function buildUI(dataDivId, data) { // build User Interface
             randval = abcUtil.randval();
             fscapeUrl = config.domain + '/featurescape/?' +
                 findapi + '?limit=' + size + '&find={"randval":{"$gte":' + randval
-                + '},"provenance.analysis.execution_id":"' + selection.execution_id
+                + '},"provenance.analysis.source":"computer","provenance.analysis.execution_id":"' + selection.execution_id
                 + '","provenance.image.case_id":"' + tissueId
                 + '"}&db=' + selection.db + '&c=' + selection.cancer_type;
             window.open(fscapeUrl);
