@@ -81,7 +81,6 @@ function buildQueryString(q) {
 function doMessage(name, location, text, color) {
 
     if (!document.getElementById(name)) {
-        console.log("not exists", name, location, text, color);
         // Element does not exist. Let's create it.
         var div = document.createElement("div");
         div.id = name;
@@ -91,7 +90,6 @@ function doMessage(name, location, text, color) {
 
     } else {
         // Element exists. Lets get it by ID.
-        console.log("exists", name, location, text, color);
         var div = document.getElementById(name);
         div.innerHTML = text;
         div.style.color = color;
