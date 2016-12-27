@@ -81,12 +81,14 @@ function buildQueryString(q) {
 function doMessage(name, location, text, color) {
     var div;
     if (!document.getElementById(name)) {
+        console.log("not exists", name, location, text, color);
         // Element does not exist. Let's create it.
         div = document.createElement("div");
         div.id = name;
         location.appendChild(div);
     } else {
         // Element exists. Lets get it by ID.
+        console.log("exists", name, location, text, color);
         div = document.getElementById(name);
     }
 
@@ -168,7 +170,7 @@ function parseData(data, size, query) {
 
     if (sameCaseId) {
         // Get info about the slide, once.
-        console.log("THUMBNAIL A " + mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + prevCaseId + '"}&db=' + selection.db);
+        //console.log("THUMBNAIL A " + mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + prevCaseId + '"}&db=' + selection.db);
         $.ajax({
             url: mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + prevCaseId + '"}&db=' + selection.db,
             async: false,
@@ -193,7 +195,7 @@ function parseData(data, size, query) {
 
         if (!sameCaseId) {
             // Get info about each slide.
-            console.log("THUMBNAIL B " + mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + doc.provenance.image.case_id + '"}&db=' + selection.db);
+            //console.log("THUMBNAIL B " + mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + doc.provenance.image.case_id + '"}&db=' + selection.db);
             $.ajax({
                 url: mugshots.findApi + '?collection=' + config.imgcoll + '&limit=1&find={"case_id":"' + doc.provenance.image.case_id + '"}&db=' + selection.db,
                 async: false,
@@ -346,7 +348,6 @@ function draw(targetDiv, data, query, layout) {
                 region = new_x + "," + new_y + "," + canvas.width + "," + canvas.height;
 
                 uri = scheme + "://" + server + "/" + prefix + data[idx].identifier + "/" + region + "/" + iSize + "/" + rotation + "/" + quality + "." + format;
-                log(uri);
 
                 link = document.createElement('a');
 
