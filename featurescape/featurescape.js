@@ -116,9 +116,6 @@ function cleanUI() { // and create fscapeAnalysisDiv
 }
 
 function doFeaturescape(data, url) {
-    console.log("alskdjf;lasdkjf");
-
-    document.getElementById('msg').textContent = '--> processing ...';
 
     if (data.length == 0) {
 
