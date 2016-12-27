@@ -458,7 +458,7 @@ function createQuery(db, exec) {
     case_id = config.default_case_id;
     query = findhost + ':' + findport
         + '?limit=1000&find={"randval":{"$gte":' + abcUtil.randval() + '},'
-        + '"provenance.analysis.execution_id":"' + exec + '",'
+        + '"provenance.analysis.execution_id":"' + exec + '","provenance.analysis.source":"computer",'
         + '"provenance.image.case_id":"' + case_id + '"}'
         + '&db=' + db;
 
