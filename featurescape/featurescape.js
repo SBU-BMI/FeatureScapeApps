@@ -1,17 +1,13 @@
-fscape = function (x) {
-    // being used to ini UI
-    if ((!x) && (document.getElementById("section"))) {
-        fscape.UI()
-    } else if (x) { //creating an fscape grid instance
-        return new fscape.grid(x)
-    } else {
-        console.log('no fscape UI')
-    }
-};
+var selection = {};
+var url = '';
+var docs = [];
+var findhost = "";
+var findport = "";
+var fscapeDiv;
+var fscapeData;
 
-fscape.UI = function () {
-    fscape.div = document.getElementById("section");
-    selection = {};
+$(function () {
+    fscapeDiv = document.getElementById("section");
 
     //  check for data URL
     var q = '';
@@ -34,77 +30,96 @@ fscape.UI = function () {
             }
             console.log("findhost", findhost);
             console.log("findport", findport);
-            // We just gonna pass q along to fscape.loadURL, below.
+            // We just gonna pass q along to getData(), below.
 
         }
 
     }
     else {
         // Default
+        selection.cancer_type = 'luad';
         findhost = config.findAPI;
         findport = config.port;
         console.log("findhost", findhost);
         console.log("findport", findport);
+
         q = createQuery(config.default_db, config.default_execution_id);
     }
-    fscape.loadURL(q);
-};
+    getData(q);
+});
 
-fscape.loadURL = function (url) {
+function getData(url) {
     console.log("*** getJSON ***");
-    log(url);
-    msg.textContent = "loading, please wait ...";
+    console.log(url);
+    document.getElementById('msg').textContent = "Fetching data, please wait ...";
 
-    try {
-        $.getJSON(url,
-            function (jsonResult) {
-                console.log("Success!");
-                fscape.fun(jsonResult, url);
-            })
-            .done(function () {
-                console.log('getJSON request succeeded!');
-            })
-            .fail(function (jqXHR, textStatus, errorThrown) {
-                console.log('getJSON request failed! ' + errorThrown);
-                console.log("error " + textStatus);
-                console.log("incoming Text " + JSON.stringify(jqXHR, null, 3));
-                document.getElementById("msg").innerHTML = "getJSON request failed<br><pre>" + JSON.stringify(jqXHR, null, 3) + "</pre>That's all we know.";
-            });
-    }
-    catch(err) {
-        // Control never gets passed here; just want to show we did indeed try it.
-        document.getElementById("msg").innerHTML = err.message;
-    }
-};
+    // Do like fig4.
+    $.getJSON(url).then(function (data) {
 
-fscape.log = function (divID, txt, color) {
+        if (data.length == 0) {
+            document.getElementById('msg').textContent = "Data not available";
+        }
+        else {
+            document.getElementById('msg').textContent = "OK! Loading ...";
+            doFeaturescape(data, url);
+        }
+
+    });
+
+    /*
+     // This section, while decent effort, does not improve speed, nor does it indicate slowness.
+     // Why?  Because nothing is "failing".
+     try {
+     $.getJSON(url,
+     function (jsonResult) {
+     console.log("Success!");
+     doFeaturescape(jsonResult, url);
+     })
+     .done(function () {
+     console.log('getJSON request succeeded!');
+     })
+     .fail(function (jqXHR, textStatus, errorThrown) {
+     console.log('getJSON request failed! ' + errorThrown);
+     console.log("error " + textStatus);
+     console.log("incoming Text " + JSON.stringify(jqXHR, null, 3));
+     document.getElementById("msg").innerHTML = "getJSON request failed<br><pre>" + JSON.stringify(jqXHR, null, 3) + "</pre>That's all we know.";
+     });
+     }
+     catch(err) {
+     // Control never gets passed here; just want to show we did indeed try it.
+     document.getElementById("msg").innerHTML = err.message;
+     }
+     */
+}
+
+function log(divID, txt, color) {
     var d = document.getElementById(divID);
     d.innerHTML = txt;
     d.style.color = ((!color) ? 'navy' : color);
-};
+}
 
-fscape.cleanUI = function () { // and create fscapeAnalysisDiv
+function cleanUI() { // and create fscapeAnalysisDiv
 
     console.log("Preparing UI");
     if (!document.getElementById('fscapeAnalysisDiv')) {
-        $('<div id="fscapeAnalysisDiv"></div>').appendTo(fscape.div);
+        $('<div id="fscapeAnalysisDiv"></div>').appendTo(fscapeDiv);
         fscapeAnalysisDiv.hidden = true;
         $(fscapeAnalysisDiv).show(1000)
     } else {
         fscapeAnalysisDiv.textContent = ''
     }
-};
+}
 
-fscape.fun = function (data, url) {
+function doFeaturescape(data, url) {
 
-    //msg.textContent = '--> processing ...';
+    document.getElementById('msg').textContent = '--> processing ...';
 
     if (data.length == 0) {
         console.log("data.length == 0");
 
         document.getElementById('section').innerHTML = '<span style="color:red">Data not available for patient:</span><br>'
             + getPatient(url);
-        msg.textContent = '';
+        document.getElementById('msg').textContent = '';
 
     }
     else {
@@ -143,7 +158,7 @@ fscape.fun = function (data, url) {
         });
 
         var xx = nv;
-        msg.textContent = '';
+        document.getElementById('msg').textContent = '';
         var p = getPatient(url);
 
         if (!selection.cancer_type) {
@@ -157,16 +172,15 @@ fscape.fun = function (data, url) {
             + (p.length > 12 ? 'diagnostic image ' : 'patient ')
             + '<strong>' + p + '</strong>';
 
-        fscape.log('info1', text, 'black');
+        log('info1', text, 'black');
 
-        fscape.cleanUI();
+        cleanUI();
 
-        fscape.plot(xx)
+        plot(xx);
     }
 
-};
-
-fscape.clust2html = function (cl) {
+}
+function clust2html(cl) {
     var ind = cl[0];
     var T = cl[1];
     var cmap = jmat.colormap().map(function (ci) {
@@ -183,7 +197,7 @@ fscape.clust2html = function (cl) {
     h += '<tr style="height:100px;vertical-align:bottom">';
     h += '<td style="color:navy">Variable</td>';
     ind.forEach(function (i, j) {
-        h += '<td><span><div class="textColVertical" style="width:12px;transform:rotate(-90deg);font-size:12px">' + fscape.dt.parmNum[i] + '</div></span></td>'
+        h += '<td><span><div class="textColVertical" style="width:12px;transform:rotate(-90deg);font-size:12px">' + fscapeData.parmNum[i] + '</div></span></td>'
 
     });
     h += '</tr>';
@@ -192,7 +206,7 @@ fscape.clust2html = function (cl) {
     // body
     h += '<tbody>';
     ind.forEach(function (i, j) {
-        h += '<tr><td>' + fscape.dt.parmNum[i] + '</td>';
+        h += '<tr><td>' + fscapeData.parmNum[i] + '</td>';
         T.forEach(function (c, k) {
             var x = Math.pow(c[j], 2); // E[0,1]
             if (isNaN(x)) {
@@ -212,10 +226,10 @@ fscape.clust2html = function (cl) {
     h += '</table><p id="featuremoreTD"></p>';
 
     return h
-};
+}
 
 // do it
-fscape.plot = function (x) { // when ready to do it
+function plot(x) { // when ready to do it
     console.log("Plotting graph");
     fscapeAnalysisDiv.innerHTML = '<table id="fscapeAnalysisTab">'
         + '<tr><td id="featurecrossTD" style="vertical-align:top"></td>'
@@ -224,14 +238,14 @@ fscape.plot = function (x) { // when ready to do it
         + '<td id="featurecompTD" style="vertical-align:top"></td></tr></table>'
         + '<div id="featurecomputeDIV"></div>';
     //fscapeAnalysisDiv
-    if (x) { // otherwise expect the data already packed in fscape.dt
-        fscape.dt = {
+    if (x) { // otherwise expect the data already packed in fscapeData
+        fscapeData = {
             docs: x,
             tab: {}
         };
 
         Object.getOwnPropertyNames(x[0]).forEach(function (p) {
-            fscape.dt.tab[p] = x.map(function (xi) {
+            fscapeData.tab[p] = x.map(function (xi) {
                 return xi[p]
             })
         })
@@ -240,13 +254,13 @@ fscape.plot = function (x) { // when ready to do it
     // featurecrossTD
 
     // numeric parameters
-    var parmNum = Object.getOwnPropertyNames(fscape.dt.tab).filter(function (p) {
-        return typeof(fscape.dt.docs[0][p]) == "number"
+    var parmNum = Object.getOwnPropertyNames(fscapeData.tab).filter(function (p) {
+        return typeof(fscapeData.docs[0][p]) == "number"
     });
 
     // cluster numeric parameters
     var xx = parmNum.map(function (p) {
-        return fscape.dt.tab[p]
+        return fscapeData.tab[p]
     });
 
     // make sure they're all numbers
@@ -279,20 +293,20 @@ fscape.plot = function (x) { // when ready to do it
     });
 
     var cl = jmat.cluster(cc);  // remember this has three output arguments
-    fscape.dt.cl = cl; // this may be better kept as a structure
-    fscape.dt.parmNum = parmNum;
+    fscapeData.cl = cl; // this may be better kept as a structure
+    fscapeData.parmNum = parmNum;
 
     featurecrossTD.innerHTML = "<label>Click to choose a different cancer type &amp; tissue slide image:&nbsp;"
         + '<input type="button" class="btn btn-secondary" onclick="window.location.href=\'u24Preview.html#' + findhost + ':' + findport + '\'" name="btnSelect" id="btnSelect" value="Go!" />'
-        + "</label><br><br>" + fscape.clust2html(cl);
+        + "</label><br><br>" + clust2html(cl);
 
     setTimeout(function () {
         var tdfun = function () {
             var ij = JSON.parse('[' + this.id + ']');
             if (ij.length > 0) {
                 var i = ij[1], j = ij[0];
-                var fi = fscape.dt.parmNum[i];
-                var fj = fscape.dt.parmNum[j];
+                var fi = fscapeData.parmNum[i];
+                var fj = fscapeData.parmNum[j];
                 if ($('#featuremapTD > table').length == 0) {
                     featuremapTD.innerHTML = 'zooming into <br>'
                         + '<li style="color:blue">' + fi + '</li>'
@@ -311,7 +325,7 @@ fscape.plot = function (x) { // when ready to do it
 
                 this.textContent = "X";
                 setTimeout(function () {
-                    fscape.scatterPlot("featuremapTD", i, j);
+                    scatterPlot("featuremapTD", i, j);
                 }, 0)
             }
         };
@@ -320,10 +334,10 @@ fscape.plot = function (x) { // when ready to do it
             var ij = JSON.parse('[' + this.id + ']');
             if (ij.length > 0) {
                 var i = ij[1], j = ij[0];
-                var ind = fscape.dt.cl[0];
+                var ind = fscapeData.cl[0];
                 var ii = ind.indexOf(i), jj = ind.indexOf(j);
-                var fi = fscape.dt.parmNum[i];
-                var fj = fscape.dt.parmNum[j];
+                var fi = fscapeData.parmNum[i];
+                var fj = fscapeData.parmNum[j];
                 var cBack = JSON.parse('[' + this.style.color.slice(4, -1).split(', ') + ']').map(function (c) {
                     return 255 - c
                 }).toString();
@@ -334,7 +348,7 @@ fscape.plot = function (x) { // when ready to do it
                     + '<li style="color:navy">' + fi + ' </li>'
                     + '<li style="color:navy">' + fj + '</li> '
                     + '|corr(' + ii + ',' + jj + ')|= '
-                    + jmat.toPrecision(1 - fscape.dt.cl[1][ii][jj])
+                    + jmat.toPrecision(1 - fscapeData.cl[1][ii][jj])
                     + '</p><p style="background-color: ' + this.style.color + '; font-size: 3px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
 
                 $(this).tooltip()[0].title = '< ' + fi + ' , ' + fj + ' >';
@@ -344,136 +358,13 @@ fscape.plot = function (x) { // when ready to do it
         $('td', featurecrossTB).click(tdfun);
         $('td', featurecrossTB).mouseover(tdover);
 
-        msg.textContent = '';
+        document.getElementById('msg').textContent = '';
 
     }, 0);
 
-};
+}
 
-// fscape.featuremap
-fscape.featuremap = function (i, j) {
-    // cross filter
-    var ind = fscape.dt.cl[0];
-    var ii = ind.indexOf(i), jj = ind.indexOf(j);
-    var fi = fscape.dt.parmNum[i];
-    var fj = fscape.dt.parmNum[j];
-
-    if (!fscape.dt.dtmemb) { // if the data was not normalized already
-        fscape.dt.dtmemb = {}; // distributions
-        fscape.dt.parmNum.forEach(function (p) {
-            fscape.dt.dtmemb[p] = jmat.memb(fscape.dt.tab[p])
-        })
-    }
-
-    if (!fscape.dt.tabmemb) {
-        fscape.dt.tabmemb = {}
-    }
-
-    if (!fscape.dt.tabmemb[fi]) {
-        fscape.dt.tabmemb[fi] = jmat.memb(fscape.dt.tab[fi], fscape.dt.dtmemb[fi])
-    }
-
-    if (!fscape.dt.tabmemb[fj]) {
-        fscape.dt.tabmemb[fj] = jmat.memb(fscape.dt.tab[fj], fscape.dt.dtmemb[fj])
-    }
-
-    //
-    if ($('#featuremapTD > table').length == 0) { // assemble map
-        fscape.dt.n = 20; //fscape.dt.docs.length/100  // for a n x n table
-        var h = '<div id="2DscatterPlot" style="color:red">processing 2D plot ...</div>';
-        h += '<table id="quantileMap" style="visibility:hidden">'; // notice it starts hidden
-        h += '<tr><td id="legendFj">fj</td><td></td></tr>';
-        h += '<tr><td id="featuremapTableTD"></td><td id="legendFi">fi</td></tr>';
-        h += '</table><div id="featuremapMoreDiv"><div>';
-        featuremapTD.innerHTML = h;
-        // 2d scatter plot
-        fscape.scatterPlot(document.getElementById("2DscatterPlot"), i, j);
-
-        // featuremapTableTD
-        var hh = '<table id="featureheatmapTable">';
-        var tii = jmat.range(0, fscape.dt.n - 1);
-        var tjj = jmat.range(0, fscape.dt.n - 1);
-        tii.forEach(function (ti) {
-            hh += '<tr>';
-            tjj.forEach(function (tj) {
-                hh += '<td id="fm_' + (fscape.dt.n - ti - 1) + '_' + (tj) + '">&nbsp;&nbsp;&nbsp;</td>'
-            });
-            hh += '</tr>'
-        });
-        hh += '</table>';
-        featuremapTableTD.innerHTML = hh;
-
-        var mapTDover = function () {
-            featuremapMoreDiv.innerHTML = this.id;
-            var qij = JSON.parse('[' + this.id.slice(3).replace('_', ',') + ']').map(function (q) {
-                return q / fscape.dt.n
-            });
-
-            var vi = jmat.interp1(fscape.dt.dtmemb[fi][1], fscape.dt.dtmemb[fi][0], [qij[0], qij[0] + 1 / fscape.dt.n]);
-            var vj = jmat.interp1(fscape.dt.dtmemb[fj][1], fscape.dt.dtmemb[fj][0], [qij[1], qij[1] + 1 / fscape.dt.n]);
-            var c = this.style.backgroundColor;
-            var h = '<p style="background-color: ' + c + '; font-size: 3px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
-            h += '<li>' + fj + ' = [' + jmat.toPrecision(vj) + ']</li>';
-            h += 'Quantile = [' + jmat.toPrecision([qij[1], qij[1] + 1 / fscape.dt.n]) + ']';
-            h += '<li>' + fi + ' = [' + jmat.toPrecision(vi) + ']</li>';
-            h += 'Quantile = [' + jmat.toPrecision([qij[0], qij[0] + 1 / fscape.dt.n]) + ']';
-            h += '<p style="color:blue">distribution density: ' + jmat.toPrecision(this.d) + '</p>';
-            h += '<p style="background-color: ' + c + '; font-size: 3px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
-            featuremapMoreDiv.innerHTML = h
-        };
-
-        $('#featureheatmapTable >>> td').mouseover(mapTDover);
-        legendFi.style.transform = "rotate(-90deg)";
-        quantileMap.style.visibility = "visible";
-    } else {
-        fscape.scatterPlot(document.getElementById("2DscatterPlot"), i, j)
-    }
-
-    // legends
-    legendFi.textContent = fi;
-    legendFj.textContent = fj;
-
-    // calculate densities
-    var M = jmat.zeros(fscape.dt.n, fscape.dt.n);
-    var N = fscape.dt.n - 1 / fscape.dt.tab[fi].length; // to shave the ceiling
-
-    var s = fscape.dt.n / (fscape.dt.tabmemb[fi].length); // step increase
-    jmat.transpose([fscape.dt.tabmemb[fi], fscape.dt.tabmemb[fj]]).forEach(function (xij) {
-        M[Math.floor(xij[0] * N)][Math.floor(xij[1] * N)] += s
-    });
-
-    // prepare the colormap
-    var cmap = jmat.colormap().map(function (ci) {
-        return ci.map(function (cij) {
-            return Math.round(cij * 255)
-        })
-    });
-
-    var ij = jmat.range(0, fscape.dt.n - 1);
-    ij.forEach(function (ti) {
-        ij.forEach(function (tj) {
-            var td = document.getElementById('fm_' + ti + '_' + tj);
-            var d = M[ti][tj]; // density
-            td.d = d;
-            var v = Math.round(63 * d);
-            v = Math.min(63, v);
-            var c = 'rgb(' + cmap[v].toString() + ')';
-            td.style.backgroundColor = c
-        })
-    });
-
-    // mouse over anywhere in the map refocuses correlation info
-    featureheatmapTable.onmouseover = function () {
-        var c = featurecrossTB.tBodies[0].children[ii].children[jj + 1].style.color;
-        var cBack = JSON.parse('[' + this.style.color.slice(4, -1).split(', ') + ']').map(function (c) {
-            return 255 - c
-        }).toString();
-        featuremoreTD.innerHTML = '<p style="background-color: ' + c + '; font-size: 3px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p><p style="color:navy">Pearson correlation between <li style="color:navy">' + fi + ' </li><li style="color:navy">' + fj + '</li> corr(' + ii + ',' + jj + ')= ' + Math.round((1 - fscape.dt.cl[1][ii][jj]) * 1000) / 1000 + '</p><p style="background-color: ' + c + '; font-size: 3px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>'
-    };
-
-};
-
-fscape.scatterPlot = function (div0, i, j) {
+function scatterPlot(div0, i, j) {
     // feature names
     if (typeof(div0) == 'string') {
         div0 = document.getElementById(div0)
@@ -482,10 +373,10 @@ fscape.scatterPlot = function (div0, i, j) {
     div0.innerHTML = '';
     var div = document.createElement('div');
     div0.appendChild(div);
-    var fi = fscape.dt.parmNum[i];
-    var fj = fscape.dt.parmNum[j];
-    var x = fscape.dt.tab[fi];
-    var y = fscape.dt.tab[fj];
+    var fi = fscapeData.parmNum[i];
+    var fj = fscapeData.parmNum[j];
+    var x = fscapeData.tab[fi];
+    var y = fscapeData.tab[fj];
     div.style.width = '600px';
     div.style.height = '500px';
 
@@ -513,7 +404,7 @@ fscape.scatterPlot = function (div0, i, j) {
         }
     };
 
-    fscape.plt = Plotly.newPlot(div, [trace0], layout);
+    Plotly.newPlot(div, [trace0], layout);
     window.scrollTo(window.innerWidth, window.scrollY);
 
     console.log(div._fullLayout.xaxis._tmin, div._fullLayout.xaxis._tmax, div._fullLayout.yaxis._tmin, div._fullLayout.yaxis._tmax);
@@ -562,8 +453,7 @@ fscape.scatterPlot = function (div0, i, j) {
 
     };
 
-};
-
+}
 function createQuery(db, exec) {
     console.log("Creating query...");
     case_id = config.default_case_id;
@@ -600,10 +490,3 @@ function getPatient(q) {
     }
 
 }
-
-var findhost = "";
-var findport = "";
-
-$(function () {
-    fscape();
-});
