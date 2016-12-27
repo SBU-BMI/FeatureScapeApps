@@ -13,7 +13,7 @@ function buildQueryStr() {
     return (mugshots.findApi
     + '?collection=objects&limit=12&find={"provenance.analysis.execution_id":"'
     + selection.execution_id
-    + '","randval":{"$gte":'
+    + '","provenance.analysis.source":"computer","randval":{"$gte":'
     + abcUtil.randval() + '}}&db='
     + selection.db);
 }
