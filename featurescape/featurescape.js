@@ -51,7 +51,9 @@ $(function () {
 function getData(url) {
     console.log("*** getJSON ***");
     console.log(url);
-    document.getElementById('msg').textContent = "Fetching data, please wait ...";
+    //document.getElementById('msg').textContent = "Fetching data, please wait ...";
+
+    document.getElementById('msg').innerHTML = '<p>Processing...</p><br><img src="' + config.domain + '/img/ajax-loader.gif" border="0" alt=" photo ajax-loader.gif"/>';
 
     /*
     // Do like fig4.

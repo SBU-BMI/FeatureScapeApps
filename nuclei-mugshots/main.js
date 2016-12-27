@@ -390,7 +390,8 @@ function draw(targetDiv, data, query, layout) {
 function getData(url) {
 
     abcUtil.clrMsg('');
-    doMessage('msg', document.body, 'loading, please wait ...', 'red');
+    //doMessage('msg', document.body, 'loading, please wait ...', 'red');
+    document.getElementById('msg').innerHTML = '<p>Processing...</p><br><img src="' + config.domain + '/img/ajax-loader.gif" border="0" alt=" photo ajax-loader.gif"/>';
     slides_not_found = false;
 
     try {
