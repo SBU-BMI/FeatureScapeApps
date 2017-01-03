@@ -295,14 +295,21 @@ function draw(targetDiv, data, query, layout) {
             tbl = document.createElement('table'),
             idx = 0, i, j, row, col,
             scheme = 'http',
-            server = findhost.substring(7), //config.iiifServer,
-            prefix = config.iiifPrefix,
             region = '',
             iSize = 'full',
             rotation = '0',
             quality = 'default',
             format = 'jpg',
             obj, normalized, canvas, w, h, new_x, new_y, uri, link, context, imgSrc;
+
+        var server = findhost.substring(7);
+        if (!server)
+        {
+            server = config.iiifServer;
+        }
+        
+        var prefix = config.iiifPrefix;       
+        console.log("build:", prefix, server);  
 
         fragment.appendChild(tbl);
 
