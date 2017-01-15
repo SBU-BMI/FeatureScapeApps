@@ -353,11 +353,23 @@ function plot(x) { // when ready to do it
                     + '</p><p style="background-color: ' + this.style.color + '; font-size: 3px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>';
 
                 $(this).tooltip()[0].title = '< ' + fi + ' , ' + fj + ' >';
+                this.parentElement.children[0].style.backgroundColor="yellow"
+                this.parentElement.parentElement.parentElement.tHead.children[0].children[ii+1].style.backgroundColor="yellow"
+
             }
         };
 
+        var tdleave = function(){
+            this.parentElement.children[0].style.backgroundColor=""
+            var jj = parseInt(this.id.split(',')[1])
+            var ind=fscape.dt.cl[0]
+            var j = ind.indexOf(jj)
+            this.parentElement.parentElement.parentElement.tHead.children[0].children[j+1].style.backgroundColor=""
+        }
+
         $('td', featurecrossTB).click(tdfun);
         $('td', featurecrossTB).mouseover(tdover);
+        $('td', featurecrossTB).mouseleave(tdleave);
 
         document.getElementById('msg').textContent = '';
 
