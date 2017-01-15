@@ -362,7 +362,7 @@ function plot(x) { // when ready to do it
         var tdleave = function(){
             this.parentElement.children[0].style.backgroundColor=""
             var jj = parseInt(this.id.split(',')[1])
-            var ind=fscape.dt.cl[0]
+            var ind=fscapeData.cl[0]
             var j = ind.indexOf(jj)
             this.parentElement.parentElement.parentElement.tHead.children[0].children[j+1].style.backgroundColor=""
         }
