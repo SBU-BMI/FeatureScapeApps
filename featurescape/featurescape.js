@@ -429,6 +429,7 @@ function scatterPlot(div0, i, j) {
     divZ.innerHTML = '<p><button id="resampleBt" class="btn btn-secondary" style="color:red">Nuclear mugshots from selection region</button></p>'
         + '<p id="resampleMsg"></p>';
     div.appendChild(divZ);
+    $.getScript('http://localhost:8000/featurescapeBMI/fun/zoomin.js')
 
     resampleBt.onclick = function () {
 
