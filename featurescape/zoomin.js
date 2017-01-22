@@ -20,7 +20,8 @@ zoomin=function(){ // ini
             var plty=document.getElementsByClassName('js-plotly-plot')[0]
             console.log(plty._fullLayout.xaxis,plty._fullLayout.yaxis)
             console.log('opening download window')
-            window.open('http://localhost:8000/featurescapeBMI/fun/download.html?url='+encodeURIComponent(location.search.slice(1))+'&xTitle='+plty._fullLayout.xaxis.title+'&yTitle='+plty._fullLayout.yaxis.title+'&xmin='+plty._fullLayout.xaxis._r[0]+'&xmax='+plty._fullLayout.xaxis._r[1]+'&ymin='+plty._fullLayout.yaxis._r[0]+'&ymax='+plty._fullLayout.yaxis._r[1])
+            //window.open('http://localhost:8000/featurescapeBMI/fun/download.html?url='+encodeURIComponent(location.search.slice(1))+'&xTitle='+plty._fullLayout.xaxis.title+'&yTitle='+plty._fullLayout.yaxis.title+'&xmin='+plty._fullLayout.xaxis._r[0]+'&xmax='+plty._fullLayout.xaxis._r[1]+'&ymin='+plty._fullLayout.yaxis._r[0]+'&ymax='+plty._fullLayout.yaxis._r[1])
+            window.open('download.html?url='+encodeURIComponent(location.search.slice(1))+'&xTitle='+plty._fullLayout.xaxis.title+'&yTitle='+plty._fullLayout.yaxis.title+'&xmin='+plty._fullLayout.xaxis._r[0]+'&xmax='+plty._fullLayout.xaxis._r[1]+'&ymin='+plty._fullLayout.yaxis._r[0]+'&ymax='+plty._fullLayout.yaxis._r[1])
         }
     }
 }
