@@ -217,7 +217,7 @@ function clust2html(cl) {
             v = Math.min(v, 50);
             v = Math.max(v, 0);
             var cm = 'rgb(' + cmap[v].toString() + ')';
-            h += '<td id="' + i + ',' + ind[k] + '" style="color:' + cm + ';font-size:' + (14 - 4 * c[j]) + '">O</td>';
+            h += '<td id="' + i + ',' + ind[k] + '" style="color:' + cm + ';background-color:'+cm+';font-size:' + (14 - 4 * c[j]) + '">O</td>';
 
         });
         h += '</tr>'
@@ -297,7 +297,7 @@ function plot(x) { // when ready to do it
     fscapeData.parmNum = parmNum;
 
     featurecrossTD.innerHTML = "<label>Click to choose a different cancer type &amp; tissue slide image:&nbsp;"
-        + '<input type="button" class="btn btn-secondary" onclick="window.location.href=\'u24Preview.html#' + findhost + ':' + findport + '\'" name="btnSelect" id="btnSelect" value="Go!" />'
+        + '<input type="button" class="btn btn-secondary" onclick="window.open(\''+location.href.slice(0,location.href.indexOf('?'))+'u24Preview.html#' + findhost + ':' + findport + '\')" name="btnSelect" id="btnSelect" value="Go!" />'
         + "</label><br><br>" + clust2html(cl);
 
     setTimeout(function () {
@@ -316,15 +316,20 @@ function plot(x) { // when ready to do it
                 }
                 // place an X on selection td, after clearing it all to "O"
                 for (var tri = 0; tri < this.parentElement.parentElement.children.length; tri++) {
-                    for (var tdj = 0; tdj < this.parentElement.parentElement.children[tri].children.length; tdj++) {
+                    for (var tdj = 1; tdj < this.parentElement.parentElement.children[tri].children.length; tdj++) {
                         var txtC = this.parentElement.parentElement.children[tri].children[tdj];
                         if (txtC.textContent.length == 1) {
                             txtC.textContent = 'O'
+                            txtC.style.border=''
+                            txtC.align="center"
+                            txtC.style.color=txtC.style.backgroundColor
                         }
                     }
                 }
 
                 this.textContent = "X";
+                this.style.color='rgb('+this.style.backgroundColor.match(/[0123456789]+/g).map(function(x){return 255-parseInt(x)}).join(',')+')'
+                this.style.border='solid'
                 setTimeout(function () {
                     scatterPlot("featuremapTD", i, j);
                 }, 0)
