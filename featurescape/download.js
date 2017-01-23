@@ -14,7 +14,7 @@ downloadData=function(div){
     // 'properties.scalar_features.nv' :
     
     downloadData.parms.url=downloadData.parms.url.replace(/limit=\d+&/,'').replace(/"\$gte"\:[0123456789\.]+/,'"$gte":0')
-    div.innerHTML='<p id="downloadDataLimitMsg"></p>Maximum number of features to download: <input style="color:blue" id="downloadDataLimitInput" size=6> <button class="btn btn-primary" id="downloadButton" disabled>Download</button><hr><button id="saveFileJsonBt" class="btn btn-success" disabled>Save File as JSON</button> <button id="saveFileCsvBt" class="btn btn-success" disabled>Save File as CSV</button>'
+    div.innerHTML='<p id="downloadDataLimitMsg"></p>Maximum number of features to download: <input style="color:blue" id="downloadDataLimitInput" size=6> <button class="btn btn-primary" id="downloadButton" disabled>Download</button><hr><button id="saveFileJsonBt" class="btn btn-success" disabled>Save File as JSON</button> <button id="saveFileCsvBt" class="btn btn-success" disabled>Save File as CSV</button> (Chrome browser preferred)'
     downloadDataLimitInput.value=100000
     downloadData.msg=function(m,c){
         downloadDataLimitMsg.style.color=c||'blue'
@@ -113,23 +113,26 @@ downloadData.getData=function(){
     }
     //url = url.replace('http://quip1.uhmc.sunysb.edu','http://129.49.249.191')
     $.getJSON(url)
-     .then(function(x){
+     .then(function(x){         
          try{
+             if(!Array.isArray(x)){x=[]}
              //downloadData.parms.n+=x.length
-             downloadData.parms.lastId=x.slice(-1)[0]._id
-             downloadData.dt=downloadData.dt.concat(downloadData.propertiesArray(x))
-             console.log(Date()+' n = '+downloadData.dt.length+', last _id = '+downloadData.parms.lastId)
+             if(x.length>0){
+                 downloadData.parms.lastId=x.slice(-1)[0]._id
+                 downloadData.dt=downloadData.dt.concat(downloadData.propertiesArray(x))
+                 console.log(Date()+' n = '+downloadData.dt.length+', last _id = '+downloadData.parms.lastId)
+             }
              downloadData.msg('features retrieved: '+downloadData.dt.length+' ... out of an estimated total of '+downloadData.parms.pn)
              if((x.length==n)&(x.length<parseInt(downloadDataLimitInput.value))){
                  setTimeout(function(){
-                    downloadData.parms.urlFind = downloadData.parms.urlFind.replace('http://quip1.uhmc.sunysb.edu','http://129.49.249.191')
+                    //downloadData.parms.urlFind = downloadData.parms.urlFind.replace('http://quip1.uhmc.sunysb.edu','http://129.49.249.191')
                     downloadData.getData()
                  },1000)
              }else{
                  downloadData.dt=downloadData.dt.slice(0,Math.min(downloadData.dt.length,parseInt(downloadDataLimitInput.value)))
                  var N=downloadData.dt.length
                  var M=Object.getOwnPropertyNames(downloadData.dt[0]).length
-                 downloadData.msg('Data retrieval ended, '+N+' x '+M+' = '+(N*M)+' values retrieved') //, it can be resumed by clicking on Download','green')
+                 downloadData.msg('Data retrieval ended, '+N+' x '+M+' = '+(N*M)+' values retrieved','green') //, it can be resumed by clicking on Download','green')
                  downloadButton.disabled=false
                  downloadButton.textContent='New Download'
                  downloadButton.style.backgroundColor='orange'
