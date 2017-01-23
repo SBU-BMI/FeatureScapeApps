@@ -65,10 +65,16 @@ downloadData=function(div){
 
      saveFileCsvBt.onclick=function(){
          var ff = Object.getOwnPropertyNames(downloadData.dt[0]).sort()
-         var csv=ff.join(',') // header
+         var csv=ff.join(',')+'\n' // header
+         downloadData.dt.forEach(function(r){
+             var x = []
+             ff.forEach(function(f){
+                 x.push(r[f])
+             })
+             csv+=x.join(',')+'\n'
+         })
+         jmat.saveFile(csv.slice(0,-1),'features.csv')
          
-
-         //jmat.saveFile(JSON.stringify(downloadData.dt),'features.json')
      }
 
 }
@@ -123,7 +129,7 @@ downloadData.getData=function(){
                  downloadData.msg('Data retrieval ended, it can be resumed by clicking on Download','green')
              }
              saveFileJsonBt.disabled=false
-             //saveFileCsvBt.disabled=false
+             saveFileCsvBt.disabled=false
          }
          catch(err){
              console.log(Date()+' error:',x)
