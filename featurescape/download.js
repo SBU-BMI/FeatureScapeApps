@@ -126,7 +126,17 @@ downloadData.getData=function(){
                     downloadData.getData()
                  },1000)
              }else{
-                 downloadData.msg('Data retrieval ended, it can be resumed by clicking on Download','green')
+                 downloadData.dt=downloadData.dt.slice(0,Math.min(downloadData.dt.length,parseInt(downloadDataLimitInput.value)))
+                 var N=downloadData.dt.length
+                 var M=Object.getOwnPropertyNames(downloadData.dt[0]).length
+                 downloadData.msg('Data retrieval ended, '+N+' x '+M+' = '+(N*M)+' values retrieved') //, it can be resumed by clicking on Download','green')
+                 downloadButton.disabled=false
+                 downloadButton.textContent='New Download'
+                 downloadButton.style.backgroundColor='orange'
+                 downloadButton.style.color='green'
+                 downloadButton.onclick=function(){
+                     window.open(location.href)
+                 }
              }
              saveFileJsonBt.disabled=false
              saveFileCsvBt.disabled=false
