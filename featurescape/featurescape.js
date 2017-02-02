@@ -297,7 +297,7 @@ function plot(x) { // when ready to do it
     fscapeData.parmNum = parmNum;
 
     featurecrossTD.innerHTML = "<label>Click to choose a different cancer type &amp; tissue slide image:&nbsp;"
-        + '<input type="button" class="btn btn-secondary" onclick="window.open(\''+location.href.slice(0,location.href.indexOf('?'))+'/u24Preview.html#' + findhost + ':' + findport + '\')" name="btnSelect" id="btnSelect" value="Go!" />'
+        + '<input type="button" class="btn btn-secondary" onclick="window.open(\''+location.href.slice(0,location.href.indexOf('?'))+'\/u24Preview.html#' + findhost + ':' + findport + '\')" name="btnSelect" id="btnSelect" value="Go!" />'
         + "</label><br><br>" + clust2html(cl);
 
     setTimeout(function () {
