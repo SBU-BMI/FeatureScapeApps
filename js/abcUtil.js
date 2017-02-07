@@ -124,7 +124,7 @@ abcUtil = {
         if (jQuery.isEmptyObject(trace)) {
 
             trace = {
-                url: selection.findhost + ':' + selection.findport + '/?limit=12&collection=metadata&find={}&db=u24_meta',
+                url: selection.findhost + ':' + selection.findport + '/?limit=120&collection=metadata&find={}&db=u24_meta',
                 id: 'selectTumor',
                 onchange: 'tumorChanged(this)',
                 font_color: 'navy',
