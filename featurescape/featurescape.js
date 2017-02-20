@@ -296,8 +296,15 @@ function plot(x) { // when ready to do it
     fscapeData.cl = cl; // this may be better kept as a structure
     fscapeData.parmNum = parmNum;
 
+    var str = location.href.slice(0, location.href.indexOf('?'));
+    var n = str.endsWith("/");
+    if (n == false)
+    {
+        str = str + "/";
+    }
+
     featurecrossTD.innerHTML = "<label>Click to choose a different cancer type &amp; tissue slide image:&nbsp;"
-        + '<input type="button" class="btn btn-secondary" onclick="window.open(\''+location.href.slice(0,location.href.indexOf('?'))+'\/u24Preview.html#' + findhost + ':' + findport + '\')" name="btnSelect" id="btnSelect" value="Go!" />'
+        + '<input type="button" class="btn btn-secondary" onclick="window.open(\''+ str +'u24Preview.html#' + findhost + ':' + findport + '\')" name="btnSelect" id="btnSelect" value="Go!" />'
         + "</label><br><br>" + clust2html(cl);
 
     setTimeout(function () {
