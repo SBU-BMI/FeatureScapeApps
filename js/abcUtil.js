@@ -62,7 +62,7 @@ abcUtil = {
         // test:begin
         if (arr.length<=size) {
             console.log("Returning now.",arr.length);
-            return arr.slice(0);
+            return arr;
         } else { // test:end
         
             var shuffled = arr.slice(0),
