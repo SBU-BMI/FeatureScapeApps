@@ -59,6 +59,11 @@ abcUtil = {
     },
 
     getRandomSubarrayPartialShuffle: function (arr, size) {
+        // test:begin
+        if (arr.length<=size) 
+            return arr.slice(0);
+        // test:end
+        
         var shuffled = arr.slice(0),
             i = arr.length,
             min = i - size,
