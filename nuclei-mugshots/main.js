@@ -321,6 +321,8 @@ function draw(targetDiv, data, query, layout) {
             // n columns
             for (j = 0; j < mugshots.n; j++) {
 
+             if (idx<data.length) { // test:begin
+                
                 obj = {
                     x: data[idx].markup[0],
                     y: data[idx].markup[1],
@@ -376,6 +378,8 @@ function draw(targetDiv, data, query, layout) {
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 drawBackground(canvas, context, imgSrc, obj);
                 row.appendChild(col);
+                 
+             } // test:end 
 
                 idx = idx + 1;
             }
