@@ -61,6 +61,7 @@ abcUtil = {
     getRandomSubarrayPartialShuffle: function (arr, size) {
         // test:begin
         if (arr.length<=size) {
+            console.log('Returning now.' + arr.length);
             return arr.slice(0);
         } else { // test:end
         
