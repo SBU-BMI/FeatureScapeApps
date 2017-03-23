@@ -61,7 +61,7 @@ abcUtil = {
     getRandomSubarrayPartialShuffle: function (arr, size) {
         // test:begin
         if (arr.length<=size) {
-            console.log('Returning now.' + arr.length);
+            console.log("Returning now.",arr.length);
             return arr.slice(0);
         } else { // test:end
         
@@ -70,6 +70,10 @@ abcUtil = {
                 min = i - size,
                 temp,
                 index;
+            
+            //test
+            console.log("Random shuffle.");
+            
             while (i-- > min) {
                 index = Math.floor((i + 1) * Math.random());
                 temp = shuffled[index];
