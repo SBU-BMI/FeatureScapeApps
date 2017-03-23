@@ -60,22 +60,23 @@ abcUtil = {
 
     getRandomSubarrayPartialShuffle: function (arr, size) {
         // test:begin
-        if (arr.length<=size) 
+        if (arr.length<=size) {
             return arr.slice(0);
-        // test:end
+        } else { // test:end
         
-        var shuffled = arr.slice(0),
-            i = arr.length,
-            min = i - size,
-            temp,
-            index;
-        while (i-- > min) {
-            index = Math.floor((i + 1) * Math.random());
-            temp = shuffled[index];
-            shuffled[index] = shuffled[i];
-            shuffled[i] = temp;
-        }
-        return shuffled.slice(min);
+            var shuffled = arr.slice(0),
+                i = arr.length,
+                min = i - size,
+                temp,
+                index;
+            while (i-- > min) {
+                index = Math.floor((i + 1) * Math.random());
+                temp = shuffled[index];
+                shuffled[index] = shuffled[i];
+                shuffled[i] = temp;
+            }
+            return shuffled.slice(min);
+        } // test:end
     },
 
     featureArrays: function (selection) {
